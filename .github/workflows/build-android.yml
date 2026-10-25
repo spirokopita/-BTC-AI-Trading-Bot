@@ -13,6 +13,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BTCAUD_KEYSTORE_PASSWORD: ${{ secrets.BTC_PAPER_SIGNING_STORE_PASSWORD }}
+      BTCAUD_KEY_ALIAS: ${{ secrets.BTC_PAPER_SIGNING_KEY_ALIAS }}
+      BTCAUD_KEY_PASSWORD: ${{ secrets.BTC_PAPER_SIGNING_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -23,6 +27,18 @@ jobs:
         run: |
           test -f android/app/build.gradle.kts
           test -f android/app/src/main/AndroidManifest.xml
+      - name: Configure stable private debug signing if available
+        env:
+          KEYSTORE_B64: ${{ secrets.BTC_PAPER_SIGNING_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            umask 077
+            printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/btc-paper-signing.jks"
+            echo "BTCAUD_KEYSTORE_PATH=$RUNNER_TEMP/btc-paper-signing.jks" >> "$GITHUB_ENV"
+            echo "Using stable secret-backed Android signing"
+          else
+            echo "::warning::No stable signing secret configured. This debug APK cannot update previous builds signed with different keys."
+          fi
       - name: Run Kotlin unit tests
         working-directory: android
         run: gradle --no-daemon testDebugUnitTest

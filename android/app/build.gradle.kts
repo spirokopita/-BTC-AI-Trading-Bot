@@ -4,7 +4,24 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Optional stable signing configured with GitHub Actions secrets.
+ // A missing secret intentionally falls back to the normal ephemeral debug signature.
+val signingFile = providers.environmentVariable("BTCAUD_KEYSTORE_PATH").orNull
+val signingStorePassword = providers.environmentVariable("BTCAUD_KEYSTORE_PASSWORD").orNull
+val signingAlias = providers.environmentVariable("BTCAUD_KEY_ALIAS").orNull
+val signingKeyPassword = providers.environmentVariable("BTCAUD_KEY_PASSWORD").orNull
+val stableSigning = listOf(signingFile, signingStorePassword, signingAlias, signingKeyPassword)
+    .all { !it.isNullOrBlank() }
+
 android {
+    signingConfigs {
+        if (stableSigning) create("privatePersistentDebug") {
+            storeFile = file(signingFile!!)
+            storePassword = signingStorePassword
+            keyAlias = signingAlias
+            keyPassword = signingKeyPassword
+        }
+    }
     namespace = "com.btcaud.paper"
     compileSdk = 35
 
@@ -17,6 +34,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        getByName("debug") {
+            if (stableSigning) signingConfig = signingConfigs.getByName("privatePersistentDebug")
+        }
         release { isMinifyEnabled = false }
     }
     compileOptions {
