@@ -24,3 +24,14 @@ GitHub Actions `.github/workflows/build-android.yml` runs both commands and publ
 
 ## News eye (observational only)\n- Hard-coded HTTPS RSS sources: CoinDesk, Decrypt and Cointelegraph. Content and request sizes are bounded, redirects restricted to the source domain, and XML DTD/entities rejected.\n- News collected roughly every 30 minutes when monitoring is on. First-seen timestamps are written once to SQLite; publication time is retained separately.\n- RSS outages do not block public ticker polling or the strategy engine. Headlines are categorised for display only; no unvalidated sentiment trade entries.\n\n## Research roadmap
 Historical BTC/AUD data provenance and 1h/15m timeframes, walk-forward tests and realistic fill assumptions are needed before treating the strategy as day trading. Existing Python news collectors and backtests **are not connected to the Android strategy**. Future news signals must be timestamped by actual first observation and validated out of sample to avoid look-ahead bias. There is no verified profit claim.
+
+## Causal historical replay
+- The on-device REPLAY CACHED HISTORY button backtests the baseline against
+  up to 400 locally cached completed BTC/AUD 4h candles. No replay writes to
+  the real paper ledger or implies a profitable algorithm.
+- Decisions see completed bars only; simulated fills are delayed to the
+  following bar's OPEN. Stops conservatively win when both stop/target touch.
+- Same trade-friction and A$50 / 5%-cash risk budget as the online baseline.
+- 400 bars span only about 67 days; the lab explicitly warns this is too
+  little history for credible AI training or selection. Multi-year archives
+  and purged walk-forward validation remain required.

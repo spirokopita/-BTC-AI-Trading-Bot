@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.btcaud.paper.core.MonitorSnapshot
+import com.btcaud.paper.core.HistoricalPaperReplay
 import com.btcaud.paper.data.PaperDatabase
 import com.btcaud.paper.work.AppControl
 import com.btcaud.paper.work.WorkScheduler
@@ -67,6 +68,7 @@ private fun PaperScreen(activity: MainActivity) {
     val scope = rememberCoroutineScope()
     var state by remember { mutableStateOf<MonitorSnapshot?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    var research by remember { mutableStateOf<HistoricalPaperReplay.Report?>(null) }
     suspend fun reload() {
         state = withContext(Dispatchers.IO) { PaperDatabase(activity).use { it.snapshot() } }
     }
@@ -169,6 +171,36 @@ private fun PaperScreen(activity: MainActivity) {
                         }
                     }
                     HorizontalDivider()
+                    HorizontalDivider()
+                    Text("HISTORICAL REPLAY LAB", color = accent,
+                        style = MaterialTheme.typography.titleLarge)
+                    Text("Uses completed 4h bars already stored on this phone. " +
+                        "It does not change the paper wallet or trade live.",
+                        color = muted)
+                    OutlinedButton(onClick = {
+                        scope.launch {
+                            try {
+                                research = withContext(Dispatchers.IO) {
+                                    PaperDatabase(activity).use { it.researchReplay() }
+                                }
+                            } catch (e: Exception) {
+                                error = e.message ?: "Historical replay failed"
+                            }
+                        }
+                    }, modifier = Modifier.fillMaxWidth()) { Text("REPLAY CACHED HISTORY") }
+                    research?.let { report ->
+                        Text("Bars analysed: " + report.bars +
+                            " · Buys: " + report.buys + " · Sells: " + report.sells,
+                            color = Color.White)
+                        Text("Replay net return: " +
+                            String.format(Locale.US, "%.2f%%", report.netReturnBps / 100.0) +
+                            " · Max drawdown: " +
+                            String.format(Locale.US, "%.2f%%", report.maxDrawdownBps / 100.0),
+                            color = Color.White)
+                        Text("Simulated ending equity: " + aud(report.endingEquityCents),
+                            color = Color.White)
+                        Text(report.warning, color = muted)
+                    }
                     Text("NEWS EYE · READ-ONLY OBSERVATIONS", color = accent,
                         style = MaterialTheme.typography.titleLarge)
                     Text("Last successful RSS poll: " + time(s.latestNewsSeenMillis), color = muted)

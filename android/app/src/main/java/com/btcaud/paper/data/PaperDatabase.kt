@@ -12,6 +12,7 @@ import com.btcaud.paper.core.PaperFill
 import com.btcaud.paper.core.PaperLedger
 import com.btcaud.paper.core.PaperTradeEvent
 import com.btcaud.paper.core.NewsObservation
+import com.btcaud.paper.core.HistoricalPaperReplay
 
 /**
  * Local transactional paper ledger. Database file name deliberately unchanged
@@ -370,6 +371,19 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
      * Atomically throttle public RSS polling to roughly once every 30 minutes.
      * News is a passive observation source, never an automatic BUY/SELL signal.
      */
+    /** Isolated read-only replay against cached, completed, genuine-source-labelled candles. */
+    fun researchReplay(): HistoricalPaperReplay.Report {
+        val candles = readableDatabase.rawQuery("""SELECT start_s,open_cents,high_cents,
+            low_cents,close_cents FROM candles_4h ORDER BY start_s DESC LIMIT 400""",
+            null).use { c ->
+            buildList {
+                while (c.moveToNext()) add(HistoricalPaperReplay.Bar(c.getLong(0),
+                    c.getLong(1), c.getLong(2), c.getLong(3), c.getLong(4)))
+            }.asReversed()
+        }
+        return HistoricalPaperReplay.run(candles)
+    }
+
     fun recordNewsAttempt(nowMs: Long): Boolean {
         val cutoff = nowMs - 30L * 60_000L
         return writableDatabase.update("app_state", ContentValues().apply {
