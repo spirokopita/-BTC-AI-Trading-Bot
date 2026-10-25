@@ -64,7 +64,7 @@ private fun PaperScreen(activity: MainActivity) {
         while (true) { reload(); delay(15_000) }
     }
     val purple = Color(0xFF9B6AFF)
-    MaterialTheme(colorScheme = darkColorScheme(primary = purple)) {
+    MaterialTheme(colorScheme = darkColorScheme(primary = purple, onBackground = Color.White, onSurface = Color.White, surface = Color(0xFF0B0812), onPrimary = Color(0xFF180B2D))) {
         Surface(Modifier.fillMaxSize(), color = Color(0xFF0B0812)) {
             Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("BTC AI", style = MaterialTheme.typography.headlineLarge, color = purple)
@@ -72,11 +72,11 @@ private fun PaperScreen(activity: MainActivity) {
                 val s = state
                 if (s == null) Text("Loading local state...") else {
                     Text("MONITOR  ${s.status(System.currentTimeMillis())}", color = purple)
-                    Text("Simulated equity: ${aud(s.account.cashCents)}", style = MaterialTheme.typography.headlineMedium)
-                    Text("NET P&L after costs: ${aud(s.account.netPnlCents)} (no trades yet)")
-                    Text("BTC/AUD closed 4h candle: ${s.latestCloseAudCents?.let(::aud) ?: "NO DATA"}")
-                    Text("Last successful poll: ${s.lastSuccessMillis?.let { java.text.DateFormat.getDateTimeInstance().format(java.util.Date(it)) } ?: "Never"}")
-                    Text("Open positions: NONE · Last trade: NONE · AI: DISABLED")
+                    Text("Simulated cash: ${aud(s.account.cashCents)}", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text("NET P&L after costs: ${aud(s.account.netPnlCents)} (trading not yet enabled)", color = Color.White)
+                    Text("BTC/AUD closed 4h candle: ${s.latestCloseAudCents?.let(::aud) ?: "NO DATA"}", color = Color.White)
+                    Text("Last successful poll: ${s.lastSuccessMillis?.let { java.text.DateFormat.getDateTimeInstance().format(java.util.Date(it)) } ?: "Never"}", color = Color.White)
+                    Text("Open positions: NONE · Last trade: NONE · AI: DISABLED", color = Color.White)
                     if (s.lastError != null) Text("Feed warning: ${s.lastError}", color = Color(0xFFFFA1A1))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(onClick = {
@@ -88,7 +88,7 @@ private fun PaperScreen(activity: MainActivity) {
                     }
                     Spacer(Modifier.height(8.dp))
                     Text("TEST FUNDS", color = purple)
-                    Text("Funding: ${aud(s.account.cumulativeFundingCents)} · Refills: ${s.account.refillCount}")
+                    Text("Funding: ${aud(s.account.cumulativeFundingCents)} · Refills: ${s.account.refillCount}", color = Color.White)
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(onClick = { scope.launch {
                             try { AppControl.refill(activity); reload() }
