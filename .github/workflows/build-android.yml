@@ -5,6 +5,9 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/build-android.yml'
+concurrency:
+  group: btc-paper-android-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -23,6 +26,9 @@ jobs:
       - name: Run Kotlin unit tests
         working-directory: android
         run: gradle --no-daemon testDebugUnitTest
+      - name: Compile Android instrumentation tests
+        working-directory: android
+        run: gradle --no-daemon assembleDebugAndroidTest
       - name: Build APK
         working-directory: android
         run: |
