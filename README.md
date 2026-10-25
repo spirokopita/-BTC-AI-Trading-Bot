@@ -1,5 +1,7 @@
 # BTC AI Trading Bot — V16 (current project)
 
+> **V17 Android CI validation (2026-10-26):** An Android 15/API 35 emulator ran all 9 existing SQLite/paper instrumentation tests successfully, in addition to the JVM tests and APK build. [Verified run and APK artifact](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40239464599). This does **not** verify real Samsung behavior, Kraken connectivity or trading profitability. APK is ephemeral debug-signed unless stable signing secrets are configured.
+
 **Android app: paper trading ONLY. No real wallet, exchange credentials, deposits, live orders, or guaranteed profits.**
 
 - **Monitor:** Live-public Kraken BTC/AUD ticker, up to ~700 completed 4-hour candles, WorkManager background checks requested roughly every 15 minutes (Android can defer them), purple notification, toggle and dashboard widgets.
