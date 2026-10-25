@@ -1,0 +1,33 @@
+name: Python paper research regression tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'backtester/**'
+      - 'data_layer/**'
+      - 'news_intelligence/**'
+      - 'paper_engine/**'
+      - 'trading_costs/**'
+      - 'strategy_loop/**'
+      - 'research/**'
+      - 'tests/**'
+      - 'requirements-test.txt'
+      - '.github/workflows/research-tests.yml'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-test.txt
+      - name: Install research test dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-test.txt
+      - name: Regression-test historical analysis and paper engine
+        run: python -m unittest discover -s tests -q
