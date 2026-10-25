@@ -1,3 +1,23 @@
+# BTC AI Trading Bot — V16 (current project)
+
+**Android app: paper trading ONLY. No real wallet, exchange credentials, deposits, live orders, or guaranteed profits.**
+
+- **Monitor:** Live-public Kraken BTC/AUD ticker, up to ~700 completed 4-hour candles, WorkManager background checks requested roughly every 15 minutes (Android can defer them), purple notification, toggle and dashboard widgets.
+- **Simulated trading:** Optional, OFF by default. Rule-based SMA10/SMA20 crossover research baseline, A$1,000 initial balance, min(5% cash, A$50) position sizing, 16bps simulated fee + 5bps spread + 5bps slippage on both entry and exit. Paper stop/target checks depend on polling; **not real exchange stops**.
+- **Ledger:** Local SQLite trades, open BTC position, net liquidation equity including exit-cost estimates, realised net P&L, deposited funding audit and additive migration from V15.
+- **Multiple eyes:** Kraken price observations and a separate first-observed-timestamped **read-only RSS news eye**. News topics are *not* used to trade until validated out of sample.
+- **Research:** Isolated causal history replay with next-candle-open simulated fills, the same cost model and explicit insufficient-history warnings. Python V12 research and LightGBM prototype remain separate from the Android execution strategy.
+- **Tests/builds:** GitHub Actions compiles Kotlin unit tests and Android instrumentation test APK, builds the Android debug APK and uploads an artifact. The existing Python research suite passed **130 local unit tests** on 2026-10-25. Tests compiling is **not** proof of successful phone/device operation or profits.
+- **Signing:** The V15 and V16 debug artifacts have different signer certificates. In-place upgrade requires a stable signing key; see [signing instructions](android/SIGNING.md). Never commit a private keystore or its passwords.
+
+Current Android source details: [android/README.md](android/README.md). Builds: [GitHub Actions](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions).
+
+**Next engineering targets:** Stable signing secret, real-device tests, longer independently verified BTC/AUD history (multiple years), chronological walk-forward model comparisons, trade/news attribution, and only then validated AI inference. Profitability is unverified.
+
+---
+
+## Historical project notes (prior versions; no longer current)
+
 # V13 — Android-first BTC/AUD paper-monitor project
 
 **New:** [`android/README.md`](android/README.md) explains the native Kotlin project, A$1,000 simulated prefill/refill/reset, purple notification, two home-screen widgets, public market monitor and honest APK build status. The existing Python V12 strategy/fee/wallet/backtester code remains intact and regression-tested. **No real wallet, trading keys, or live trading.**

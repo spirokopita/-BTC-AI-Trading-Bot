@@ -1,3 +1,32 @@
+# V16 engineering update — 2026-10-25
+
+### Current state in five lines
+1. V16 native Android public-market monitor, optional local simulated BTC/AUD strategy and persistent fee-accounting SQLite ledger are committed.
+2. Android observed ticker execution uses completed-bar signals, first-seen gating, 5%/A$50 long-only sizing; trading is OFF by default and is **not AI**.
+3. Three bounded HTTPS RSS feeds now populate an observational, first-seen-timestamped news eye; no headline controls trades.
+4. A causal offline replay lab executes following-candle fills and warns of short Kraken OHLC sample history; Python research suite passed 130 tests locally.
+5. GitHub Actions has built V16 successfully and compiles JVM and Android instrumentation tests. Real-device behavior and net profitability remain unverified.
+
+### Completed
+- Preserved pre-existing installed app account with additive SQLite migrations v1 -> v3. Trades, equity and funding history are separated.
+- Explicit paper control, execution audit, reset/refill separation, dark-mode improvements, and traceable decisions.
+- Kotlin strategy, costs, guardrails, replay, news labels and instrumentation source tests.
+- Expanded recent public Kraken OHLC retention; missing historical bars are not invented and gaps in signal lookback block new entries.
+- Corrected fresh-install v3 database schema after review.
+- Added a separate signing-secret path in Gradle/Actions; no private key is committed.
+
+### Broken / limitations / next
+- **Important:** Existing V15 APK cannot be replaced by these V16 debug builds because signer certificates differ. A stable keystore secret must be installed once for future upgrade continuity. Uninstalling old builds removes local app data.
+- GitHub runner compilation does not execute Android instrumentation tests on a real device or prove RSS endpoints work on a Samsung phone.
+- Android background jobs are inexact; protective exits can be delayed by Doze/network failure.
+- The current app does not implement a trained AI, news-based edge estimation, 15m/1h streaming trading, or reliable verified annual profitability.
+- Official live Kraken OHLC provides only roughly 720 4h bars; obtain multi-year properly sourced archives and run time-separated validation before promoting any learned model.
+- Next: phone smoke test, stable signed updates, model-data provenance/audit, and forward paper performance tracking.
+
+---
+
+## Historical changelog (previous notes retained)
+
 # Project changelog / next-run briefing
 
 **OPEN BLOCKER (V15): Which GitHub repository should receive the Android project so GitHub Actions can actually compile and test the APK?** No repository was provided or modified in this run.
