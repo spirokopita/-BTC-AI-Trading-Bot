@@ -246,9 +246,9 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
         require(candles.isNotEmpty())
         require(candles.all { it.isValid(nowS) })
         val sorted = candles.distinctBy { it.startS }.sortedBy { it.startS }
-        require(sorted.zipWithNext().all { (a, b) ->
-            b.startS - a.startS == MonitorPolicy.CANDLE_INTERVAL_SECONDS
-        }) { "Missing candle in fetched tail" }
+        // Preserve real gaps without inventing bars. The signal evaluator
+        // rejects new entries if its latest 21 candles are not contiguous;
+        // older missing rows do not suppress ticker-based protective exits.
         require(nowS - sorted.last().startS <= 2L * MonitorPolicy.CANDLE_INTERVAL_SECONDS) {
             "Exchange candles are stale"
         }
@@ -374,7 +374,7 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
     /** Isolated read-only replay against cached, completed, genuine-source-labelled candles. */
     fun researchReplay(): HistoricalPaperReplay.Report {
         val candles = readableDatabase.rawQuery("""SELECT start_s,open_cents,high_cents,
-            low_cents,close_cents FROM candles_4h ORDER BY start_s DESC LIMIT 400""",
+            low_cents,close_cents FROM candles_4h ORDER BY start_s DESC LIMIT 800""",
             null).use { c ->
             buildList {
                 while (c.moveToNext()) add(HistoricalPaperReplay.Bar(c.getLong(0),

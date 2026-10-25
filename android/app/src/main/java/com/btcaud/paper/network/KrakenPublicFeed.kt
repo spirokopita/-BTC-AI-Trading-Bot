@@ -38,8 +38,8 @@ object KrakenPublicFeed {
                     .multiply(BigDecimal(100)).setScale(0, RoundingMode.HALF_UP).longValueExact()
                 completed += PaperDatabase.Candle(start, cents(1), cents(2), cents(3), cents(4))
             }
-            // Kraken limits recent OHLC history; enough bars to warm up the 21-bar V16 signal.
-            return completed.takeLast(250).also { require(it.isNotEmpty()) { "No completed Kraken candles" } }
+            // Kraken limits recent OHLC history; roughly 116 days of recent completed 4h bars, not enough for AI.
+            return completed.takeLast(700).also { require(it.isNotEmpty()) { "No completed Kraken candles" } }
         } finally { conn.disconnect() }
     }
 

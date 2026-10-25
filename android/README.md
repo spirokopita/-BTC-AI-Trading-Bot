@@ -27,11 +27,11 @@ Historical BTC/AUD data provenance and 1h/15m timeframes, walk-forward tests and
 
 ## Causal historical replay
 - The on-device REPLAY CACHED HISTORY button backtests the baseline against
-  up to 400 locally cached completed BTC/AUD 4h candles. No replay writes to
+  up to 800 locally cached completed BTC/AUD 4h candles. No replay writes to
   the real paper ledger or implies a profitable algorithm.
 - Decisions see completed bars only; simulated fills are delayed to the
   following bar's OPEN. Stops conservatively win when both stop/target touch.
 - Same trade-friction and A$50 / 5%-cash risk budget as the online baseline.
-- 400 bars span only about 67 days; the lab explicitly warns this is too
+- Kraken's roughly 720-bar OHLC limit spans at most about 120 days; the lab explicitly warns this is too
   little history for credible AI training or selection. Multi-year archives
   and purged walk-forward validation remain required.
