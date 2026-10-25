@@ -1,3 +1,32 @@
+# V17 engineering update — 2026-10-26
+
+### Current state in exactly five lines
+1. V16 native Android app monitors public Kraken BTC/AUD and keeps all simulated funds, decisions and trades in local SQLite.
+2. Paper strategy is a rule-based SMA crossover, OFF by default; no wallet, live orders, exchange keys or verified AI model.
+3. WorkManager, purple-accent notification and two Glance widgets remain bounded by Android background restrictions.
+4. V17 GitHub Actions now boots an Android 15 (API 35) emulator and **executed all 9 existing SQLite/paper instrumentation tests successfully**.
+5. Android debug APK built; physical Samsung testing and genuine BTC/AUD gross/cost/NET results remain unverified.
+
+### Done — one highest-value task: execute Android instrumentation in CI
+- Updated `.github/workflows/build-android.yml` to grant runner KVM access, boot a Google APIs API 35 x86_64 emulator and run `gradle --no-daemon connectedDebugAndroidTest` as a required build gate.
+- Kept JVM unit tests, instrumentation compilation and `assembleDebug`; added always-uploaded Android test XML/HTML evidence artifact.
+- **Verified run:** [GitHub Actions run 40239464599](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40239464599) completed successfully on 2026-10-26 AEDT. Runner output: `Starting 9 tests on emulator-5554`, `Finished 9 tests`, `BUILD SUCCESSFUL`.
+- [Android emulator test evidence](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40239464599/artifacts/12616836718) and [debug APK ZIP](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40239464599/artifacts/12617001299) were published by the runner.
+- Existing tests exercised paper account refill/reset, SQLite schema/migration, idempotent controls, paused writes, candle deduplication, paper entry/exit and news first-observed retention. No network-connected Kraken test or visual widget test was run.
+
+### Broken / limitations / next
+- Physical-device installation, widget rendering, notification permissions, Doze recovery and public Kraken/RSS reachability are **NOT TESTED**. Emulator instrumentation tests validate SQLite/paper logic, not the whole app UX.
+- Signing secrets were absent in the verified CI run. The resulting ephemeral debug-signed APK cannot update an APK signed by a different certificate; uninstalling loses app data. Do not uninstall a prior build until its local data is preserved.
+- Android 15+ background execution cannot guarantee 24/7 monitoring or immediate protective exits. The current rule-based strategy has no demonstrated after-fee edge.
+- **Next highest-value task:** verify full phone smoke test and stable signing/update continuity; then collect source-audited BTC/AUD history and run out-of-sample NET evaluation.
+- **Question for device-validation run:** Which Android phone/emulator can be used for manual widget/notification/Doze checks, and has a persistent signing keystore been configured in GitHub Actions secrets?
+
+### Observed NET results
+- Real orders: **0**. Genuine BTC/AUD gross, trading costs and NET returns: **NOT MEASURED**.
+- Emulator tests: **9/9 passed**. These are functional tests, not performance or profitability measurements.
+
+---
+
 # V16 engineering update — 2026-10-25
 
 ### Current state in five lines
