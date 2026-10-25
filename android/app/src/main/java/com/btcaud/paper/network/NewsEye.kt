@@ -5,6 +5,7 @@ import com.btcaud.paper.core.NewsObservation
 import com.btcaud.paper.core.NewsTopic
 import org.xmlpull.v1.XmlPullParser
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -61,7 +62,17 @@ object NewsEye {
         try {
             require(conn.responseCode == 200) { "RSS HTTP " + conn.responseCode }
             require(trustedHost(conn.url, source.articleHost)) { "RSS redirected off trusted source" }
-            val xml = conn.inputStream.use { it.readNBytes(MAX_BYTES + 1) }
+            val xml = conn.inputStream.use { stream ->
+                val data = ByteArrayOutputStream()
+                val buffer = ByteArray(8_192)
+                while (true) {
+                    val n = stream.read(buffer)
+                    if (n < 0) break
+                    data.write(buffer, 0, n)
+                    require(data.size() <= MAX_BYTES) { "RSS response too large" }
+                }
+                data.toByteArray()
+            }
             require(xml.size in 1..MAX_BYTES) { "RSS response too large" }
             val text = xml.toString(Charsets.UTF_8)
             require(!text.contains("<!DOCTYPE", ignoreCase = true) &&

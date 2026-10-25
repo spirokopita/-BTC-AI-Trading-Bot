@@ -22,5 +22,5 @@ gradle --no-daemon assembleDebug
 
 GitHub Actions `.github/workflows/build-android.yml` runs both commands and publishes the signed-with-debug-key APK artifact after success. Kotlin JUnit tests cover crossover, data gaps, price-based exits, risk sizing and net-cost accounting. Android instrumentation/database migration and live exchange connectivity still require device tests.
 
-## Research roadmap
+## News eye (observational only)\n- Hard-coded HTTPS RSS sources: CoinDesk, Decrypt and Cointelegraph. Content and request sizes are bounded, redirects restricted to the source domain, and XML DTD/entities rejected.\n- News collected roughly every 30 minutes when monitoring is on. First-seen timestamps are written once to SQLite; publication time is retained separately.\n- RSS outages do not block public ticker polling or the strategy engine. Headlines are categorised for display only; no unvalidated sentiment trade entries.\n\n## Research roadmap
 Historical BTC/AUD data provenance and 1h/15m timeframes, walk-forward tests and realistic fill assumptions are needed before treating the strategy as day trading. Existing Python news collectors and backtests **are not connected to the Android strategy**. Future news signals must be timestamped by actual first observation and validated out of sample to avoid look-ahead bias. There is no verified profit claim.

@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.btcaud.paper.data.PaperDatabase
 import com.btcaud.paper.network.KrakenPublicFeed
+import com.btcaud.paper.network.NewsEye
 import com.btcaud.paper.notifications.StatusNotification
 import com.btcaud.paper.widgets.DashboardWidget
 import com.btcaud.paper.widgets.ToggleWidget
@@ -35,6 +36,17 @@ class MarketSyncWorker(context: Context, params: WorkerParameters) : CoroutineWo
             Result.retry()
         } finally {
             try {
+                // Independently collect bounded first-observed RSS headlines;
+                // a broken news provider cannot prevent risk exits or mark the
+                // price feed as healthy/unhealthy.
+                try {
+                    if (db.recordNewsAttempt(System.currentTimeMillis())) {
+                        val report = NewsEye.collect()
+                        db.storeNews(report.observations, System.currentTimeMillis(), report.warnings)
+                    }
+                } catch (e: Exception) {
+                    db.recordNewsFailure("News eye: " + e.javaClass.simpleName)
+                }
                 ToggleWidget().updateAll(applicationContext)
                 DashboardWidget().updateAll(applicationContext)
                 StatusNotification.refresh(applicationContext, db.snapshot())

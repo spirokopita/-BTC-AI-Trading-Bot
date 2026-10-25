@@ -169,6 +169,23 @@ private fun PaperScreen(activity: MainActivity) {
                         }
                     }
                     HorizontalDivider()
+                    Text("NEWS EYE · READ-ONLY OBSERVATIONS", color = accent,
+                        style = MaterialTheme.typography.titleLarge)
+                    Text("Last successful RSS poll: " + time(s.latestNewsSeenMillis), color = muted)
+                    if (s.newsWarning != null)
+                        Text("News warning: " + s.newsWarning, color = Color(0xFFFFA1A1))
+                    if (s.latestNews.isEmpty()) {
+                        Text("No observed headlines yet. News does NOT trigger trades.", color = muted)
+                    } else {
+                        s.latestNews.take(5).forEach { article ->
+                            Text(article.source + " · " + article.topic, color = accent)
+                            Text(article.headline, color = Color.White)
+                            Text("First seen: " + time(article.firstSeenMs), color = muted)
+                        }
+                    }
+                    Text("Headlines are classified for research, not used for BUY/SELL until " +
+                        "we have leakage-free historical validation.", color = muted)
+                    HorizontalDivider()
                     Text("TEST FUNDS", color = accent)
                     Text("Funding: " + aud(s.account.cumulativeFundingCents) +
                         " · Refills: " + s.account.refillCount, color = Color.White)

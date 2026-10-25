@@ -11,13 +11,14 @@ import com.btcaud.paper.core.PaperDecisionEngine
 import com.btcaud.paper.core.PaperFill
 import com.btcaud.paper.core.PaperLedger
 import com.btcaud.paper.core.PaperTradeEvent
+import com.btcaud.paper.core.NewsObservation
 
 /**
  * Local transactional paper ledger. Database file name deliberately unchanged
  * so upgrading from V15 preserves the A$1,000 account and funding history.
  * SQLite v1 -> v2 is additive, with no destructive migration.
  */
-class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13.db", null, 2) {
+class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13.db", null, 3) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""CREATE TABLE app_state (
             id INTEGER PRIMARY KEY CHECK(id=1), enabled INTEGER NOT NULL DEFAULT 0,
@@ -41,6 +42,7 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             high_cents INTEGER NOT NULL, low_cents INTEGER NOT NULL,
             close_cents INTEGER NOT NULL, source TEXT NOT NULL)""")
         createTradeTable(db)
+        createNewsTable(db)
         db.execSQL("INSERT INTO app_state(id, enabled, cash_cents, funding_cents, refill_count, reset_count) VALUES(1,0,100000,100000,0,0)")
         db.execSQL("INSERT INTO funding_audit(kind, amount_cents, cash_after_cents, funding_after_cents, created_ms) VALUES('PREFILL',100000,100000,100000,0)")
     }
@@ -55,18 +57,34 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             reason TEXT NOT NULL)""")
     }
 
+    private fun createNewsTable(db: SQLiteDatabase) {
+        db.execSQL("""CREATE TABLE IF NOT EXISTS news_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT NOT NULL UNIQUE,
+            source TEXT NOT NULL, headline TEXT NOT NULL, topic TEXT NOT NULL,
+            published_ms INTEGER, first_seen_ms INTEGER NOT NULL)""")
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_news_first_seen ON news_items(first_seen_ms DESC)")
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion == 1 && newVersion == 2) { "Unsupported database upgrade" }
-        db.execSQL("ALTER TABLE app_state ADD COLUMN trading_enabled INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN position_sats INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN position_basis_cents INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN entry_price_cents INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN last_evaluated_s INTEGER")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN last_decision TEXT NOT NULL DEFAULT 'NOT_ARMED'")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN last_reason TEXT NOT NULL DEFAULT 'Paper strategy is off'")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN ticker_cents INTEGER")
-        db.execSQL("ALTER TABLE app_state ADD COLUMN ticker_ms INTEGER")
-        createTradeTable(db)
+        require(oldVersion in 1..2 && newVersion == 3) { "Unsupported database upgrade" }
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE app_state ADD COLUMN trading_enabled INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN position_sats INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN position_basis_cents INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN entry_price_cents INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN last_evaluated_s INTEGER")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN last_decision TEXT NOT NULL DEFAULT 'NOT_ARMED'")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN last_reason TEXT NOT NULL DEFAULT 'Paper strategy is off'")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN ticker_cents INTEGER")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN ticker_ms INTEGER")
+            createTradeTable(db)
+        }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE app_state ADD COLUMN news_attempt_ms INTEGER")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN news_success_ms INTEGER")
+            db.execSQL("ALTER TABLE app_state ADD COLUMN news_error TEXT")
+            createNewsTable(db)
+        }
     }
 
     private fun account(db: SQLiteDatabase): PaperAccount =
@@ -106,6 +124,21 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
                     c.getLong(3), c.getLong(4), if (c.isNull(5)) null else c.getLong(5), c.getString(6)))
             }
         }
+        val newsStatus = db.rawQuery(
+            "SELECT news_success_ms,news_error FROM app_state WHERE id=1", null
+        ).use { c ->
+            check(c.moveToFirst())
+            Pair(if(c.isNull(0)) null else c.getLong(0),
+                 if(c.isNull(1)) null else c.getString(1))
+        }
+        val observedNews = db.rawQuery("""SELECT source,headline,url,published_ms,first_seen_ms,topic
+            FROM news_items ORDER BY first_seen_ms DESC, id DESC LIMIT 6""", null).use { c ->
+            buildList {
+                while (c.moveToNext()) add(NewsObservation(c.getString(0), c.getString(1),
+                    c.getString(2), if(c.isNull(3)) null else c.getLong(3),
+                    c.getLong(4), c.getString(5)))
+            }
+        }
         return MonitorSnapshot(
             enabled = state[0] == "1", lastAttemptMillis = state[1].toLongOrNull(),
             lastSuccessMillis = state[2].toLongOrNull(), lastError = state[3].ifBlank { null },
@@ -116,6 +149,8 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             lastDecisionReason = state[9], latestTickerAudCents = state[10].toLongOrNull(),
             latestTickerMillis = state[11].toLongOrNull(),
             realisedNetCents = realised, recentTrades = trades,
+            latestNewsSeenMillis = newsStatus.first, newsWarning = newsStatus.second,
+            latestNews = observedNews,
         )
     }
 
@@ -328,6 +363,55 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             db.update("app_state", updated, "id=1 AND enabled=1", null)
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
+    }
+
+    /**
+     * Atomically throttle public RSS polling to roughly once every 30 minutes.
+     * News is a passive observation source, never an automatic BUY/SELL signal.
+     */
+    fun recordNewsAttempt(nowMs: Long): Boolean {
+        val cutoff = nowMs - 30L * 60_000L
+        return writableDatabase.update("app_state", ContentValues().apply {
+            put("news_attempt_ms", nowMs)
+        }, "id=1 AND enabled=1 AND (news_attempt_ms IS NULL OR news_attempt_ms <= ?)",
+            arrayOf(cutoff.toString())) == 1
+    }
+
+    fun storeNews(observations: List<NewsObservation>, nowMs: Long, warning: String?) {
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            val enabled = db.rawQuery("SELECT enabled FROM app_state WHERE id=1", null).use { c ->
+                check(c.moveToFirst()); c.getInt(0) == 1
+            }
+            if (enabled) {
+                observations.take(120).forEach { item ->
+                    db.insertWithOnConflict("news_items", null, ContentValues().apply {
+                        put("url", item.url.take(700))
+                        put("source", item.source.take(50))
+                        put("headline", item.headline.take(220))
+                        put("topic", item.topic.take(25))
+                        if (item.publishedMs == null) putNull("published_ms")
+                        else put("published_ms", item.publishedMs)
+                        put("first_seen_ms", item.firstSeenMs)
+                    }, SQLiteDatabase.CONFLICT_IGNORE)
+                }
+                db.execSQL("""DELETE FROM news_items WHERE id NOT IN (
+                    SELECT id FROM news_items ORDER BY first_seen_ms DESC, id DESC LIMIT 600)""")
+                db.update("app_state", ContentValues().apply {
+                    put("news_success_ms", nowMs)
+                    if (warning == null) putNull("news_error")
+                    else put("news_error", warning.take(240))
+                }, "id=1", null)
+            }
+            db.setTransactionSuccessful()
+        } finally { db.endTransaction() }
+    }
+
+    fun recordNewsFailure(message: String) {
+        writableDatabase.update("app_state", ContentValues().apply {
+            put("news_error", message.take(240))
+        }, "id=1 AND enabled=1", null)
     }
 
     private fun addTradeEvent(db: SQLiteDatabase, side: String, session: Int,

@@ -76,6 +76,9 @@ data class MonitorSnapshot(
     val lastDecisionReason: String = "Paper strategy is off",
     val realisedNetCents: Long = 0L,
     val recentTrades: List<PaperTradeEvent> = emptyList(),
+    val latestNewsSeenMillis: Long? = null,
+    val newsWarning: String? = null,
+    val latestNews: List<NewsObservation> = emptyList(),
 ) {
     fun status(nowMillis: Long): MonitoringStatus =
         if (enabled && lastError != null) MonitoringStatus.STALE
