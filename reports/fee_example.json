@@ -1,0 +1,25 @@
+{
+  "venue": "kraken",
+  "instrument": "spot",
+  "qty_btc": 0.0004953278287894576,
+  "budget_aud": 50.0,
+  "break_even_price_move_pct": 1.90214164295105,
+  "paper_only": true,
+  "ledger": {
+    "gross_pnl_quote": 1.9813113151578303,
+    "entry_fee_quote": 0.3968253968253968,
+    "exit_fee_quote": 0.411526922087732,
+    "total_trading_fees_quote": 0.8083523189131288,
+    "spread_quote": 0.04041875082921974,
+    "slippage_quote": 0.10320190653671996,
+    "funding_quote": 0.0,
+    "withdrawal_network_quote": 0.0,
+    "total_costs_quote": 0.9519729762790685,
+    "net_pnl_quote": 1.029338338878766,
+    "net_return_pct": 2.058676677757532,
+    "entry_execution_price": 100142.11138590956,
+    "exit_execution_price": 103852.16067242566,
+    "entry_order_type": "taker",
+    "exit_order_type": "taker"
+  }
+}

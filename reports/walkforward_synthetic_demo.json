@@ -1,0 +1,27 @@
+{
+  "provenance": "SYNTHETIC CANDLES: NOT KRAKEN OR A REAL TRADING TRACK RECORD",
+  "future_oracle_used_to_pick_parameters": false,
+  "folds": [
+    {
+      "fold": 1,
+      "selected_candidate_index_from_train": 0,
+      "test_net_return_pct": 0.0,
+      "test_completed_trades": 0,
+      "test_hindsight_trade_count": 0
+    },
+    {
+      "fold": 2,
+      "selected_candidate_index_from_train": 0,
+      "test_net_return_pct": 0.0,
+      "test_completed_trades": 0,
+      "test_hindsight_trade_count": 0
+    },
+    {
+      "fold": 3,
+      "selected_candidate_index_from_train": 0,
+      "test_net_return_pct": 0.0,
+      "test_completed_trades": 0,
+      "test_hindsight_trade_count": 0
+    }
+  ]
+}

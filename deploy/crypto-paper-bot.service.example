@@ -1,0 +1,27 @@
+# TEMPLATE ONLY — no service is installed by this project.
+# On a network-connected Linux VPS, adjust WorkingDirectory and ExecStart,
+# create a dedicated nonprivileged btc-paper OS user, then install via systemd.
+# All orders are LOCAL SQLITE simulations. NO exchange trading credentials.
+[Unit]
+Description=BTC/AUD unattended PAPER-only strategy research loop
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=btc-paper
+Group=btc-paper
+WorkingDirectory=/opt/btc_aud_ai_project_v11
+ExecStart=/opt/btc_aud_ai_project_v11/.venv/bin/python -m strategy_loop.cli serve --market-db /var/lib/btc-paper/market.sqlite --news-db /var/lib/btc-paper/news.sqlite --wallet-db /var/lib/btc-paper/wallet.sqlite --journal-db /var/lib/btc-paper/journal.sqlite
+Restart=always
+RestartSec=30
+StateDirectory=btc-paper
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/btc-paper
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

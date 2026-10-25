@@ -1,0 +1,59 @@
+{
+  "label": "SYNTHETIC TEST ONLY \u2014 no real Kraken BTC/AUD performance",
+  "starting_cash_quote": 1000.0,
+  "ending_cash_quote": 998.3694194755782,
+  "net_pnl_quote": -1.630580524421788,
+  "gross_pnl_quote": 0.0795886900528644,
+  "total_fees_quote": 1.586952563615134,
+  "spread_quote": 0.07934765002013314,
+  "slippage_quote": 0.04386900083936067,
+  "trades": [
+    {
+      "entry_execution_price": 100.06211222976216,
+      "entry_fee_quote": 0.3968253968253968,
+      "entry_order_type": "taker",
+      "entry_ts": 144014400,
+      "exit_execution_price": 107.43314574308842,
+      "exit_fee_quote": 0.4260573731824678,
+      "exit_order_type": "taker",
+      "exit_ts": 144043200,
+      "funding_quote": 0.0,
+      "gross_pnl_quote": 3.7179288067552494,
+      "net_pnl_quote": 2.831114274626003,
+      "net_return_pct": 5.662228549252006,
+      "quantity_base": 0.49572384090069993,
+      "reason": "target_intrabar",
+      "slippage_quote": 0.022786683326611917,
+      "spread_quote": 0.041145078794758094,
+      "total_costs_quote": 0.8868145321292347,
+      "total_trading_fees_quote": 0.8228827700078646,
+      "withdrawal_network_quote": 0.0
+    },
+    {
+      "entry_execution_price": 109.06770233044075,
+      "entry_fee_quote": 0.3968253968253968,
+      "entry_order_type": "taker",
+      "entry_ts": 144057600,
+      "exit_execution_price": 100.93734642783346,
+      "exit_fee_quote": 0.36724439678187265,
+      "exit_order_type": "taker",
+      "exit_ts": 144072000,
+      "funding_quote": 0.0,
+      "gross_pnl_quote": -3.638340116702385,
+      "net_pnl_quote": -4.461694799047791,
+      "net_return_pct": -8.923389598095582,
+      "quantity_base": 0.4547925145877981,
+      "reason": "stop_gap",
+      "slippage_quote": 0.02108231751274875,
+      "spread_quote": 0.03820257122537504,
+      "total_costs_quote": 0.8233546823453932,
+      "total_trading_fees_quote": 0.7640697936072695,
+      "withdrawal_network_quote": 0.0
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "closed_trades": 2,
+    "fills": 4
+  }
+}

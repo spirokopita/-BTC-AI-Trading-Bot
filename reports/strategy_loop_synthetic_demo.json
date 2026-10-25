@@ -1,0 +1,13 @@
+{
+  "label": "SYNTHETIC DATA ONLY \u2014 not genuine Kraken prices or trading returns",
+  "first_run_processed": 700,
+  "second_run_processed": 0,
+  "new_simulated_orders": 0,
+  "ending_equity_quote": 1000.0,
+  "realized_net_profit_quote": 0.0,
+  "wallet_verified": {
+    "ok": true,
+    "closed_trades": 0,
+    "fills": 0
+  }
+}

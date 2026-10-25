@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0e"><title>BTC / AUD • Paper Command</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><div><span class="eyebrow">AUTONOMOUS RESEARCH TERMINAL / BTC–AUD</span><h1>Paper Command <span class="mono">/ V12</span></h1><div class="subtitle">Local read-only monitoring • no order controls • no live-money access</div></div><div class="right"><div class="pill">PAPER ONLY</div><div id="lastrefresh" class="small">Connecting…</div></div></header>
+<main>
+<section id="warnings" class="warnings" aria-live="polite"></section>
+<div class="grid stats">
+ <article class="tile"><div class="label">ESTIMATED NET ACCOUNT P&L</div><div class="value" id="pnl">—</div><div class="small" id="equity">No wallet data</div></article>
+ <article class="tile"><div class="label">REALISED NET P&L</div><div class="value" id="realized">—</div><div class="small" id="tradesCount">No trade ledger</div></article>
+ <article class="tile"><div class="label">MODELED TRADING FEES</div><div class="value" id="fees">—</div><div class="small" id="othercosts">Spread / slippage unavailable</div></article>
+ <article class="tile"><div class="label">BOT HEALTH</div><div class="value medium" id="health">UNKNOWN</div><div class="small" id="heartbeat">No heartbeat</div></article>
+</div>
+<div class="grid two">
+ <section class="panel"><div class="panelhead"><h2>Estimated net equity</h2><span class="small">AUD • closed candles only</span></div><svg id="equityGraph" role="img" aria-label="Paper net equity chart" viewBox="0 0 640 190" preserveAspectRatio="none"></svg><div id="curveStatus" class="small">No priced history</div></section>
+ <section class="panel"><div class="panelhead"><h2>Open risk</h2><span class="small">Spot, long only</span></div><div id="position" class="details">No wallet initialized</div></section>
+</div>
+<div class="grid two">
+ <section class="panel"><div class="panelhead"><h2>Recent closed trades</h2><span class="small">Net of all modeled friction</span></div><div class="tablewrap"><table><thead><tr><th>Exit</th><th>Reason</th><th>Gross</th><th>Fees</th><th>Net</th></tr></thead><tbody id="tradeRows"><tr><td colspan="5">No trades</td></tr></tbody></table></div></section>
+ <section class="panel"><div class="panelhead"><h2>Market coverage</h2><span class="small">Source labels are not independent verification</span></div><div class="tablewrap"><table><thead><tr><th>Frame</th><th>Candles</th><th>Gaps</th><th>Last observation</th><th>Source label</th></tr></thead><tbody id="marketRows"><tr><td colspan="4">No imported candles</td></tr></tbody></table></div></section>
+</div>
+<div class="grid two">
+ <section class="panel"><div class="panelhead"><h2>Decision journal</h2><span class="small">Newest first</span></div><div id="decisions" class="feed">No decisions yet</div></section>
+ <section class="panel"><div class="panelhead"><h2>News intelligence</h2><span class="small">First-seen timestamps</span></div><div id="news" class="feed">No observed stories yet</div></section>
+</div>
+<div class="grid two">
+ <section class="panel"><div class="panelhead"><h2>Simulated orders</h2><span class="small">Never sent to exchange</span></div><div id="orders" class="feed">No simulated orders yet</div></section>
+ <section class="panel"><div class="panelhead"><h2>Feed + service health</h2><span class="small">Missing ≠ healthy</span></div><div id="feeds" class="feed">Awaiting data</div></section>
+</div>
+<footer><span>RESEARCH SYSTEM · PAPER ONLY</span><span id="updated">—</span><span>NO LIVE EXECUTION</span></footer>
+</main>
+<script src="/app.js" defer></script>
+</body></html>

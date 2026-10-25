@@ -1,0 +1,18 @@
+{
+  "label": "SYNTHETIC ACCOUNTING DEMONSTRATION ONLY; NOT REAL BTC/AUD DATA",
+  "paper_only": true,
+  "net_realized_quote": 1.602496936296994,
+  "gross_realized_quote": 2.4786192045034996,
+  "trading_fees_quote": 0.8129745656665015,
+  "spread_quote": 0.040649354953857395,
+  "slippage_quote": 0.022498347586141394,
+  "closed_trades": 1,
+  "warnings": [
+    "market: database not found; no observations available",
+    "news: database not found; no observations available",
+    "journal: database not found; no observations available",
+    "No cached BTC/AUD market candles. Historical Kraken P&L has NOT been measured",
+    "No loop heartbeat observed; service status UNKNOWN",
+    "No news observations; news signal coverage unavailable"
+  ]
+}

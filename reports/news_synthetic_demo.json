@@ -1,0 +1,33 @@
+{
+  "label": "FABRICATED STORY AND PRICES / NOT BITCOIN MARKET EVIDENCE",
+  "scored": 2,
+  "qualified_categories": [],
+  "first_event": {
+    "article_id": 1,
+    "source": "synthetic",
+    "category_tags": [
+      "etf"
+    ],
+    "asset_tags": [
+      "BTC"
+    ],
+    "sentiment": "positive",
+    "first_seen_ts": 1767340800,
+    "published_ts": 1767312000,
+    "available_ts": 1767340800,
+    "baseline_last_known_close_ts": 1767340800,
+    "future_close_ts": 1767355200,
+    "horizon_hours": 4,
+    "pre_close": 100.7,
+    "post_close": 100.8,
+    "gross_change_pct": 0.09930486593843213,
+    "fee_adjusted_net_return_pct": -1.6118721047929936,
+    "fee_adjusted_net_pnl_quote": -0.8059360523964969,
+    "trading_fees_quote": 0.7935517189834895,
+    "spread_quote": 0.03967759838788125,
+    "slippage_quote": 0.0219345245882403,
+    "upside_after_fee_and_edge": false,
+    "absolute_move_exceeds_break_even_plus_edge": false,
+    "threshold_upward_move_pct": 1.9935791633743376
+  }
+}

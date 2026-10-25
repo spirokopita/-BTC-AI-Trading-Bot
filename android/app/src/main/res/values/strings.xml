@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BTC AI Paper</string>
+    <string name="toggle_widget_description">Start or pause BTC/AUD paper monitoring</string>
+    <string name="dashboard_widget_description">BTC/AUD paper equity, feed freshness and signal</string>
+</resources>

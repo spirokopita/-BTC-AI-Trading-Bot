@@ -1,0 +1,15 @@
+{
+  "label": "SYNTHETIC SOFTWARE DEMO, NOT HISTORICAL BITCOIN RETURNS",
+  "initial_quote_units": 1000.0,
+  "net_account_return_pct": 0.3291513190698758,
+  "fee_free_account_return_pct": 0.42508974112507314,
+  "closed_trades": 1,
+  "fees_quote": 0.8265956644123171,
+  "spread_quote": 0.041333108711065776,
+  "slippage_quote": 0.0540182844516093,
+  "wallet_verified": {
+    "ok": true,
+    "closed_trades": 1,
+    "fills": 2
+  }
+}

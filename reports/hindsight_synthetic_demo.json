@@ -1,0 +1,32 @@
+{
+  "provenance": "SYNTHETIC FABRICATED CANDLES - NOT HISTORICAL RETURNS",
+  "net_account_return_pct": 0.3291513190698758,
+  "trade_count": 1,
+  "trade_diagnostics": [
+    {
+      "entry_ts": 1707264000,
+      "actual_exit_ts": 1708934400,
+      "actual_net_quote": 3.291513190698751,
+      "best_next_open_exit_ts": 1708128000,
+      "best_next_open_net_quote": 9.142443481224518,
+      "best_next_open_gross_quote": 10.112304595856981,
+      "best_next_open_fees_quote": 0.8737808805997979,
+      "best_next_open_spread_quote": 0.04369264645009907,
+      "best_next_open_slippage_quote": 0.05238758758255582,
+      "difference_best_opens_minus_actual_quote": 5.850930290525767,
+      "difference_nonnegative_quote": 5.850930290525767,
+      "best_delayed_entry_ts": 1707264000,
+      "best_delayed_exit_ts": 1708128000,
+      "best_delayed_net_quote": 9.142440116479094,
+      "best_delayed_fees_quote": 0.8737805589750618,
+      "best_delayed_gross_quote": 10.112300873674023,
+      "difference_best_delayed_minus_actual_quote": 5.8509269257803425,
+      "delayed_entry_differs_from_actual": false,
+      "best_exit_before_actual": true,
+      "best_exit_after_actual": false
+    }
+  ],
+  "missed_signal_count": 40,
+  "positive_what_if_count": 40,
+  "sum_non_earnable_hindsight_exit_gap_quote": 5.850930290525767
+}
