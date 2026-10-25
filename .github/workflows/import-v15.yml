@@ -33,5 +33,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          git reset -- .github/workflows/android-paper-ci.yml
+          echo "Android CI workflow excluded: GitHub Actions token lacks workflows permission"
           git diff --cached --quiet || git commit -m "Import V15 paper-only trading bot source"
           git push
