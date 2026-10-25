@@ -32,7 +32,8 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             last_evaluated_s INTEGER,
             last_decision TEXT NOT NULL DEFAULT 'NOT_ARMED',
             last_reason TEXT NOT NULL DEFAULT 'Paper strategy is off',
-            ticker_cents INTEGER, ticker_ms INTEGER)""")
+            ticker_cents INTEGER, ticker_ms INTEGER,
+            news_attempt_ms INTEGER, news_success_ms INTEGER, news_error TEXT)""")
         db.execSQL("""CREATE TABLE funding_audit (
             id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL,
             amount_cents INTEGER NOT NULL, cash_after_cents INTEGER NOT NULL,
