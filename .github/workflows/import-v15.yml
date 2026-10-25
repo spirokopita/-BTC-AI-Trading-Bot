@@ -1,0 +1,37 @@
+name: Import V15 source archive
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Safely extract project archive
+        run: |
+          python3 - <<'PY'
+          import zipfile,pathlib,sys
+          archive=pathlib.Path("BTC_AI_Trading_Bot_Complete_Repo_V15.zip")
+          root=pathlib.Path.cwd().resolve()
+          with zipfile.ZipFile(archive) as z:
+              for item in z.infolist():
+                  p=pathlib.PurePosixPath(item.filename)
+                  if p.is_absolute() or ".." in p.parts or item.filename.startswith(".git/"):
+                      sys.exit("Unsafe archive path: "+item.filename)
+                  if (item.external_attr >> 16) & 0o170000 == 0o120000:
+                      sys.exit("Symlinks not allowed: "+item.filename)
+              z.extractall(root)
+          print("Extracted",len(z.infolist()),"entries")
+          PY
+      - name: Inspect imported layout
+        run: |
+          find . -maxdepth 3 -type f | head -100
+          test -f android/settings.gradle.kts || echo "::warning::Android project layout needs inspection"
+      - name: Commit extracted source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Import V15 paper-only trading bot source"
+          git push
