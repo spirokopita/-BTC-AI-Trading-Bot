@@ -20,6 +20,9 @@ jobs:
         run: |
           test -f android/app/build.gradle.kts
           test -f android/app/src/main/AndroidManifest.xml
+      - name: Run Kotlin unit tests
+        working-directory: android
+        run: gradle --no-daemon testDebugUnitTest
       - name: Build APK
         working-directory: android
         run: |

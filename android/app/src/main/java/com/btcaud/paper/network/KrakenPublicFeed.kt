@@ -15,7 +15,7 @@ object KrakenPublicFeed {
         val conn = (URL(ENDPOINT).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"; connectTimeout = 10_000; readTimeout = 15_000
             setRequestProperty("Accept", "application/json")
-            setRequestProperty("User-Agent", "BTCAUDPaper/13 (read-only research)")
+            setRequestProperty("User-Agent", "BTCAUDPaper/16 (read-only public market observations)")
         }
         try {
             require(conn.responseCode == 200) { "Kraken HTTP ${conn.responseCode}" }
@@ -38,8 +38,35 @@ object KrakenPublicFeed {
                     .multiply(BigDecimal(100)).setScale(0, RoundingMode.HALF_UP).longValueExact()
                 completed += PaperDatabase.Candle(start, cents(1), cents(2), cents(3), cents(4))
             }
-            // Kraken limits OHLC history. V13 verifies the latest 12 completed bars only.
-            return completed.takeLast(12).also { require(it.isNotEmpty()) { "No completed Kraken candles" } }
+            // Kraken limits recent OHLC history; enough bars to warm up the 21-bar V16 signal.
+            return completed.takeLast(250).also { require(it.isNotEmpty()) { "No completed Kraken candles" } }
         } finally { conn.disconnect() }
+    }
+
+    /** Price observed when polling, not a historical candle's future execution price. */
+    fun fetchObservedTickerCents(): Long {
+        val conn = (URL("https://api.kraken.com/0/public/Ticker?pair=XBTAUD")
+            .openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 10_000
+            readTimeout = 15_000
+            setRequestProperty("Accept", "application/json")
+            setRequestProperty("User-Agent", "BTCAUDPaper/16 (public data only)")
+        }
+        try {
+            require(conn.responseCode == 200) { "Kraken ticker HTTP " + conn.responseCode }
+            val body = conn.inputStream.bufferedReader().use { it.readText().take(500_000) }
+            val json = JSONObject(body)
+            require(json.getJSONArray("error").length() == 0) { "Kraken ticker API error" }
+            val result = json.getJSONObject("result")
+            val key = result.keys().asSequence().firstOrNull() ?: error("No ticker result")
+            val raw = result.getJSONObject(key).getJSONArray("c").getString(0)
+            return BigDecimal(raw).multiply(BigDecimal(100))
+                .setScale(0, RoundingMode.HALF_UP).longValueExact().also {
+                    require(it > 0L) { "Ticker must be positive" }
+                }
+        } finally {
+            conn.disconnect()
+        }
     }
 }

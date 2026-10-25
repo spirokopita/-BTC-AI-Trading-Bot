@@ -9,7 +9,7 @@ import com.btcaud.paper.widgets.ToggleWidget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/** All user control paths (app, widget, notification) converge here. */
+/** All control routes converge here. All executions remain simulated. */
 object AppControl {
     suspend fun setEnabled(context: Context, enabled: Boolean) {
         withContext(Dispatchers.IO) {
@@ -17,6 +17,14 @@ object AppControl {
             if (changed) {
                 if (enabled) WorkScheduler.start(context) else WorkScheduler.stop(context)
             }
+            refresh(context)
+        }
+    }
+
+    suspend fun setTradingEnabled(context: Context, enabled: Boolean) {
+        withContext(Dispatchers.IO) {
+            PaperDatabase(context).use { it.setTradingEnabled(enabled) }
+            if (enabled) WorkScheduler.start(context)
             refresh(context)
         }
     }
