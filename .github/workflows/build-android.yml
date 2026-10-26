@@ -5,6 +5,10 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/build-android.yml'
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
 concurrency:
   group: btc-paper-android-${{ github.ref }}
   cancel-in-progress: true
