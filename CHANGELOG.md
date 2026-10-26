@@ -1,27 +1,29 @@
 # V18 engineering update — 2026-10-27
 
 ### Current state — exactly five lines
-1. V16 native Android BTC/AUD app and paper-only SQLite ledger remain the product; trading is OFF by default.
-2. V17 Android 15 emulator evidence recorded 9/9 instrumentation tests passed; physical-phone UX remains unverified.
-3. V18 adds a read-only Kraken public BTC/AUD AssetPairs/Ticker/OHLC provenance audit and CI artifact.
-4. V18 deterministic protocol checks passed 9/9 locally; genuine live endpoint results are pending the CI network run.
-5. Real orders: 0; genuine BTC/AUD gross, costs and NET strategy returns: NOT MEASURED.
+1. V16 native Android BTC/AUD monitor and local paper-only SQLite ledger remain the product; simulated trading defaults OFF.
+2. V18 verified real Kraken BTC/AUD public AssetPairs, Ticker and 4h OHLC HTTPS responses from a GitHub runner, not a handset.
+3. Kraken returned 721 4h rows: 720 completed plus one forming; the source audit now correctly excludes the forming row.
+4. V18 CI passed 10/10 synthetic protocol checks and the retained 9/9 Android 15 emulator instrumentation tests; debug APK built.
+5. Real orders: 0; genuine strategy gross, trading costs and NET BTC/AUD returns: NOT MEASURED.
 
-### Done — one highest-value unfinished task: verify the actual public-market data source
-- Added android/tools/verify_kraken_public.py: fetches ONLY unauthenticated HTTPS public AssetPairs, Ticker and 4h OHLC; checks canonical market identity, positive non-crossed quotes, valid sorted candles, 21 contiguous completed bars, excludes the unfinished bar and rejects stale data. No wallet, exchange keys or order methods.
-- Produces JSON evidence with observation UTC, quote caveat (Kraken REST Ticker has no exchange quote timestamp), response SHA-256 hashes and HTTP Date metadata; captures a precise error on failure instead of inventing market observations.
-- Added nine deterministic synthetic protocol tests. Local command: python3 -m unittest discover -s android/tools -p 'test_verify_kraken_public.py' -v; observed **9/9 passed** on 2026-10-27.
-- Updated .github/workflows/build-android.yml with an independent source-audit job. Live network errors are visible but do not block the unrelated Android APK build. Artifact: BTC-Paper-Kraken-Public-Source-Audit. PR validation also runs Android emulator tests.
-- **Live Kraken verification: PENDING CI execution/evidence review.** A synthetic unit-test pass is not proof of successful real API connectivity.
+### Done — one highest-value task: verify the real BTC/AUD public source
+- Merged V18 PR #2 on 2026-10-27: https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/2 (squash commit c495e42beebdd0b8f007117bdd124c7e258914de).
+- Added android/tools/verify_kraken_public.py, a **read-only** HTTPS source audit that verifies AssetPairs canonical BTC/AUD identity, Ticker bid/ask/last, OHLC chronology, positive finite prices, candle alignment, 21-bar tail continuity, completed-candle freshness and exclusion of the unfinished bar. It never calls private/order endpoints and needs no keys.
+- The first live probe detected **721** rows, exposing our initial incorrect 720-row maximum. Corrected the parser's accepted raw count to 721 and added a regression test for 720 completed + 1 forming; **10/10** deterministic protocol tests passed.
+- **Verified GitHub Actions run:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40415827030 on 2026-10-26 22:54 UTC (2026-10-27 09:54 AEDT). Observed market key XBTAUD, 721 raw 4h rows, 720 completed, 1 forming, latest 21 contiguous, last completed candle ending 2026-10-26 20:00 UTC; ticker last A$113,920.20 at HTTP observation time. Kraken REST Ticker does not provide a per-quote timestamp; the observation is not a historical tick stream.
+- Preserved SHA-256 response hashes, HTTP Date and exact checked-at time in JSON evidence: https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40415827030/artifacts/12696001110.
+- Android CI on the same commit also compiled the APK, passed JVM tests and **9/9 Android 15 emulator instrumentation tests**. APK artifact: https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40415827030/artifacts/12695778197. Device-test evidence: https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40415827030/artifacts/12695662761.
 
 ### Broken / limitations / next
-- A successful CI public endpoint check would verify GitHub runner reachability only, **not** connectivity on the actual Android handset or persistence into its SQLite cache.
-- Historical multi-year BTC/AUD candles, source-audited news, phone installation, widgets/notification/Doze smoke tests and stable APK signing remain outstanding.
-- Next: inspect CI's actual JSON audit and emulator results; if source verified, implement an Android network/SQLite integration smoke test. Stable signing still needs an owner-provided private keystore, never one committed to Git.
+- Live endpoint verification occurred on a GitHub runner. **Android phone connectivity, parsing and SQLite persistence against this real feed remain unverified**; CI tests use synthetic market fixtures. No evidence yet of a working 24/7 Android monitor.
+- Physical phone installation, widget rendering, notification permission, Doze recovery and stable signing/update continuity are still unverified. APK remains debug-signed without configured persistent signing secrets; installing over differently signed APKs may fail, and uninstalling loses local data.
+- Multi-year historical BTC/AUD source provenance and untouched out-of-sample after-fee evaluation are still missing. Kraken's 720 completed 4h rows are insufficient for credible AI training.
+- **Next highest-value task:** add an Android network-to-SQLite integration smoke test against real Kraken public responses, checking 721-row/unfinished-bar handling, fail-closed stale behaviour and safe idempotent cache updates; then verify physical-phone behaviour and stable signing.
 
 ### Observed NET results
-- Genuine market strategy gross: NOT MEASURED; costs: NOT MEASURED; NET: NOT MEASURED.
-- Real trades: **0**. The nine deterministic audit tests use fabricated protocol fixtures, not market history.
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real orders: **0**. Source verification is not a backtest, paper-profit observation or live execution result.
 
 ---
 
