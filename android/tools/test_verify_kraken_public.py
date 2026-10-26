@@ -27,6 +27,16 @@ class PublicAuditTest(unittest.TestCase):
         self.assertEqual(result["latest_completed_age_seconds"], 0)
         self.assertEqual(result["market"], "BTC/AUD")
 
+    def test_721_rows_includes_current_forming_bar(self):
+        assets, ticker, bars = fixture()
+        bars["result"]["XXBTZAUD"] = [
+            [NOW - (720 - i) * INTERVAL, "100", "102", "99", "101", "100", "0.5", 2]
+            for i in range(721)
+        ]
+        result = validate_snapshot(assets, ticker, bars, NOW)
+        self.assertEqual(720, result["completed_ohlc_rows"])
+        self.assertEqual(1, result["excluded_forming_rows"])
+
     def test_mismatched_market_fails_closed(self):
         assets, ticker, bars = fixture()
         ticker["result"] = {"XXBTZUSD": ticker["result"]["XXBTZAUD"]}
