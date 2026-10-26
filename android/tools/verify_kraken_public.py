@@ -88,7 +88,7 @@ def validate_snapshot(assetpairs: dict, ticker: dict, ohlc: dict, now_s: int) ->
     if bid > ask:
         raise AuditError("Ticker: crossed bid/ask")
     if not isinstance(rows, list) or len(rows) < 21 or len(rows) > 720:
-        raise AuditError("OHLC: insufficient or implausible row count")
+        raise AuditError(f"OHLC: insufficient or implausible row count ({len(rows) if isinstance(rows, list) else 'not-list'})")
 
     seen = set()
     completed = []
@@ -173,8 +173,11 @@ def main(argv=None) -> int:
         assets, a = fetch("AssetPairs", {"pair": PAIR})
         ticker, b = fetch("Ticker", {"pair": PAIR})
         bars, c = fetch("OHLC", {"pair": PAIR, "interval": 240})
-        report.update(validate_snapshot(assets, ticker, bars, int(time.time())))
         report["response_evidence"] = [a, b, c]
+        raw_result = unpack(bars, "OHLC")
+        _, raw_rows = one_pair(raw_result, "OHLC", ignore_last=True)
+        report["observed_raw_ohlc_row_count"] = len(raw_rows) if isinstance(raw_rows, list) else None
+        report.update(validate_snapshot(assets, ticker, bars, int(time.time())))
         report["status"] = "VERIFIED_PUBLIC_ENDPOINTS"
         exit_code = 0
     except Exception as exc:
