@@ -1,3 +1,30 @@
+# V18 engineering update — 2026-10-27
+
+### Current state — exactly five lines
+1. V16 native Android BTC/AUD app and paper-only SQLite ledger remain the product; trading is OFF by default.
+2. V17 Android 15 emulator evidence recorded 9/9 instrumentation tests passed; physical-phone UX remains unverified.
+3. V18 adds a read-only Kraken public BTC/AUD AssetPairs/Ticker/OHLC provenance audit and CI artifact.
+4. V18 deterministic protocol checks passed 9/9 locally; genuine live endpoint results are pending the CI network run.
+5. Real orders: 0; genuine BTC/AUD gross, costs and NET strategy returns: NOT MEASURED.
+
+### Done — one highest-value unfinished task: verify the actual public-market data source
+- Added android/tools/verify_kraken_public.py: fetches ONLY unauthenticated HTTPS public AssetPairs, Ticker and 4h OHLC; checks canonical market identity, positive non-crossed quotes, valid sorted candles, 21 contiguous completed bars, excludes the unfinished bar and rejects stale data. No wallet, exchange keys or order methods.
+- Produces JSON evidence with observation UTC, quote caveat (Kraken REST Ticker has no exchange quote timestamp), response SHA-256 hashes and HTTP Date metadata; captures a precise error on failure instead of inventing market observations.
+- Added nine deterministic synthetic protocol tests. Local command: python3 -m unittest discover -s android/tools -p 'test_verify_kraken_public.py' -v; observed **9/9 passed** on 2026-10-27.
+- Updated .github/workflows/build-android.yml with an independent source-audit job. Live network errors are visible but do not block the unrelated Android APK build. Artifact: BTC-Paper-Kraken-Public-Source-Audit. PR validation also runs Android emulator tests.
+- **Live Kraken verification: PENDING CI execution/evidence review.** A synthetic unit-test pass is not proof of successful real API connectivity.
+
+### Broken / limitations / next
+- A successful CI public endpoint check would verify GitHub runner reachability only, **not** connectivity on the actual Android handset or persistence into its SQLite cache.
+- Historical multi-year BTC/AUD candles, source-audited news, phone installation, widgets/notification/Doze smoke tests and stable APK signing remain outstanding.
+- Next: inspect CI's actual JSON audit and emulator results; if source verified, implement an Android network/SQLite integration smoke test. Stable signing still needs an owner-provided private keystore, never one committed to Git.
+
+### Observed NET results
+- Genuine market strategy gross: NOT MEASURED; costs: NOT MEASURED; NET: NOT MEASURED.
+- Real trades: **0**. The nine deterministic audit tests use fabricated protocol fixtures, not market history.
+
+---
+
 # V17 engineering update — 2026-10-26
 
 ### Current state in exactly five lines
