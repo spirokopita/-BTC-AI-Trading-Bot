@@ -87,7 +87,7 @@ def validate_snapshot(assetpairs: dict, ticker: dict, ohlc: dict, now_s: int) ->
         raise AuditError("Ticker: missing bid/ask/last") from exc
     if bid > ask:
         raise AuditError("Ticker: crossed bid/ask")
-    if not isinstance(rows, list) or len(rows) < 21 or len(rows) > 720:
+    if not isinstance(rows, list) or len(rows) < 21 or len(rows) > 721:
         raise AuditError(f"OHLC: insufficient or implausible row count ({len(rows) if isinstance(rows, list) else 'not-list'})")
 
     seen = set()
