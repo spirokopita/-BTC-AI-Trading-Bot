@@ -105,6 +105,9 @@ jobs:
         run: |
           if [ -f audit/kraken-public-audit.json ]; then
             cat audit/kraken-public-audit.json
+            if ! grep -q '"status": "VERIFIED_PUBLIC_ENDPOINTS"' audit/kraken-public-audit.json; then
+              echo "::warning::Kraken public feed audit is UNVERIFIED; inspect JSON artifact"
+            fi
           else
             echo "::warning::No live Kraken audit evidence produced"
           fi
