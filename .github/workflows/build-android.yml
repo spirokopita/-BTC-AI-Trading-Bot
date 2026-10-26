@@ -5,6 +5,10 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/build-android.yml'
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android.yml'
 concurrency:
   group: btc-paper-android-${{ github.ref }}
   cancel-in-progress: true
@@ -84,3 +88,33 @@ jobs:
           name: BTC-Paper-Android-APK
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+  public-market-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test public-market provenance rules (synthetic fixtures)
+        run: python3 -m unittest discover -s android/tools -p 'test_verify_kraken_public.py' -v
+      - name: Audit current Kraken BTC/AUD public endpoints (non-blocking external check)
+        id: live_kraken
+        continue-on-error: true
+        run: python3 android/tools/verify_kraken_public.py --output audit/kraken-public-audit.json
+      - name: Expose audit status in runner log
+        if: always()
+        run: |
+          if [ -f audit/kraken-public-audit.json ]; then
+            cat audit/kraken-public-audit.json
+            if ! grep -q '"status": "VERIFIED_PUBLIC_ENDPOINTS"' audit/kraken-public-audit.json; then
+              echo "::warning::Kraken public feed audit is UNVERIFIED; inspect JSON artifact"
+            fi
+          else
+            echo "::warning::No live Kraken audit evidence produced"
+          fi
+      - name: Preserve read-only Kraken source audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BTC-Paper-Kraken-Public-Source-Audit
+          path: audit/kraken-public-audit.json
+          if-no-files-found: warn
