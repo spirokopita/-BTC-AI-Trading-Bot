@@ -1,3 +1,30 @@
+# V19 engineering update — 2026-10-28
+
+### Current state — exactly five lines
+1. V16 native Android BTC/AUD app remains paper-only with local SQLite, purple status UI and Glance widgets; strategy defaults OFF.
+2. V18 verified Kraken public BTC/AUD AssetPairs/Ticker/4h OHLC from a GitHub runner, but not on an Android device.
+3. V19 adds a shared, strict Android public-feed parser and production network-to-SQLite sync path.
+4. V19 adds emulator tests for 721-row/720-completed handling, cache idempotence, stale/wrong-market rejection and a real Kraken network smoke.
+5. Real orders: 0; genuine strategy gross, costs and NET BTC/AUD returns: NOT MEASURED.
+
+### Done — one highest-value task: Android network-to-SQLite integration
+- Production MarketSyncWorker now calls KrakenPublicFeed.syncInto(db), the exact path exercised by the live Android instrumentation smoke test.
+- The shared parser checks the BTC/AUD market key, positive OHLC/ticker values, bid <= ask, candle alignment/ordering, completed-only bars, a contiguous 21-bar tail and completed-bar freshness <= 8 hours. It accepts up to 721 Kraken rows, persists at most 720 completed rows, and refuses redirects and oversized HTTP responses.
+- Added emulator fixture tests for 721 rows with a forming candle, duplicate persistence, wrong market, stale data, duplicate/gapped timestamps, crossed bid/ask, paused writes, zero paper trades and stale status on failure.
+- Added a real HTTPS Kraken -> Android parser -> SQLite smoke test. Network IO failures produce an explicit JUnit skip, not a fabricated pass. This is not a profitability test.
+- **Verification status at commit time:** GitHub Actions emulator/JVM build and live handset-network result PENDING. Do not claim V19 APK verified until CI completes.
+
+### Broken / limitations / next
+- Real Android network smoke depends on exchange reachability and can be SKIPPED if the emulator has no network. A successful emulator run does not verify a physical Samsung device.
+- No multi-year independently sourced BTC/AUD history, untouched out-of-sample NET evaluation, real news edge, or stable APK signing continuity is established.
+- Next: inspect GitHub Actions V19 emulator evidence; fix failures, then test physical-phone installation, widgets, notification permission and Doze behaviour.
+
+### Observed NET results
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Synthetic Android tests assert zero trading P&L and zero trades; they are not market profits.
+
+---
+
 # V18 engineering update — 2026-10-27
 
 ### Current state — exactly five lines
