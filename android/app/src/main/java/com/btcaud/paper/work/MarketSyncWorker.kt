@@ -24,12 +24,8 @@ class MarketSyncWorker(context: Context, params: WorkerParameters) : CoroutineWo
             if (!db.snapshot().enabled) return@withContext Result.success()
             val now = System.currentTimeMillis()
             if (!db.recordAttempt(now)) return@withContext Result.success()
-            val candles = KrakenPublicFeed.fetchCompleted(now)
-            val ticker = KrakenPublicFeed.fetchObservedTickerCents()
-            val seenAt = System.currentTimeMillis()
-            if (db.recordCandles(candles, seenAt)) {
-                db.observeTickerAndPaperTrade(seenAt, ticker)
-            }
+            // Same validated public-network -> SQLite path exercised by V19 tests.
+            KrakenPublicFeed.syncInto(db)
             Result.success()
         } catch (e: Exception) {
             db.recordFailure("Public market/strategy sync failed: " + e.javaClass.simpleName)
