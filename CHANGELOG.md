@@ -4,7 +4,7 @@
 1. V19 native Android BTC/AUD app uses public Kraken HTTPS, validated completed 4h bars, and SQLite; simulated trading defaults OFF.
 2. V20 implements a purple-accent notification showing last successful poll, observed BTC/AUD price and explicit STALE/NO DATA labels.
 3. V20 keeps an ongoing Pause action while monitoring and a dismissible Resume action when paused; both route to idempotent AppControl.
-4. Four new Android notification-contract instrumentation tests are committed; CI execution is PENDING at initial changelog write.
+4. GitHub Actions on Android 15 executed 16/16 instrumentation tests (including 4 new notification tests): 0 failures, 0 errors, 0 skips; APK built.
 5. Real orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
 
 ### Done — one highest-value unfinished task: notification user control and freshness
@@ -15,11 +15,17 @@
 - Added four Android 15 instrumentation assertions covering RUNNING, PAUSED, STALE/SUSPENDED and WAITING states, action labels and ongoing flags. These tests construct notifications without requiring notification permission or network.
 - Bumped Android package version to 0.20.0-paper / versionCode 20. Existing local SQLite data and paper-only execution remain unchanged.
 
+### Verified build and tests — 2026-10-29 AEDT
+- [V20 GitHub Actions pull-request run 40782358174](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40782358174) completed successfully. Kotlin unit tests, instrumentation compilation, debug APK assembly and Android 15 emulator instrumentation succeeded.
+- Independently inspected the [device-test XML artifact from successful push run 40782310019](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40782310019/artifacts/12857743926): **16 tests, 0 failures, 0 errors, 0 skips**. Four V20 notification tests executed, alongside the prior 12 tests.
+- Live public Kraken -> Android SQLite smoke test logged `LIVE_KRAKEN_SQLITE_VERIFIED; paper trades=0; net cents=0`; this is source connectivity, not market profitability.
+- [V20 APK artifact](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40782310019/artifacts/12857517887) downloaded and unpacked to `BTCAUD_Paper_V20_EmulatorVerified_Debug.apk` (11,091,296 bytes; SHA-256 `3381e102f0ddddbe315b76106e1ff7c5874df4e6778643285427ec468a191cb4`).
+- Debug signing remains ephemeral because persistent signing secrets are absent; upgrading an installation signed with a different certificate may fail.
+
 ### Broken / limitations / next
-- **CI verification PENDING** for V20 until a workflow run completes; source changes alone do not establish a tested APK.
 - A paused notification can be dismissed. On Android 13+ notification permission may be denied; widgets and in-app controls remain the fallback.
 - Emulator notification construction tests do not prove Samsung notification rendering, real tap handling, Doze scheduling or persistent signing on a physical phone.
-- Next: inspect GitHub Actions emulator results, fix any failures; then physical-device notification/widget/Doze checks and persistent signing.
+- Next: physical-device notification tap/widget/Doze checks and persistent signing; emulator construction tests do not establish Samsung UX behaviour.
 
 ### Observed NET results
 - Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
