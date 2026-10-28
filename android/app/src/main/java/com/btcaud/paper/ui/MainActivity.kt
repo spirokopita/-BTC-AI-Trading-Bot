@@ -88,7 +88,7 @@ private fun PaperScreen(activity: MainActivity) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text("BTC AI", style = MaterialTheme.typography.headlineLarge, color = accent)
-                Text("V16 · LOCAL SIMULATION · NO WALLET · NO EXCHANGE KEYS", color = muted)
+                Text("V20 · LOCAL SIMULATION · NO WALLET · NO EXCHANGE KEYS", color = muted)
                 val s = state
                 if (s == null) {
                     Text("Loading local paper account...", color = Color.White)
