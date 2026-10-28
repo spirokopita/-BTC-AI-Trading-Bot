@@ -1,3 +1,32 @@
+# V20 engineering update — 2026-10-29
+
+### Current state — exactly five lines
+1. V19 native Android BTC/AUD app uses public Kraken HTTPS, validated completed 4h bars, and SQLite; simulated trading defaults OFF.
+2. V20 implements a purple-accent notification showing last successful poll, observed BTC/AUD price and explicit STALE/NO DATA labels.
+3. V20 keeps an ongoing Pause action while monitoring and a dismissible Resume action when paused; both route to idempotent AppControl.
+4. Four new Android notification-contract instrumentation tests are committed; CI execution is PENDING at initial changelog write.
+5. Real orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
+
+### Done — one highest-value unfinished task: notification user control and freshness
+- Replaced paused-state notification cancellation with a dismissible PAUSED notification offering a Resume action. Monitoring ON retains a low-priority ongoing notification with Pause.
+- Notification now displays last successful poll time, observed BTC/AUD price, and a STALE marker when paused, overdue, suspended or otherwise unhealthy. Missing prices explicitly say NO DATA.
+- Both broadcast actions call AppControl.setEnabled with fixed boolean values, rather than a race-prone toggle; receiver remains non-exported.
+- Purple #7C3AED is only a notification accent; Android owns status-bar/chip colours. No unsupported foreground service, promoted Live Update or uptime guarantee is claimed.
+- Added four Android 15 instrumentation assertions covering RUNNING, PAUSED, STALE/SUSPENDED and WAITING states, action labels and ongoing flags. These tests construct notifications without requiring notification permission or network.
+- Bumped Android package version to 0.20.0-paper / versionCode 20. Existing local SQLite data and paper-only execution remain unchanged.
+
+### Broken / limitations / next
+- **CI verification PENDING** for V20 until a workflow run completes; source changes alone do not establish a tested APK.
+- A paused notification can be dismissed. On Android 13+ notification permission may be denied; widgets and in-app controls remain the fallback.
+- Emulator notification construction tests do not prove Samsung notification rendering, real tap handling, Doze scheduling or persistent signing on a physical phone.
+- Next: inspect GitHub Actions emulator results, fix any failures; then physical-device notification/widget/Doze checks and persistent signing.
+
+### Observed NET results
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Notification tests cannot establish financial performance.
+
+---
+
 # V19 engineering update — 2026-10-28
 
 ### Current state — exactly five lines
