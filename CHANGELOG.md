@@ -1,3 +1,35 @@
+# V21 engineering update — 2026-10-30
+
+### Current state — exactly five lines
+1. V20 native Android BTC/AUD paper-only app persists validated public Kraken observations in SQLite; simulated trading defaults OFF.
+2. V21 dashboard now displays estimated equity, funding-adjusted NET, ticker age, last paper trade, open BTC quantity, SMA decision and health.
+3. Cached quotes and open-position valuation are labelled STALE when the feed is paused, suspended, old or errored; no cached quote is described as live.
+4. V21 adds network-independent periodic local widget/notification refresh and eight presenter tests plus one Android scheduling test; CI verification PENDING.
+5. Real exchange orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
+
+### Done — one highest-value unfinished task: stale-safe Android dashboard
+- Added pure, clock-injected DashboardWidgetPresentation and upgraded the 4×2 Glance dashboard to include BTC/AUD quote age, estimated equity, funding-adjusted NET after modelled costs, open paper position, last trade costs and realised NET, SMA/AI distinction, and RUNNING/PAUSED/STALE/SUSPENDED health.
+- Explicit STALE quote and STALE MARK on open-position equity/P&L when an observation is old, missing, future-dated, paused or invalidated by a feed error. No exchange order routes or API credentials were added.
+- Added a separate 15-minute WorkManager WidgetRefreshWorker with **no network constraint**. It updates local widgets and status notification even when the network-constrained market sync cannot run; Doze can still delay the refresh.
+- Added eight deterministic JVM tests for no-data, fresh/old/paused/error/suspended/future timestamps, stale open-position marks and negative realised NET, plus one Android instrumentation test for unique local-refresh scheduling.
+- Bumped Android versionCode to 21 and versionName to 0.21.0-paper; existing SQLite data schema unchanged.
+
+### Build and test evidence
+- [V21 pull request #5](https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/5) contains source and tests.
+- [V21 Android 15 CI run](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40962274248): **PENDING**. No test-pass, emulator-run, APK or device claim until evidence is inspected.
+
+### Broken / limitations / next
+- Physical Samsung widget rendering, tap actions, notification permission, Doze timing and stable signing/update continuity remain unverified.
+- Local periodic refresh is best-effort: Android can delay both market sync and offline widget redraw. No 24/7 uptime promise.
+- Trade-event storage records price, quantity, modeled costs and realised NET, but does not persist a separate explicit gross field; gross/cost/NET trade-audit completeness is a future ledger task.
+- Next: verify V21 CI and physical device UI; establish persistent APK signing and then run independently sourced long-horizon BTC/AUD out-of-sample NET research.
+
+### Observed NET results
+- Genuine BTC/AUD gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Any paper fixture losses remain losses, not profits.
+
+---
+
 # V20 engineering update — 2026-10-29
 
 ### Current state — exactly five lines
