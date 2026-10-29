@@ -3,8 +3,6 @@ package com.btcaud.paper.widgets
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.appwidget.GlanceAppWidget
@@ -18,35 +16,32 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.btcaud.paper.data.PaperDatabase
-import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
+/** Compact, resizeable, read-only dashboard. All values come from persisted paper state. */
 class DashboardWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val state = withContext(Dispatchers.IO) {
-            PaperDatabase(context).use { it.snapshot() }
+        val view = withContext(Dispatchers.IO) {
+            PaperDatabase(context).use { db ->
+                DashboardWidgetPresentation.from(db.snapshot(), System.currentTimeMillis())
+            }
         }
-        fun aud(cents: Long) = "A$" + String.format(Locale.US, "%,.2f", cents / 100.0)
-        val status = state.status(System.currentTimeMillis()).name
         provideContent {
-            Column(GlanceModifier.fillMaxSize().background(Color(0xFF110B1E)).padding(12.dp)) {
-                Text("BTC AI · PAPER · " + status,
-                    style = TextStyle(color = ColorProvider(Color(0xFFBB86FC))))
-                Text("EQUITY  " + aud(state.estimatedEquityCents),
-                    style = TextStyle(color = ColorProvider(Color.White)))
-                Text("NET AFTER COSTS  " + aud(state.netPnlCents),
-                    style = TextStyle(color = ColorProvider(Color.White)))
-                Text("BTC/AUD  " + (state.latestTickerAudCents?.let(::aud) ?: "NO DATA"),
-                    style = TextStyle(color = ColorProvider(Color.White)))
-                Text("Position  " + if (state.positionSats > 0L) "BTC PAPER" else "NONE",
-                    style = TextStyle(color = ColorProvider(Color.LightGray)))
-                Text("Strategy  " + if (state.tradingEnabled && state.enabled) "ARMED" else "OFF",
-                    style = TextStyle(color = ColorProvider(Color.LightGray)))
-                Text("Last decision: " + state.lastDecision,
-                    style = TextStyle(color = ColorProvider(Color(0xFFBB86FC))))
+            Column(GlanceModifier.fillMaxSize().background(Color(0xFF110B1E)).padding(8.dp)) {
+                Text(view.title, style = TextStyle(color = ColorProvider(Color(0xFFBB86FC))))
+                Text(view.equity, style = TextStyle(color = ColorProvider(Color.White)))
+                Text(view.net, style = TextStyle(color = ColorProvider(Color.White)))
+                Text(view.ticker, style = TextStyle(color = ColorProvider(Color.White)))
+                Text(view.position, style = TextStyle(color = ColorProvider(Color.LightGray)))
+                Text(view.lastTrade, style = TextStyle(color = ColorProvider(Color.LightGray)))
+                Text(view.signal, style = TextStyle(color = ColorProvider(Color(0xFFBB86FC))))
+                Text(view.health, style = TextStyle(color = ColorProvider(Color(0xFFFFC88A))))
             }
         }
     }
 }
+
 class DashboardWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = DashboardWidget()
 }
