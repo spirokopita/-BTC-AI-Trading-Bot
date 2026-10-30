@@ -97,6 +97,10 @@ class PaperDatabaseInstrumentedTest {
         assertTrue(holding.positionSats > 0L)
         assertEquals("BUY", holding.recentTrades.first().side)
         assertEquals(1, holding.recentTrades.size)
+        val buy = holding.recentTrades.first()
+        assertTrue(buy.grossCents > 0L)
+        assertEquals(-buy.grossCents - buy.costsCents, buy.netCashFlowCents)
+        assertNull(buy.realisedNetCents)
 
         // Re-polling the same completed candle must not produce a second BUY.
         db.observeTickerAndPaperTrade(now + 60_000L, 15_100_000L)
@@ -109,6 +113,10 @@ class PaperDatabaseInstrumentedTest {
         assertEquals("SELL", finished.recentTrades.first().side)
         assertEquals(2, finished.recentTrades.size)
         assertEquals(finished.realisedNetCents, finished.netPnlCents)
+        val sell = finished.recentTrades.first()
+        assertEquals(sell.grossCents - sell.costsCents, sell.netCashFlowCents)
+        assertEquals(buy.netCashFlowCents + sell.netCashFlowCents, sell.realisedNetCents)
+        assertTrue("The loss fixture must remain a loss", sell.realisedNetCents!! < 0L)
 
         db.observeTickerAndPaperTrade(now + 180_000L, 14_500_000L)
         assertEquals(2, db.snapshot().recentTrades.size)
@@ -126,6 +134,46 @@ class PaperDatabaseInstrumentedTest {
         db.storeNews(report.map { it.copy(firstSeenMs = now + 9_000L) }, now + 9_000L, null)
         assertEquals(now, db.snapshot().latestNews.first().firstSeenMs)
         assertEquals(1, db.snapshot().latestNews.size)
+    }
+
+    @Test fun v3TradesMigrateGrossAndNetWithoutRewritingRealisedLoss() {
+        db.close()
+        context.deleteDatabase("btc_paper_v13.db")
+        val legacy = context.openOrCreateDatabase("btc_paper_v13.db", Context.MODE_PRIVATE, null)
+        legacy.execSQL("""CREATE TABLE paper_trade_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL, side TEXT NOT NULL,
+            candle_s INTEGER NOT NULL, observed_ms INTEGER NOT NULL,
+            price_cents INTEGER NOT NULL, quantity_sats INTEGER NOT NULL,
+            costs_cents INTEGER NOT NULL, realised_net_cents INTEGER,
+            reason TEXT NOT NULL)""")
+        legacy.execSQL("""INSERT INTO paper_trade_events
+            (session_id,side,candle_s,observed_ms,price_cents,quantity_sats,costs_cents,reason)
+            VALUES (0,'BUY',14400,1000,1000000,10000000,1000,'legacy entry')""")
+        legacy.execSQL("""INSERT INTO paper_trade_events
+            (session_id,side,candle_s,observed_ms,price_cents,quantity_sats,costs_cents,realised_net_cents,reason)
+            VALUES (0,'SELL',28800,2000,900000,10000000,900,-11900,'legacy loss')""")
+        legacy.version = 3
+        legacy.close()
+        db = PaperDatabase(context)
+        db.readableDatabase.rawQuery(
+            "SELECT side,gross_cents,costs_cents,net_cash_flow_cents,realised_net_cents FROM paper_trade_events ORDER BY id",
+            null
+        ).use { c ->
+            assertTrue(c.moveToNext())
+            assertEquals("BUY", c.getString(0))
+            assertEquals(100_000L, c.getLong(1))
+            assertEquals(1_000L, c.getLong(2))
+            assertEquals(-101_000L, c.getLong(3))
+            assertTrue(c.isNull(4))
+            assertTrue(c.moveToNext())
+            assertEquals("SELL", c.getString(0))
+            assertEquals(90_000L, c.getLong(1))
+            assertEquals(900L, c.getLong(2))
+            assertEquals(89_100L, c.getLong(3))
+            assertEquals(-11_900L, c.getLong(4))
+            assertFalse(c.moveToNext())
+        }
     }
 
     @Test fun oldV15AccountMigratesWithoutLosingFunding() {
