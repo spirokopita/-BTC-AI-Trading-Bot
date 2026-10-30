@@ -1,20 +1,15 @@
-# V19 engineering summary — 2026-10-28 AEDT
+# V22 engineering summary — 2026-10-31 AEDT
 
-1. Native Android paper-only BTC/AUD monitor and SQLite wallet; trading OFF by default.
-2. V19 fail-closed Kraken 4h OHLC/ticker parser and production HTTPS-to-SQLite sync.
-3. Android 15 emulator: 12/12 instrumentation tests passed, 0 failed, 0 skipped.
-4. Live public Kraken -> Android parser -> SQLite smoke VERIFIED; real orders 0.
-5. Genuine strategy gross, costs and NET BTC/AUD return NOT MEASURED.
+1. Native Android BTC/AUD app remains strictly paper-only, with no exchange keys or real order execution.
+2. SQLite v4 persists gross fill notional, modeled costs and signed NET cash flow, retaining realised NET P&L.
+3. Existing V2/V3 fills are backfilled non-destructively; V1 upgrades and fresh installs receive v4 schema.
+4. V22 Android migration and synthetic loss-accounting instrumentation added; CI execution not yet verified.
+5. Genuine BTC/AUD strategy gross, costs and NET results remain NOT MEASURED; real orders 0.
 
-**CI:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40598355525
-**Device test evidence:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40598355525/artifacts/12777354695
-**Debug APK:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/40598355525/artifacts/12777484530
-**APK SHA-256:** a8f8e05357cb8965614552cd73599cbdcb15b1fbf135f89041b258fc19a9f090
+**Source branch:** v22-persisted-gross-net-audit
 
-**Broken / unverified:** physical Samsung installation, notification and widget visuals,
-Doze recovery, stable signing/update continuity, long-horizon historical source and
-out-of-sample after-fee profitability. Live emulator smoke is read-only and cannot
-establish always-on Android uptime or an AI trading edge.
+**Completed:** ledger audit fields, deterministic integer backfill, execution history and widget labels, synthetic accounting/migration tests.
 
-**Next:** physical-phone smoke and persistent signing, followed by provenance-audited
-multi-year BTC/AUD history and untouched walk-forward NET performance analysis.
+**Broken / unverified:** Android CI, physical Samsung tests, stable signing, Doze timing and real-market strategy profitability.
+
+**Next:** inspect Android CI, fix failures if any, validate physical device and signing continuity, then source independently verifiable long-horizon BTC/AUD history.
