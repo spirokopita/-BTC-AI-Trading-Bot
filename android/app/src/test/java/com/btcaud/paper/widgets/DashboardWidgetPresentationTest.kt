@@ -95,11 +95,13 @@ class DashboardWidgetPresentationTest {
 
     @Test fun losingRealisedPaperTradeIsShownAsLoss() {
         val trade = PaperTradeEvent("SELL", now - 60_000L, 10_000_000L,
-            100_000L, 250L, -725L, "paper stop")
+            100_000L, 250L, -725L, "paper stop", 10_000L, 9_750L)
         val view = DashboardWidgetPresentation.from(
             snapshot(trades = listOf(trade)), now)
         assertTrue(view.lastTrade.contains("SELL"))
+        assertTrue(view.lastTrade.contains("gross A$100.00"))
         assertTrue(view.lastTrade.contains("costs A$2.50"))
+        assertTrue(view.lastTrade.contains("NET flow +A$97.50"))
         assertTrue(view.lastTrade.contains("realised NET -A$7.25"))
     }
 
