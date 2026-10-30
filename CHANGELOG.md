@@ -4,7 +4,7 @@
 1. Native Android BTC/AUD app remains paper-only, with no real order route or exchange keys; paper strategy defaults OFF.
 2. V22 persists gross execution notional and signed NET cash flow separately from existing costs and realised NET P&L.
 3. Additive SQLite v4 migration backfills V2/V3 audit fields using integer-only arithmetic; V1 upgrades create the v4 trade table directly.
-4. Android app and dashboard now distinguish NET cash flow from realised trading P&L; V22 instrumentation tests added, CI verification pending.
+4. GitHub Actions Android 15 emulator executed 18/18 instrumentation tests (0 failures/errors/skips), including V3 migration and losing round-trip accounting.
 5. Real exchange orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
 
 ### Done — one highest-value unfinished task: complete paper trade audit
@@ -16,13 +16,15 @@
 - Bumped Android to versionCode 22 / versionName 0.22.0-paper.
 
 ### Build and test evidence
-- Code committed to `v22-persisted-gross-net-audit` branch. **CI results pending at time of this changelog entry; do not report as passed until inspected.**
-- Emulator, Samsung physical-device, persistent signing, offline Doze recovery and live BTC/AUD after-fee performance are not verified by these source changes.
+- [V22 GitHub Actions run 41140286354](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354) **succeeded** 2026-10-31 09:53 AEDT: Kotlin JVM tests, Android instrumentation compilation, APK build and Android 15 emulator all passed.
+- Independently extracted [Android instrumentation XML and logcat artifact 13018179083](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354/artifacts/13018179083): 18 tests, **0 failures, 0 errors, 0 skips**. Both `v3TradesMigrateGrossAndNetWithoutRewritingRealisedLoss` and `paperExecutionIsPersistedAndIdempotent` executed. Live public Kraken-to-SQLite smoke logged `LIVE_KRAKEN_SQLITE_VERIFIED` (no real orders).
+- Extracted [V22 debug APK artifact 13018488727](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354/artifacts/13018488727): 11,091,296 bytes; SHA-256 `a81ebdd794a373ab4bfd9a3334a82da354d28f804e35c8a7a29f68924dc01e1b`. Stable signing secrets absent.
+- Samsung physical-device installation, widget layout, persistent signing, offline Doze recovery and live BTC/AUD after-fee performance remain unverified; emulator verification does not prove those.
 
 ### Broken / limitations / next
 - Stable APK signing is absent; avoid uninstalling an existing installation without backing up the paper wallet.
-- V22 legacy v2/v3 migration is covered by an Android instrumentation test but has not yet been independently executed on a physical handset.
-- Next: inspect CI, fix any failure, then validate Samsung widget/notification/offline behaviour and stable signing; independently source longer BTC/AUD history for untouched out-of-sample NET performance.
+- V3-to-V4 migration passed Android 15 emulator instrumentation; V2 upgrade path and real existing-phone databases are not independently validated.
+- Next: validate Samsung widget/notification/offline behaviour and stable signing; independently source longer BTC/AUD history for untouched out-of-sample NET performance.
 
 ### Observed NET results
 - Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
