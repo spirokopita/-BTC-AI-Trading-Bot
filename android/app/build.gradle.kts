@@ -29,8 +29,8 @@ android {
         applicationId = "com.btcaud.paper"
         minSdk = 26
         targetSdk = 35
-        versionCode = 21
-        versionName = "0.21.0-paper"
+        versionCode = 22
+        versionName = "0.22.0-paper"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

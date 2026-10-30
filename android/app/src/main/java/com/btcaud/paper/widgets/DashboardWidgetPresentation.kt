@@ -54,7 +54,7 @@ internal object DashboardWidgetPresentation {
         val last = snapshot.recentTrades.firstOrNull()
         val lastTrade = if (last == null) "Last trade: NONE" else {
             val realised = last.realisedNetCents?.let { " · realised NET ${signedAud(it)}" } ?: ""
-            "Last: ${last.side} ${aud(last.priceCents)} · costs ${aud(last.costsCents)}$realised"
+            "Last: ${last.side} gross ${aud(last.grossCents)} · costs ${aud(last.costsCents)} · NET flow ${signedAud(last.netCashFlowCents)}$realised"
         }
         val signal = when {
             !snapshot.tradingEnabled -> "SMA OFF · AI NOT TRAINED"

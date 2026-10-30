@@ -1,3 +1,37 @@
+# V22 engineering update — 2026-10-31
+
+### Current state — exactly five lines
+1. Native Android BTC/AUD app remains paper-only, with no real order route or exchange keys; paper strategy defaults OFF.
+2. V22 persists gross execution notional and signed NET cash flow separately from existing costs and realised NET P&L.
+3. Additive SQLite v4 migration backfills V2/V3 audit fields using integer-only arithmetic; V1 upgrades create the v4 trade table directly.
+4. GitHub Actions Android 15 emulator executed 18/18 instrumentation tests (0 failures/errors/skips), including V3 migration and losing round-trip accounting.
+5. Real exchange orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
+
+### Done — one highest-value unfinished task: complete paper trade audit
+- Added `gross_cents` (execution notional, not profit) and `net_cash_flow_cents` (signed BUY debit / SELL credit) to every new persisted paper fill.
+- Added additive SQLite database version 4 upgrade. For existing V2/V3 fills, backfill both columns without changing original price, quantity, costs, realised NET, account funding or historical audit rows. Legacy gross uses exact half-up integer rounding with BigInteger intermediate multiplication.
+- Kept existing `realised_net_cents` semantics: only closed SELL fills have realised trading P&L. BUY net cash flow is not a loss; SELL net cash flow is not profit.
+- Exposed gross notional, costs, signed NET cash flow and optional realised NET P&L in Android execution history; dashboard latest-fill summary includes the same distinction.
+- Added instrumentation checks for negative realised NET on a losing synthetic round trip, fill accounting equality, idempotent re-polls, and V3-to-V4 legacy trade preservation. Existing V1 migration test retained.
+- Bumped Android to versionCode 22 / versionName 0.22.0-paper.
+
+### Build and test evidence
+- [V22 GitHub Actions run 41140286354](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354) **succeeded** 2026-10-31 09:53 AEDT: Kotlin JVM tests, Android instrumentation compilation, APK build and Android 15 emulator all passed.
+- Independently extracted [Android instrumentation XML and logcat artifact 13018179083](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354/artifacts/13018179083): 18 tests, **0 failures, 0 errors, 0 skips**. Both `v3TradesMigrateGrossAndNetWithoutRewritingRealisedLoss` and `paperExecutionIsPersistedAndIdempotent` executed. Live public Kraken-to-SQLite smoke logged `LIVE_KRAKEN_SQLITE_VERIFIED` (no real orders).
+- Extracted [V22 debug APK artifact 13018488727](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41140286354/artifacts/13018488727): 11,091,296 bytes; SHA-256 `a81ebdd794a373ab4bfd9a3334a82da354d28f804e35c8a7a29f68924dc01e1b`. Stable signing secrets absent.
+- Samsung physical-device installation, widget layout, persistent signing, offline Doze recovery and live BTC/AUD after-fee performance remain unverified; emulator verification does not prove those.
+
+### Broken / limitations / next
+- Stable APK signing is absent; avoid uninstalling an existing installation without backing up the paper wallet.
+- V3-to-V4 migration passed Android 15 emulator instrumentation; V2 upgrade path and real existing-phone databases are not independently validated.
+- Next: validate Samsung widget/notification/offline behaviour and stable signing; independently source longer BTC/AUD history for untouched out-of-sample NET performance.
+
+### Observed NET results
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Synthetic fixture expected realised NET loss is -A$119.00; it is a test assertion, not market evidence.
+
+---
+
 # V21 engineering update — 2026-10-30
 
 ### Current state — exactly five lines

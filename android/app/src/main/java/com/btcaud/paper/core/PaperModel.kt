@@ -55,6 +55,10 @@ data class PaperTradeEvent(
     val costsCents: Long,
     val realisedNetCents: Long?,
     val reason: String,
+    /** Gross execution notional, NOT gross P&L. */
+    val grossCents: Long,
+    /** Signed account movement: BUY negative, SELL positive; NOT trading profit. */
+    val netCashFlowCents: Long,
 )
 
 /** P&L includes estimated exit friction when BTC is open, using the last OBSERVED price. */

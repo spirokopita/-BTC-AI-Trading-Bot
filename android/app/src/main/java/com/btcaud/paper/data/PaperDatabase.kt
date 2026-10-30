@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.math.BigInteger
 import com.btcaud.paper.core.MonitorPolicy
 import com.btcaud.paper.core.MonitorSnapshot
 import com.btcaud.paper.core.PaperAccount
@@ -19,7 +20,7 @@ import com.btcaud.paper.core.HistoricalPaperReplay
  * so upgrading from V15 preserves the A$1,000 account and funding history.
  * SQLite v1 -> v2 is additive, with no destructive migration.
  */
-class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13.db", null, 3) {
+class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13.db", null, 4) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""CREATE TABLE app_state (
             id INTEGER PRIMARY KEY CHECK(id=1), enabled INTEGER NOT NULL DEFAULT 0,
@@ -56,7 +57,9 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             candle_s INTEGER NOT NULL, observed_ms INTEGER NOT NULL,
             price_cents INTEGER NOT NULL, quantity_sats INTEGER NOT NULL,
             costs_cents INTEGER NOT NULL, realised_net_cents INTEGER,
-            reason TEXT NOT NULL)""")
+            reason TEXT NOT NULL,
+            gross_cents INTEGER NOT NULL CHECK(gross_cents >= 0),
+            net_cash_flow_cents INTEGER NOT NULL)""")
     }
 
     private fun createNewsTable(db: SQLiteDatabase) {
@@ -68,7 +71,7 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..2 && newVersion == 3) { "Unsupported database upgrade" }
+        require(oldVersion in 1..3 && newVersion == 4) { "Unsupported database upgrade" }
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE app_state ADD COLUMN trading_enabled INTEGER NOT NULL DEFAULT 0")
             db.execSQL("ALTER TABLE app_state ADD COLUMN position_sats INTEGER NOT NULL DEFAULT 0")
@@ -86,6 +89,39 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             db.execSQL("ALTER TABLE app_state ADD COLUMN news_success_ms INTEGER")
             db.execSQL("ALTER TABLE app_state ADD COLUMN news_error TEXT")
             createNewsTable(db)
+        }
+        // V1 has no trades: its v4 table was created above. Existing V2/V3
+        // rows are migrated without changing their costs or realised NET.
+        if (oldVersion in 2..3) {
+            db.execSQL("ALTER TABLE paper_trade_events ADD COLUMN gross_cents INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE paper_trade_events ADD COLUMN net_cash_flow_cents INTEGER NOT NULL DEFAULT 0")
+            val rows = db.rawQuery(
+                "SELECT id,side,quantity_sats,price_cents,costs_cents FROM paper_trade_events",
+                null
+            ).use { c ->
+                buildList {
+                    while (c.moveToNext()) add(listOf(
+                        c.getLong(0), if (c.getString(1) == "BUY") 1L else -1L,
+                        c.getLong(2), c.getLong(3), c.getLong(4)
+                    ))
+                }
+            }
+            for (row in rows) {
+                // Integer-only half-up rounding, identical to PaperFill.grossCents.
+                // BigInteger avoids overflowing intermediate satoshi * price math.
+                val gross = BigInteger.valueOf(row[2])
+                    .multiply(BigInteger.valueOf(row[3]))
+                    .add(BigInteger.valueOf(50_000_000L))
+                    .divide(BigInteger.valueOf(100_000_000L))
+                    .longValueExact()
+                val netFlow = if (row[1] == 1L)
+                    -Math.addExact(gross, row[4])
+                else Math.subtractExact(gross, row[4])
+                check(db.update("paper_trade_events", ContentValues().apply {
+                    put("gross_cents", gross)
+                    put("net_cash_flow_cents", netFlow)
+                }, "id=?", arrayOf(row[0].toString())) == 1)
+            }
         }
     }
 
@@ -120,10 +156,11 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             check(c.moveToFirst()); c.getLong(0)
         }
         val trades = db.rawQuery("""SELECT side,observed_ms,price_cents,quantity_sats,costs_cents,
-            realised_net_cents,reason FROM paper_trade_events ORDER BY id DESC LIMIT 12""", null).use { c ->
+            realised_net_cents,reason,gross_cents,net_cash_flow_cents FROM paper_trade_events ORDER BY id DESC LIMIT 12""", null).use { c ->
             buildList {
                 while (c.moveToNext()) add(PaperTradeEvent(c.getString(0), c.getLong(1), c.getLong(2),
-                    c.getLong(3), c.getLong(4), if (c.isNull(5)) null else c.getLong(5), c.getString(6)))
+                    c.getLong(3), c.getLong(4), if (c.isNull(5)) null else c.getLong(5),
+                    c.getString(6), c.getLong(7), c.getLong(8)))
             }
         }
         val newsStatus = db.rawQuery(
@@ -436,6 +473,10 @@ class PaperDatabase(context: Context) : SQLiteOpenHelper(context, "btc_paper_v13
             put("session_id", session); put("side", side); put("candle_s", candleS)
             put("observed_ms", nowMs); put("price_cents", fill.priceAudCentsPerBtc)
             put("quantity_sats", fill.quantitySats); put("costs_cents", fill.costsCents)
+            put("gross_cents", fill.grossCents)
+            put("net_cash_flow_cents", if (fill.side == PaperFill.Side.BUY)
+                -Math.addExact(fill.grossCents, fill.costsCents)
+                else Math.subtractExact(fill.grossCents, fill.costsCents))
             if (realised == null) putNull("realised_net_cents") else put("realised_net_cents", realised)
             put("reason", reason)
         })

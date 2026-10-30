@@ -88,7 +88,7 @@ private fun PaperScreen(activity: MainActivity) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text("BTC AI", style = MaterialTheme.typography.headlineLarge, color = accent)
-                Text("V20 · LOCAL SIMULATION · NO WALLET · NO EXCHANGE KEYS", color = muted)
+                Text("V22 · LOCAL SIMULATION · NO WALLET · NO EXCHANGE KEYS", color = muted)
                 val s = state
                 if (s == null) {
                     Text("Loading local paper account...", color = Color.White)
@@ -163,8 +163,10 @@ private fun PaperScreen(activity: MainActivity) {
                             Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                 Text(event.side + " · " + time(event.observedMs) +
                                     " · " + aud(event.priceCents), color = Color.White)
-                                Text("Costs: " + aud(event.costsCents) +
-                                    (event.realisedNetCents?.let { " · NET: " + aud(it) } ?: ""),
+                                Text("Gross notional: " + aud(event.grossCents) +
+                                    " · costs: " + aud(event.costsCents) +
+                                    " · NET cash flow: " + aud(event.netCashFlowCents) +
+                                    (event.realisedNetCents?.let { " · realised NET P&L: " + aud(it) } ?: ""),
                                     color = muted)
                                 Text(event.reason, color = muted)
                             }
