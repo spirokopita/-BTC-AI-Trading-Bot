@@ -1,3 +1,35 @@
+# V22 engineering update — 2026-10-31
+
+### Current state — exactly five lines
+1. Native Android BTC/AUD app remains paper-only, with no real order route or exchange keys; paper strategy defaults OFF.
+2. V22 persists gross execution notional and signed NET cash flow separately from existing costs and realised NET P&L.
+3. Additive SQLite v4 migration backfills V2/V3 audit fields using integer-only arithmetic; V1 upgrades create the v4 trade table directly.
+4. Android app and dashboard now distinguish NET cash flow from realised trading P&L; V22 instrumentation tests added, CI verification pending.
+5. Real exchange orders: 0; genuine BTC/AUD strategy gross, trading costs and NET profitability: NOT MEASURED.
+
+### Done — one highest-value unfinished task: complete paper trade audit
+- Added `gross_cents` (execution notional, not profit) and `net_cash_flow_cents` (signed BUY debit / SELL credit) to every new persisted paper fill.
+- Added additive SQLite database version 4 upgrade. For existing V2/V3 fills, backfill both columns without changing original price, quantity, costs, realised NET, account funding or historical audit rows. Legacy gross uses exact half-up integer rounding with BigInteger intermediate multiplication.
+- Kept existing `realised_net_cents` semantics: only closed SELL fills have realised trading P&L. BUY net cash flow is not a loss; SELL net cash flow is not profit.
+- Exposed gross notional, costs, signed NET cash flow and optional realised NET P&L in Android execution history; dashboard latest-fill summary includes the same distinction.
+- Added instrumentation checks for negative realised NET on a losing synthetic round trip, fill accounting equality, idempotent re-polls, and V3-to-V4 legacy trade preservation. Existing V1 migration test retained.
+- Bumped Android to versionCode 22 / versionName 0.22.0-paper.
+
+### Build and test evidence
+- Code committed to `v22-persisted-gross-net-audit` branch. **CI results pending at time of this changelog entry; do not report as passed until inspected.**
+- Emulator, Samsung physical-device, persistent signing, offline Doze recovery and live BTC/AUD after-fee performance are not verified by these source changes.
+
+### Broken / limitations / next
+- Stable APK signing is absent; avoid uninstalling an existing installation without backing up the paper wallet.
+- V22 legacy v2/v3 migration is covered by an Android instrumentation test but has not yet been independently executed on a physical handset.
+- Next: inspect CI, fix any failure, then validate Samsung widget/notification/offline behaviour and stable signing; independently source longer BTC/AUD history for untouched out-of-sample NET performance.
+
+### Observed NET results
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Synthetic fixture expected realised NET loss is -A$119.00; it is a test assertion, not market evidence.
+
+---
+
 # V21 engineering update — 2026-10-30
 
 ### Current state — exactly five lines
