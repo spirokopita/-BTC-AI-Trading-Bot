@@ -176,6 +176,122 @@ class PaperDatabaseInstrumentedTest {
         }
     }
 
+
+    @Test fun v2PopulatedAccountMigratesToV4WithoutChangingWalletOrTrades() {
+        db.close()
+        context.deleteDatabase("btc_paper_v13.db")
+        val legacy = context.openOrCreateDatabase("btc_paper_v13.db", Context.MODE_PRIVATE, null)
+        // This fixture has the V2 schema, not the V3 news columns or V4 audit fields.
+        legacy.execSQL("""CREATE TABLE app_state (
+            id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL,
+            cash_cents INTEGER NOT NULL, funding_cents INTEGER NOT NULL,
+            refill_count INTEGER NOT NULL, reset_count INTEGER NOT NULL,
+            last_attempt_ms INTEGER, last_success_ms INTEGER, last_error TEXT,
+            trading_enabled INTEGER NOT NULL DEFAULT 0,
+            position_sats INTEGER NOT NULL DEFAULT 0,
+            position_basis_cents INTEGER NOT NULL DEFAULT 0,
+            entry_price_cents INTEGER NOT NULL DEFAULT 0,
+            last_evaluated_s INTEGER, last_decision TEXT NOT NULL,
+            last_reason TEXT NOT NULL, ticker_cents INTEGER, ticker_ms INTEGER)""")
+        legacy.execSQL("""CREATE TABLE funding_audit (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL,
+            amount_cents INTEGER NOT NULL, cash_after_cents INTEGER NOT NULL,
+            funding_after_cents INTEGER NOT NULL, created_ms INTEGER NOT NULL)""")
+        legacy.execSQL("""CREATE TABLE candles_4h (
+            start_s INTEGER PRIMARY KEY, open_cents INTEGER NOT NULL,
+            high_cents INTEGER NOT NULL, low_cents INTEGER NOT NULL,
+            close_cents INTEGER NOT NULL, source TEXT NOT NULL)""")
+        legacy.execSQL("""CREATE TABLE paper_trade_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL, side TEXT NOT NULL,
+            candle_s INTEGER NOT NULL, observed_ms INTEGER NOT NULL,
+            price_cents INTEGER NOT NULL, quantity_sats INTEGER NOT NULL,
+            costs_cents INTEGER NOT NULL, realised_net_cents INTEGER,
+            reason TEXT NOT NULL)""")
+        // Synthetic A$3,000 funded, one partial close at a genuine loss:
+        // BUY 0.10 BTC: gross 100000c + costs 1000c.
+        // SELL 0.05 BTC: gross 45000c - costs 450c, realised -5950c.
+        // Remaining position: 0.05 BTC, cost basis 50500c.
+        legacy.execSQL("""INSERT INTO app_state (
+            id,enabled,cash_cents,funding_cents,refill_count,reset_count,
+            trading_enabled,position_sats,position_basis_cents,entry_price_cents,
+            last_evaluated_s,last_decision,last_reason,ticker_cents,ticker_ms)
+            VALUES (1,1,243550,300000,1,0,0,5000000,50500,1000000,
+                    1800000000,'HOLD','legacy observation',900000,1800000000000)""")
+        legacy.execSQL("""INSERT INTO funding_audit
+            (kind,amount_cents,cash_after_cents,funding_after_cents,created_ms)
+            VALUES ('PREFILL',100000,100000,100000,0)""")
+        legacy.execSQL("""INSERT INTO funding_audit
+            (kind,amount_cents,cash_after_cents,funding_after_cents,created_ms)
+            VALUES ('REFILL',200000,300000,300000,100)""")
+        legacy.execSQL("""INSERT INTO candles_4h
+            (start_s,open_cents,high_cents,low_cents,close_cents,source)
+            VALUES (1800000000,950000,1000000,890000,900000,'legacy-cache')""")
+        legacy.execSQL("""INSERT INTO paper_trade_events
+            (session_id,side,candle_s,observed_ms,price_cents,quantity_sats,
+             costs_cents,reason)
+            VALUES (0,'BUY',1800000000,1800000000000,1000000,10000000,
+                    1000,'legacy buy')""")
+        legacy.execSQL("""INSERT INTO paper_trade_events
+            (session_id,side,candle_s,observed_ms,price_cents,quantity_sats,
+             costs_cents,realised_net_cents,reason)
+            VALUES (0,'SELL',1800014400,1800014400000,900000,5000000,
+                    450,-5950,'legacy loss')""")
+        legacy.version = 2
+        legacy.close()
+
+        db = PaperDatabase(context)
+        val upgraded = db.snapshot() // Triggers V2 -> V4 migration.
+        assertEquals(4, db.readableDatabase.version)
+        assertEquals(243_550L, upgraded.account.cashCents)
+        assertEquals(300_000L, upgraded.account.cumulativeFundingCents)
+        assertEquals(1, upgraded.account.refillCount)
+        assertTrue(upgraded.enabled)
+        assertFalse(upgraded.tradingEnabled)
+        assertEquals(5_000_000L, upgraded.positionSats)
+        assertEquals(50_500L, upgraded.positionBasisCents)
+        assertEquals(1_000_000L, upgraded.entryPriceCents)
+        assertEquals(900_000L, upgraded.latestTickerAudCents)
+        assertEquals(900_000L, upgraded.latestCloseAudCents)
+        assertEquals("HOLD", upgraded.lastDecision)
+        assertEquals(-5_950L, upgraded.realisedNetCents)
+        assertEquals(2, upgraded.recentTrades.size)
+        val sell = upgraded.recentTrades[0]
+        val buy = upgraded.recentTrades[1]
+        assertEquals("SELL", sell.side)
+        assertEquals(45_000L, sell.grossCents)
+        assertEquals(450L, sell.costsCents)
+        assertEquals(44_550L, sell.netCashFlowCents)
+        assertEquals(-5_950L, sell.realisedNetCents)
+        assertEquals("BUY", buy.side)
+        assertEquals(100_000L, buy.grossCents)
+        assertEquals(1_000L, buy.costsCents)
+        assertEquals(-101_000L, buy.netCashFlowCents)
+        assertNull(buy.realisedNetCents)
+        assertTrue(upgraded.latestNews.isEmpty())
+        db.readableDatabase.rawQuery("SELECT COUNT(*) FROM funding_audit", null).use { c ->
+            assertTrue(c.moveToFirst())
+            assertEquals(2, c.getInt(0))
+        }
+        db.readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='news_items'", null
+        ).use { c ->
+            assertTrue(c.moveToFirst())
+            assertEquals(1, c.getInt(0))
+        }
+
+        // Reopening an upgraded database must not double-backfill or reset anything.
+        db.close()
+        db = PaperDatabase(context)
+        val reopened = db.snapshot()
+        assertEquals(4, db.readableDatabase.version)
+        assertEquals(upgraded.account, reopened.account)
+        assertEquals(upgraded.positionSats, reopened.positionSats)
+        assertEquals(upgraded.positionBasisCents, reopened.positionBasisCents)
+        assertEquals(upgraded.recentTrades, reopened.recentTrades)
+        assertEquals(-5_950L, reopened.realisedNetCents)
+    }
+
     @Test fun oldV15AccountMigratesWithoutLosingFunding() {
         db.close()
         context.deleteDatabase("btc_paper_v13.db")
