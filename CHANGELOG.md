@@ -16,7 +16,9 @@
 
 ### Tests and deliverables
 - Test source: `android/app/src/androidTest/java/com/btcaud/paper/data/PaperDatabaseInstrumentedTest.kt`.
-- [V23 GitHub Actions run 41246248077](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077) completed successfully on 2026-11-01 AEDT: Kotlin JVM tests, instrumentation compilation, debug APK assembly and Android 15 emulator instrumentation passed.\n- Independently inspected [V23 instrumentation XML/logcat artifact 13059474276](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059474276): **19 tests, 0 failures, 0 errors, 0 skips**; the new V2 migration/reopen test executed. Live public Kraken-to-SQLite smoke test logged `LIVE_KRAKEN_SQLITE_VERIFIED; paper trades=0; net cents=0`.\n- [V23 debug APK artifact 13059647916](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059647916) extracted: 11,091,296 bytes, APK SHA-256 `af114cb4757718ba1e38b351b44d06f38de77932bf92b590061dce0265667d92`. Stable signing secrets remain absent.
+- [V23 GitHub Actions run 41246248077](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077) completed successfully on 2026-11-01 AEDT: Kotlin JVM tests, instrumentation compilation, debug APK assembly and Android 15 emulator instrumentation passed.
+- Independently inspected [V23 instrumentation XML/logcat artifact 13059474276](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059474276): **19 tests, 0 failures, 0 errors, 0 skips**; the new V2 migration/reopen test executed. Live public Kraken-to-SQLite smoke test logged `LIVE_KRAKEN_SQLITE_VERIFIED; paper trades=0; net cents=0`.
+- [V23 debug APK artifact 13059647916](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059647916) extracted: 11,091,296 bytes, APK SHA-256 `af114cb4757718ba1e38b351b44d06f38de77932bf92b590061dce0265667d92`. Stable signing secrets remain absent.
 
 ### Broken / limitations / next
 - Physical Samsung installation, Glance widget layout, notification interactions, Doze delays and stable APK signing remain unverified.
