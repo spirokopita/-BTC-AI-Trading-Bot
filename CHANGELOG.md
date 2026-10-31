@@ -1,3 +1,34 @@
+# V23 engineering update — 2026-11-01
+
+### Current state — exactly five lines
+1. Native Android BTC/AUD app remains paper-only; paper strategy OFF by default, no real order route or exchange keys.
+2. V22 SQLite v4 persists gross execution notional, modeled costs, signed NET cash flow and realised NET P&L.
+3. V23 adds a populated V2-to-V4 migration regression covering funding, an open position, a realised loss, news-table creation and safe reopen.
+4. Android 15 emulator validation for the new V23 regression: PENDING GitHub Actions result; V22's prior 18/18 success is not a V23 test result.
+5. Real exchange orders: 0; genuine BTC/AUD strategy gross, costs and NET profitability: NOT MEASURED.
+
+### Done — one highest-value unfinished task: V2 legacy wallet migration validation
+- Added a full V2 SQLite fixture with A$3,000 cumulative funding, A$2,435.50 cash, a 0.05 BTC remaining paper position and two legacy fills.
+- Asserts V2->V4 adds first-observed news schema and backfills execution gross/cost/NET without rewriting funding, cash, position basis, ticker, original candle, or realised NET.
+- Synthetic partial close remains a **-A$59.50 realised NET loss** (SELL gross A$450.00, costs A$4.50, NET cash inflow A$445.50); BUY gross A$1,000.00, costs A$10.00, NET cash outflow -A$1,010.00. These are fabricated test fixtures, not real-market results.
+- Reopens the same database and checks the upgraded rows are unchanged (no duplicate backfill). No real trading adapter, keys or service were added.
+- Android versionCode 23 / versionName 0.23.0-paper; migration production code unchanged.
+
+### Tests and deliverables
+- Test source: `android/app/src/androidTest/java/com/btcaud/paper/data/PaperDatabaseInstrumentedTest.kt`.
+- CI Android 15 instrumentation and debug APK: PENDING verification. Do not treat source changes as a successful build until the workflow passes.
+
+### Broken / limitations / next
+- Physical Samsung installation, Glance widget layout, notification interactions, Doze delays and stable APK signing remain unverified.
+- Real-market after-fee performance remains unmeasured; the current SMA rule is not a trained AI.
+- Next: verify physical Samsung behaviour and stable signing, then acquire independently sourced multi-year BTC/AUD data for untouched out-of-sample NET research.
+
+### Observed NET results
+- Genuine BTC/AUD strategy gross: **NOT MEASURED**; costs: **NOT MEASURED**; NET: **NOT MEASURED**.
+- Real exchange orders: **0**. Synthetic fixture realised NET: **-A$59.50**, strictly a loss.
+
+---
+
 # V22 engineering update — 2026-10-31
 
 ### Current state — exactly five lines
