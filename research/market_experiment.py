@@ -83,9 +83,13 @@ def signal(bars, i, name):
         return c > ma100 and c > closes[-7] and statistics.pstdev(recent) < .035
     raise ValueError('Unknown strategy')
 
-def simulate(bars, start, end, name, *, fee_multiplier=1):
+def simulate(bars, start, end, name, *, fee_multiplier=1, position_cap_aud=50.0):
     if not (102 <= start < end <= len(bars)) or end-start < 2:
         raise ValueError('Invalid backtest interval')
+    if position_cap_aud not in (50.0, 100.0):
+        raise ValueError('Only approved paper research caps A$50/A$100')
+    if not math.isfinite(fee_multiplier) or fee_multiplier < 0:
+        raise ValueError('Invalid fee multiplier')
     cash, qty, entry_mid, entry_fill = 1000., 0., 0., None
     equity = [cash]
     totals = {'gross': 0., 'fees': 0., 'spread': 0., 'slippage': 0., 'net': 0.}
@@ -98,12 +102,15 @@ def simulate(bars, start, end, name, *, fee_multiplier=1):
         price = bars[j][1]
         want = False if j == end-1 else signal(bars, j-1, name)
         if want and not qty:
-            stake = min(50., .05*cash)
+            stake = min(position_cap_aud, (position_cap_aud / 1000.) * cash)
             probe = estimate_execution(price, stake/price, 'buy', 'taker', costs)
             qty = stake / (probe.execution_price * (1 + probe.fee_rate))
             entry_fill = estimate_execution(price, qty, 'buy', 'taker', costs)
             entry_mid = price
-            cash -= entry_fill.executed_notional_quote + entry_fill.fee_quote
+            debit = entry_fill.executed_notional_quote + entry_fill.fee_quote
+            if debit > stake + 1e-8:
+                raise AssertionError('Entry exceeds cash fraction / position cap')
+            cash -= debit
         elif not want and qty:
             exit_fill = estimate_execution(price, qty, 'sell', 'taker', costs)
             cash += exit_fill.executed_notional_quote - exit_fill.fee_quote
@@ -131,7 +138,7 @@ def simulate(bars, start, end, name, *, fee_multiplier=1):
         peak = max(peak, e)
         drawdown = min(drawdown, e/peak-1)
     assert qty == 0 and math.isclose(cash-1000, totals['net'], abs_tol=1e-7)
-    return {'strategy': name,
+    return {'strategy': name, 'position_cap_aud': position_cap_aud,
             'start_utc': datetime.fromtimestamp(bars[start][0],timezone.utc).isoformat(),
             'end_utc': datetime.fromtimestamp(bars[end-1][0],timezone.utc).isoformat(),
             'trades': len(trades), 'wins': sum(t['net_aud']>0 for t in trades),
