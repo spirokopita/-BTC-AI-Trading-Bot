@@ -12,6 +12,9 @@ object PaperDecisionEngine {
     const val SLIPPAGE_BPS = 5
     const val COST_BPS = FEE_BPS + SPREAD_BPS + SLIPPAGE_BPS
     const val MIN_HISTORY = 21
+    /** PAPER ONLY: A$100 maximum entry debit, at most 10% of available simulated cash. */
+    const val MAX_PAPER_ORDER_CENTS = 10_000L
+    const val MAX_CASH_FRACTION_DIVISOR = 10L
 
     enum class Action { BUY, SELL, HOLD }
     data class Bar(val startS: Long, val closeCents: Long)
@@ -49,10 +52,10 @@ object PaperDecisionEngine {
         return Decision(Action.HOLD, "No bullish SMA10/SMA20 crossover")
     }
 
-    /** Risk budget min(5% of cash, A$50), including estimated entry costs. */
+    /** Risk budget min(10% of cash, A$100), INCLUDING estimated entry costs. */
     fun buyQuantitySats(cashCents: Long, priceCents: Long): Long {
         if (cashCents <= 0L || priceCents <= 0L) return 0L
-        val budget = minOf(cashCents / 20L, 5_000L)
+        val budget = minOf(cashCents / MAX_CASH_FRACTION_DIVISOR, MAX_PAPER_ORDER_CENTS)
         if (budget < 100L) return 0L
         return Math.multiplyExact(Math.multiplyExact(budget, 100_000_000L), 10_000L) /
             Math.multiplyExact(priceCents, 10_000L + COST_BPS)
