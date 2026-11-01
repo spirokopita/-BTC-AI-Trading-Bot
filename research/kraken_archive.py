@@ -124,7 +124,7 @@ def load(csv_path=None):
             if info.file_size>30000000: raise ValueError('BTC/AUD member unexpectedly large')
             with z.open(info) as f: raw=f.read(30000001)
             if len(raw)!=info.file_size: raise IOError('Uncompressed member size mismatch')
-        prov={'source':'OFFICIAL_KRAKEN_FULL_OHLCVT_2026_06_30','parts':store.lengths,
+        prov={'source':'OFFICIAL_KRAKEN_FULL_OHLCVT_ARCHIVE','parts':store.lengths,
               'member':name,'member_crc32':f'{info.CRC:08x}',
               'member_sha256':hashlib.sha256(raw).hexdigest(),
               'whole_archive_sha256_verified':False,
@@ -132,7 +132,8 @@ def load(csv_path=None):
     all_bars=parse_csv(raw)
     bars,gaps=longest_contiguous(all_bars)
     prov.update({'total_candles':len(all_bars),'gap_count':len(gaps),
-                 'gap_examples':gaps[:10],'selected_contiguous_bars':len(bars),'selection_rule':'LONGEST_CONTIGUOUS_BY_BAR_COUNT_NOT_RETURNS',
+                 'gap_examples':gaps[:10], 'archive_first_utc':utc(all_bars[0][0]),
+                 'archive_last_utc':utc(all_bars[-1][0]), 'selected_contiguous_bars':len(bars),'selection_rule':'LONGEST_CONTIGUOUS_BY_BAR_COUNT_NOT_RETURNS',
                  'first_utc':utc(bars[0][0]),'last_utc':utc(bars[-1][0])})
     return bars,prov
 
