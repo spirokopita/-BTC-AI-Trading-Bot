@@ -4,7 +4,7 @@ from research.market_experiment import STEP, parse_kraken, signal, simulate, exp
 
 BASE = 1704067200
 
-def bars(n=700):
+def bars(n=740):
     out=[]
     for i in range(n):
         price=100+i*.03+3*((i%40)/40)
