@@ -167,7 +167,7 @@ def run(bars,events,provenance,news_sha):
     for a,b in zip(cuts[:-1],cuts[1:]):
         start=a+20
         results={s:simulate(bars,start,b,s,events) for s in STRATEGIES}
-        for s in ('trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto'):
+        for s in ('trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto','news_positive_pulse','news_positive_placebo'):
             results[s]['half_cost_net_aud']=simulate(bars,start,b,s,events,mult=.5)['net_aud']
             results[s]['double_cost_net_aud']=simulate(bars,start,b,s,events,mult=2)['net_aud']
         folds.append(dict(start_utc=datetime.fromtimestamp(bars[start][0],timezone.utc).isoformat(),
