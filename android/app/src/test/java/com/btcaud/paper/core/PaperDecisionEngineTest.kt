@@ -61,7 +61,7 @@ class PaperDecisionEngineTest {
                 assertTrue("10% available cash", debit <= cash / 10L)
             }
         }
-        assertEquals(0L, PaperDecisionEngine.buyQuantitySats(0L, price))
+        assertEquals(0L, PaperDecisionEngine.buyQuantitySats(0L, 15_000_000L))
         assertEquals(0L, PaperDecisionEngine.buyQuantitySats(100_000L, 0L))
     }
 
