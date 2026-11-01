@@ -16,7 +16,7 @@ CASH=1000.
 FEE=.008
 SPREAD=.0005
 SLIPPAGE=.0005
-STRATEGIES=('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto')
+STRATEGIES=('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto','news_positive_pulse','news_positive_placebo')
 
 def ts(s):
     if not isinstance(s,str) or not s.endswith('Z'): raise ValueError('UTC Z required')
@@ -45,6 +45,10 @@ def signal(bars,i,name,events=()):
     if i<202 or i+1>=len(bars): return False
     close=bars[i][4]
     closes=[b[4] for b in bars[i-201:i+1]]
+    if name in ('news_positive_pulse','news_positive_placebo'):
+        # Fixed 24h long-only event window; this is a retrospective post-hoc hypothesis.
+        shift=7*86400 if name=='news_positive_placebo' else 0
+        return any(e['sentiment']>0 for e in asof(events,bars[i][0]+STEP,shift,window=86400))
     if name=='sma': return statistics.mean(closes[-10:])>statistics.mean(closes[-20:])
     if name=='momentum': return close>closes[-13]*1.01
     if name=='rsi':
@@ -62,7 +66,7 @@ def signal(bars,i,name,events=()):
     breakout=close>max(b[2] for b in bars[i-24:i])
     base=trend and breakout and .01<=atr<=.07
     if name=='trend_breakout': return base
-    if name in ('news_veto','news_veto_7d','news_delay','placebo_veto'):
+    if name in ('news_veto','news_veto_7d','news_delay','placebo_veto','news_positive_pulse','news_positive_placebo'):
         # placebo is a negative control only, NOT a deployable news feature.
         shift=7*86400 if name=='placebo_veto' else 0
         risk=any(e['sentiment']<0 for e in asof(events,bars[i][0]+STEP,shift,
@@ -178,7 +182,7 @@ def run(bars,events,provenance,news_sha):
         max_paper_entry_debit_aud=CAP,initial_cash_aud=CASH,
         fixed_parameters_predeclared=True,chronological_expanding_folds=folds,
         event_study=event_study(bars,events),
-        ablations='news_veto 48h vs news_veto_7d vs trend_breakout; placebo_veto shifts news +7 days; 7d added post-hoc as EXPLORATORY after zero 48h veto effect',
+        ablations='48h/7d veto vs price-only; 24h positive news pulse vs +7d placebo; added post-hoc as EXPLORATORY after veto showed zero effect',
         selection='HOLD',promotion='REJECTED_NO_UNTOUCHED_PROSPECTIVE_NET_EDGE',
         limitations=['Previously inspected historical data; chronological replay is NOT untouched OOS',
         'Manually selected famous news stories and revised publication timestamps are NOT first-seen bot data',
