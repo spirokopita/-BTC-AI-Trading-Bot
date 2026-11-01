@@ -1,3 +1,30 @@
+# V24 algorithm research — 2026-11-01 (PR #8, paper-only)
+
+**NEXT DATA ACCESS QUESTION:** Can the official multi-year Kraken BTC/AUD OHLCVT archive (large multi-part download) be ingested into a persistent research cache, and can point-in-time FIRST-OBSERVED news history be sourced, so the next experiment has a genuinely untouched multi-year test set? Current short Kraken OHLC endpoint cannot establish robust profitability.
+
+### Current state — exactly five lines
+1. Android V23 remains the deployed-source baseline, paper-only, strategy OFF by default; no real order route.
+2. V24 research pipeline retrieved and validated 720 public Kraken BTC/AUD completed 4h candles (2026-07-04 to 2026-11-01 UTC).
+3. Five predefined algorithms evaluated with three disjoint chronological out-of-sample folds and 20-bar training purges.
+4. GitHub Actions run 41293127006 passed 6 deterministic tests and real-market research; report artifact retained.
+5. Real orders 0; selected SMA proxy aggregate gross +A$1.243646, costs A$3.113138, NET **−A$1.869491** across three independent paper windows.
+
+### Done — one highest-value unfinished task: verifiable market-data strategy research
+- Added `research/market_experiment.py`, six tests, and `.github/workflows/market-research.yml` to fetch genuine public Kraken data, hash the source response, reject gaps/duplicates/unfinished candles and run fee-aware next-open simulations.
+- Evaluated SMA trend-state proxy, momentum, RSI oversold, breakout and trend/volatility regime using the V6 fee execution model with Android-matching 16bps fee, 5bps half-spread and 5bps slippage **per side**.
+- Three train-only selected SMA proxy test folds returned +A$3.996640, −A$2.021314 and −A$3.844817 NET respectively. The last period was a loss. Aggregate 12 trades: gross +A$1.243646, fees A$1.915776, spread A$0.598681, slippage A$0.598681, NET **−A$1.869491**. The equal-A$50-exposure buy-and-hold comparator returned −A$0.893264 NET across those three reset windows.
+- All five strategies were NET negative across the combined exploratory folds; none promoted. This SMA trend-state research proxy is NOT identical to the Android crossover and stop logic; parity remains to be verified.
+- News: located dated 2026-10-29 Binance breach reporting and 2026-11-01 withdrawal resumption reporting. No trustworthy historical first-observed feed was available; no news-predictive trading signal was backtested or claimed.
+- All findings and source/protocol details: `research/EXPERIMENT_LEDGER.md`. Detailed per-trade outcomes are in the GitHub Actions artifact `BTC-AUD-Research-OOS-Report` from run 41293127006. Kraken raw API response SHA-256 `c313552d04160e13b50182886ae6da85b1655c27ecfe36156480a2b4f6f4a6cc`.
+
+### Broken / limitations / next
+- The public Kraken API supplies only ~120 days of 4h history. Official multi-year OHLCVT archive must be downloaded and validated before credible model selection.
+- Historical news first-observed timestamps unavailable for these test folds; publication-time backfilling would be leakage. News predictive value NOT TESTED.
+- The experiment uses next-open hypothetical fills and forced final-open liquidation, without order-book depth, intra-bar stops, exchange queue position or Android strategy parity. Real performance and production profitability NOT ESTABLISHED.
+- Next: import verified multi-year exchange archive; run purged walk-forward with a fresh, untouched holdout and fee sensitivity, and validate a lower-turnover candidate. No Android APK was built during V24; prior V23 remains unchanged.
+
+---
+
 # V23 engineering update — 2026-11-01
 
 ### Current state — exactly five lines
