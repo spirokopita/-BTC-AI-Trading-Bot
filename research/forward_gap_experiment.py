@@ -89,8 +89,8 @@ def load_archive_all():
         "whole_archive_sha256_verified": False,
         "part_sizes_bytes": parts.lengths,
         "observed_bars": len(bars),
-        "unobserved_4h_intervals": gaps,
-        "unobserved_interval_note": "Kraken documents missing OHLCVT rows when no trades occurred; no rows are imputed",
+        "gap_boundaries": gaps,
+        "gap_note": "20 counts gap boundaries, not missing candle count; Kraken documents missing OHLCVT rows when no trades occurred; no rows are imputed",
         "first_utc": utc(bars[0][0]),
         "last_utc": utc(bars[-1][0]),
     }
