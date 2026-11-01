@@ -143,18 +143,38 @@ def simulate(bars, start, end, name, *, fee_multiplier=1):
 
 def experiment(bars):
     folds = []
-    for train_end, test_start, test_end in ((360, 380, 500), (480, 500, 620)):
+    for train_end, test_start, test_end in ((360, 380, 500), (480, 500, 620), (600, 620, 720)):
         train = {n: simulate(bars, 102, train_end, n) for n in STRATEGIES}
         eligible = [n for n in STRATEGIES if train[n]['trades'] >= 3 and train[n]['net_aud'] > 0]
         selected = max(eligible, key=lambda n: train[n]['net_aud']) if eligible else 'HOLD'
         test = {n: simulate(bars, test_start, test_end, n) for n in STRATEGIES}
         chosen = test[selected] if selected != 'HOLD' else {'net_aud':0.,'net_return_pct':0.,'trades':0}
         first, last = bars[test_start][1], bars[test_end-1][1]
+        # Same A$50 spot exposure and execution costs as the strategy.
+        buy_costs = FeeSettings(tiers=(FeeTier(0,.0016,.0016),),
+            spread_bps=10, base_slippage_bps=5,
+            volatility_slippage_multiplier=0, size_slippage_bps=0,
+            max_slippage_bps=5)
+        buy_probe = estimate_execution(first, 50/first, 'buy', 'taker', buy_costs)
+        hold_qty = 50/(buy_probe.execution_price*(1+buy_probe.fee_rate))
+        buy_fill = estimate_execution(first,hold_qty,'buy','taker',buy_costs)
+        sell_fill = estimate_execution(last,hold_qty,'sell','taker',buy_costs)
+        hold_gross = hold_qty*(last-first)
+        hold_fees = buy_fill.fee_quote+sell_fill.fee_quote
+        hold_spread = buy_fill.spread_quote+sell_fill.spread_quote
+        hold_slippage = buy_fill.slippage_quote+sell_fill.slippage_quote
+        hold_net = hold_gross-hold_fees-hold_spread-hold_slippage
         folds.append({'train_end_index':train_end, 'purge_bars':20,
                       'test_start_index':test_start,'test_end_exclusive':test_end,
                       'train_results':train, 'test_results':test,
                       'selected_FROM_TRAIN_ONLY':selected,'selected_test':chosen,
-                      'market_buy_hold_gross_pct':round(100*(last/first-1),6)})
+                      'market_buy_hold_gross_pct':round(100*(last/first-1),6),
+                      'same_stake_buy_hold':{
+                          'gross_aud':round(hold_gross,6),'fees_aud':round(hold_fees,6),
+                          'spread_aud':round(hold_spread,6),
+                          'slippage_aud':round(hold_slippage,6),
+                          'net_aud':round(hold_net,6),
+                          'net_return_pct_of_account':round(hold_net/1000*100,6)}})
     return {'mode':'PAPER_ONLY_RESEARCH', 'pair':'Kraken BTC/AUD',
             'interval_minutes':240,'bars':len(bars),
             'first_completed_utc':datetime.fromtimestamp(bars[0][0],timezone.utc).isoformat(),
