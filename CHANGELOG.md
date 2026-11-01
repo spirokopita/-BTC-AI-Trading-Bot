@@ -1,3 +1,28 @@
+# V30 matched historical-news controls — 2026-11-02 (PR #14)
+
+**BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can we obtain an unbiased, sufficiently large point-in-time historical news archive with original revision/availability provenance and a genuinely untouched positive NET evaluation? Ten selected historical articles and matched controls do not establish predictive advantage. **HOLD remains selected.**
+
+### Current state — exactly five lines
+1. Android V27 remains PAPER-ONLY, A$100 inclusive entry debit and 10% available cash cap; 80bps taker scenario, no strategy promotion or new APK.
+2. Official Kraken archive revalidated 13,763 BTC/AUD 4h candles, 20 gaps; 6,863 contiguous 2020-12-02–2024-01-20 bars selected by length only; extracted member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e.
+3. Ten retrospectively timestamped news events matched to earlier non-event control windows on UTC weekly slot, prior 24h direction and prior 7d volatility; 4h/24h/48h returns compared at 80bps taker plus 5bps spread and 5bps slippage per side.
+4. At 24h, news-entry mean NET -1.629283% vs matched-control -0.073195%; mean excess -1.556088%, sentiment-aligned excess +0.245267% (6/10 positive, descriptive sign-flip p=0.884766); no predictive edge established.
+5. GitHub Actions run 41355350343 PASSED 22 deterministic tests (8 V30 + 9 V29 + 5 V27), official Kraken matched study and twelve-strategy baseline rerun; HOLD retained.
+
+### DONE
+- Added `research/v30_matched_news.py`, eight synthetic no-future-price/news tests and CI workflow. Matched controls are strictly earlier than each event, same UTC weekday and four-hour slot, with pre-open return direction/volatility and +/-7-day news exclusion. Controls are not selected using subsequent price outcomes.
+- 10/10 eligible curated events had prior controls, three horizons each. Mean event NET / control NET / excess: 4h -2.057950% / -0.632214% / -1.425736%; 24h -1.629283% / -0.073195% / -1.556088%; 48h -5.146879% / -0.228110% / -4.918770%. Direction-aligned excess at 4h -0.420852%, 24h +0.245267%, 48h +1.158687%; exact descriptive sign-flip p=0.703125 / 0.884766 / 0.617188 respectively. None establishes a robust positive edge.
+- Reproduced 12 V29 strategy and news-ablation controls across five independent A$1,000 reset folds, A$100 inclusive cap, 80bps taker + 5bps half-spread + 5bps slippage per side. Price-only trend breakout: 87 trades NET -A$154.604; negative-news veto identical; positive-news pulse 4 trades NET -A$11.085; equal-A$100 buy/hold +A$92.018. All are historical diagnostics on previously inspected prices, NOT untouched OOS.
+- CI: `python3 -m unittest discover -s tests -p 'test_v30_matched_news.py' -v` (8), `test_v29_point_in_time.py` (9), `test_v27_position_sizing.py` (5); `python3 -m research.v30_matched_news --output audit/v30-matched-news.json`; `python3 -m research.v29_point_in_time --output audit/v30-strategy-control.json`. [CI 41355350343](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41355350343) PASSED; artifact 13102518396.
+
+### PARTIAL / BROKEN / NEXT
+- PARTIAL: Historic news coverage remains only 10 famous selected events. Matched controls are observational and depend on time, regimes and overlapping events; sign-flip p is descriptive, not a causal significance claim. Historical source timestamps are not true first-seen observations. No new source articles collected in V30.
+- BLOCKED: Representative timestamped news coverage, independent positive NET OOS and maker order-book fill evidence. Official full archive checksum unverified (member CRC/SHA verified).
+- NOT ATTEMPTED: Real trades, keys, new Android APK/UI, maker orders or strategy promotion.
+- NEXT: Build systematic non-headline historical article sample with published/updated timestamp verification and coverage calendar; evaluate incremental news information with category-specific matched controls and chronological embargo, and prototype lower-turnover regime-aware strategies with strict train-only selection. No waiting for future dates to begin research.
+
+---
+
 # V29 historical news point-in-time research — 2026-11-02 (PR #13)
 
 **BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can we obtain a representative, revision-aware historical BTC/AUD-relevant news corpus with defensible publication/availability timestamps and a genuinely untouched prospective test period? Ten retrospectively chosen high-profile articles do NOT establish a predictive news edge, even with leakage-safe replay. No strategy has independently validated positive NET performance.
