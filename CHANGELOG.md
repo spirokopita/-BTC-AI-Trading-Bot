@@ -6,7 +6,7 @@
 1. Android V23 remains unchanged and PAPER-ONLY, strategy OFF by default; no exchange order route.
 2. V25 extracted the actual `XBTAUD_240.csv` member of Kraken's official multipart OHLCVT ZIP using HTTP byte ranges and ZIP member CRC.
 3. Archive holds 13,763 four-hour candles with 20 gaps; predeclared longest gap-free research segment has 6,863 candles (2020-12-02 to 2024-01-20 UTC).
-4. GitHub Actions run 41294883216 passed 6 deterministic tests and executed multi-year real-market train/validation/test research; the later provenance-only update awaits verification.
+4. GitHub Actions run 41294883216 passed 6 deterministic tests and executed multi-year real-market train/validation/test research; final source-provenance correction also passed in CI run 41294958852.
 5. Predeclared train/validation policy selected HOLD: 0 test trades, A$0 NET; diagnostic SMA two reset test folds returned −A$3.186626 and +A$14.621458 NET, below equal-stake buy/hold.
 
 ### DONE — one highest-value task: actual official multi-year BTC/AUD research
