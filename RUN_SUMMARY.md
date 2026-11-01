@@ -1,21 +1,21 @@
-# V27 algorithm and risk-sizing run summary — 2026-11-01 AEDT
+# V28 research run summary — 2026-11-01 AEDT
 
-1. Android PAPER-ONLY source now budgets min(10% cash, A$100) including entry friction; models current standard Kraken Pro tier-1 80bps taker fee; Android 15 emulator 19/19 passed; APK built.
-2. Official Kraken BTC/AUD 4h archive reverified: 13,763 observed candles, 20 gap boundaries, member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e.
-3. Matched A$50/A$100 experiments under legacy 16bps and current 80bps per-side taker fee used frozen seven strategies, chronological training/validation and two exploratory later folds.
-4. At current 80bps, A$100 slow SMA +0.5%: 6 round trips, gross +A$9.106192, total costs A$10.732881, NET -A$1.626688; SMA NET -A$96.804378, same-stake buy/hold -A$16.092737.
-5. V27 research CI 41297527028 passed 11 deterministic tests; Android CI 41297522950 passed 19/19 emulator tests and built APK; 114 first-seen news articles observed in evidence run; selected HOLD.
+1. Android V27 PAPER-ONLY still enforces max A$100 / 10% simulated cash inclusive of entry costs, 80bps taker model; 19/19 emulator tests previously passed; no new APK.
+2. Fetched 720 verified completed Kraken BTC/AUD 4h candles through 2026-11-01 04:00 UTC, including 188 gap-free bars after the 2026-09-30 archive.
+3. Frozen seven-candidate A$100/80bps exploratory study: SMA 8 trades NET -A$18.769547, slow SMA 0.5% 1 trade NET -A$4.359602, same-stake buy/hold NET -A$9.587585.
+4. Recovered 134 V26, 114 V27 and 114 V28 first-observed news snapshot rows; merged 362 to 135 distinct canonical URLs with source hashes and read-back.
+5. GitHub Actions 41299334042 passed 17 deterministic tests and real-market/news research; selected HOLD A$0 NET; PR #12 awaiting merge at this checkpoint.
 
-**DONE:** Paper budget and conservative fee model source changes, A$50/A$100 x 16bps/80bps research, fee sensitivity, benchmark, verified real-market CI and news snapshot.
+**DONE:** Real post-archive public Kraken data validation, seven frozen cost-aware paper diagnostics, six new tests, prior artifact recovery, cumulative news merge, provenance and read-back.
 
-**PARTIAL:** Prospective news outcome study unavailable; earlier 2025-26 diagnostic prices already inspected. Android source and APK verified, but signing is ephemeral debug (no stable signing secret).
+**PARTIAL:** Main-branch persistent corpus write awaits merge/push verification; no news causal predictive test yet.
 
-**BLOCKED:** Independently new positive NET evidence, Android/research strategy parity, durable cumulative first-seen news history.
+**BLOCKED:** New untouched post-2026-11-01 market outcomes, mature first-observed news horizons, realistic maker fills and Android research strategy parity.
 
-**NOT ATTEMPTED:** Live trading, private order API, paid datasets, spending or destructive changes.
+**NOT ATTEMPTED:** Live trading, new APK, private credentials, spending or destructive changes.
 
-**CI research:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297527028
+**Source PR:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/12
 
-**CI Android verified:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297522950 — 19/19 emulator tests, JVM tests, APK build, public Kraken audit.
+**CI:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41299334042
 
-**Next:** Persist multi-run first-seen news, extend fresh BTC/AUD market observations, and prospectively test frozen low-turnover strategies at 80bps taker costs; consider maker-limit execution only with fill-probability/adverse-selection modelling. PAPER ONLY.
+**Next:** Merge and verify durable first-observed corpus, collect future completed BTC/AUD candles and news return labels prospectively, then evaluate fixed lower-turnover strategies. PAPER ONLY.
