@@ -98,17 +98,18 @@ def parse_csv(raw):
     if len(bars)<1000: raise ValueError(f'Only {len(bars)} candles')
     return bars
 
-def latest_contiguous(bars):
+def longest_contiguous(bars):
     starts=[0]; gaps=[]
     for i in range(1,len(bars)):
         if bars[i][0]-bars[i-1][0]!=STEP:
             gaps.append((utc(bars[i-1][0]),utc(bars[i][0])))
             starts.append(i)
     ends=starts[1:]+[len(bars)]
-    # Prefer most recent sufficiently long segment, not cherry-picked highest-return interval.
+    # Predeclared data-quality rule: longest continuous interval by bar count ONLY.
+    # Never select a segment using returns. Later segments are held for future validation.
     valid=[(a,b) for a,b in zip(starts,ends) if b-a>=1000]
     if not valid: raise ValueError(f'No >=1000-candle contiguous segment; gaps={len(gaps)}')
-    a,b=valid[-1]
+    a,b=max(valid,key=lambda pair:pair[1]-pair[0])
     return bars[a:b],gaps
 
 def load(csv_path=None):
@@ -129,9 +130,9 @@ def load(csv_path=None):
               'whole_archive_sha256_verified':False,
               'integrity_note':'ZIP member CRC verified, NOT full archive published SHA256'}
     all_bars=parse_csv(raw)
-    bars,gaps=latest_contiguous(all_bars)
+    bars,gaps=longest_contiguous(all_bars)
     prov.update({'total_candles':len(all_bars),'gap_count':len(gaps),
-                 'gap_examples':gaps[:10],'selected_contiguous_bars':len(bars),
+                 'gap_examples':gaps[:10],'selected_contiguous_bars':len(bars),'selection_rule':'LONGEST_CONTIGUOUS_BY_BAR_COUNT_NOT_RETURNS',
                  'first_utc':utc(bars[0][0]),'last_utc':utc(bars[-1][0])})
     return bars,prov
 
