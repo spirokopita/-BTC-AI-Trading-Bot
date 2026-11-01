@@ -1,5 +1,34 @@
 # BTC/AUD Research Experiment Ledger
 
+## V28 — 2026-11-01, 80bps post-archive research and cumulative first-observed news
+
+**Status:** DONE: V28 source, six new deterministic tests, 11 prior causal/risk tests, real Kraken OHLC diagnostic, recovery of two immutable prior news artifacts, cumulative news merge and SHA read-back in PR CI [41299334042](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41299334042). PARTIAL: permanent main-branch corpus commit pending merge/push CI. BLOCKED: genuinely untouched prospective OOS NET edge, matured news returns and Android strategy parity. NOT ATTEMPTED: real-money orders, maker fills, UI/APK rebuild, paid data.
+
+**Market provenance:** 720 completed Kraken BTC/AUD four-hour OHLC candles from 2026-07-04 08:00 UTC to 2026-11-01 04:00 UTC; API raw-response SHA256 `e811edd4db3d1923698cec07b4f75068a09fd0d5ba101aaaffbbd94918bcf194`. The 188 post-archive candles cover 2026-10-01 00:00 UTC through 2026-11-01 04:00 UTC, with 532 prior observed warmup bars and zero internal gaps. Source is public Kraken REST OHLC; the unclosed current candle was excluded. **This is exploratory, not untouched prospective OOS**: V24 already examined October 2026. Frozen V27 parameters and HOLD selection, no retrospective promotion.
+
+**Paper A$100 / A$1,000 initial account, 80bps taker + 5bps half-spread + 5bps slippage EACH SIDE, next-open hypothetical fills and forced final-open liquidation:**
+
+| Frozen strategy | Completed trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ | Return on A$1,000 | Max drawdown |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| SMA | 8 | -4.621734 | 12.575838 | 0.785988 | 0.785988 | **-18.769547** | -1.876955% | -2.035112% |
+| Momentum | 13 | -8.502888 | 20.274879 | 1.267176 | 1.267176 | **-31.312118** | -3.131212% | -3.131212% |
+| RSI | 10 | +1.934155 | 15.760618 | 0.985040 | 0.985040 | **-15.796542** | -1.579654% | -1.620927% |
+| Breakout | 4 | -0.676252 | 6.323332 | 0.395208 | 0.395208 | **-7.790000** | -0.779000% | -0.779000% |
+| Regime | 4 | -0.899831 | 6.322889 | 0.395180 | 0.395180 | **-8.013081** | -0.801308% | -0.961199% |
+| Slow SMA 50/200 +0.5% | 1 | -2.599042 | 1.564944 | 0.097808 | 0.097808 | **-4.359602** | -0.435960% | -0.656869% |
+| Slow SMA 50/200 +2% | 1 | -2.379900 | 1.566696 | 0.097917 | 0.097917 | **-4.142430** | -0.414243% | -0.619304% |
+
+**Same-A$100 buy/hold:** gross -A$7.874462, fees A$1.522783, spread A$0.095170, slippage A$0.095170, NET **-A$9.587585** (BTC price change -7.945395%). HOLD 0 trades and A$0 NET. Cost multiplier 0.5/2.0 sensitivity and each trade audit are preserved in V28 JSON artifact; 0.5 multiplier is NOT a maker-fill simulation. These are hypothetical price-based taker fills, not real executed trades.
+
+**First-observed news recovery:** Recovered authentic V26 SQLite snapshot (134 articles, SHA256 `d0fa9804149f6c335ca0be93a55727be0808b22c4deca80d9de70a9961155e65`) and V27 snapshot (114, SHA256 `0355b822794c87006c6fc1649da1047e9745d8cfc1fac396488f9771299102c3`), and captured V28 current RSS (114, SHA256 `c2b877a89906dcf7c76825f7ab16d0c578a8b351d36e6155e77061189fdad200`). Merged 362 snapshot rows to **135 distinct canonical URLs**, preserving the earliest actually recorded `first_seen_ts`; corpus SHA256 `b79bc80e94a8c629c0070a6e28275232c3e3cecae96014e3eccd5bcbd4a304f6`. Bloomberg feed redirect remained blocked by host allowlist; other four feeds succeeded. No publication-time backdating, no historical news trading signal, and no matured post-first-seen outcome evaluation. The PR CI artifact is preserved; main-branch JSONL persistence occurs only after merge/push succeeds.
+
+**Reproduction:** `python3 -m unittest discover -s tests -p 'test_v28_bridge_corpus.py' -v` (6 passed); `python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v` (6 passed); `python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v` (5 passed); `python3 -m research.v28_recent_bridge --output audit/v28-recent-bridge.json`; `python3 -m news_intelligence.corpus --snapshot audit/v28-seed/v26 --snapshot audit/v28-seed/v27 --snapshot audit/v28-current.sqlite --output data/first_observed_news.jsonl --manifest audit/v28-corpus-manifest.json`. CI artifact ID 13080044027. Source PR [#12](https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/12).
+
+**NEXT EXECUTABLE ACTION:** Merge verified PR and check the main push job persists the 135-row cumulative corpus; then collect genuinely new post-2026-11-01 completed BTC/AUD candles with recorded fetch times and measure news event returns only after horizon maturity. Research maker-limit execution only with queue/fill probability and adverse-selection assumptions. Preserve HOLD, A$100 hard paper cap, and 80bps current taker fee.
+
+---
+
+
 ## V27 — 2026-11-01, approved A$100 paper cap and 2026 Kraken fee reality check
 
 **Status:** DONE: paper sizing source, realistic fee model, four matched research scenarios, 11 deterministic research tests, official-market CI and new news snapshot. DONE: Android build/emulator verification passed (19/19). BLOCKED: independent prospective NET edge and cumulative point-in-time news history. NOT ATTEMPTED: live orders.
