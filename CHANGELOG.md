@@ -1,3 +1,28 @@
+# V28 frozen current-fee research and cumulative first-seen news — 2026-11-01 (PR #12)
+
+**NEXT BLOCKER:** Need genuinely unseen BTC/AUD candles after the November 1 observation, with mature 4h/24h/48h outcomes for news event studies. October prices were already inspected in V24. No candidate has demonstrated independent positive NET OOS; HOLD remains the only eligible policy. Maker order fills cannot be inferred from OHLC highs/lows alone.
+
+### Current state — exactly five lines
+1. Native Android V27 PAPER-ONLY remains verified: max A$100 / 10% cash including rounded costs, 80bps current Kraken taker scenario, 19/19 emulator tests; no new APK or strategy promotion.
+2. V28 verified 720 completed public Kraken BTC/AUD 4h bars, 2026-07-04 to 2026-11-01 04:00 UTC; 188 bars beyond the Sep 30 archive, no internal gaps; source response SHA256 e811edd4db3d1923698cec07b4f75068a09fd0d5ba101aaaffbbd94918bcf194.
+3. Frozen seven-candidate A$100 / 80bps exploratory October diagnostics: SMA 8 trades NET -A$18.769547; slow SMA 0.5% 1 trade NET -A$4.359602; same-stake buy/hold NET -A$9.587585; selected HOLD NET A$0.
+4. Recovered V26 134 and V27 114 first-observed articles, added V28 114; merged 362 snapshot rows to 135 distinct URLs, earliest observed timestamps preserved and cumulative SHA256 verified.
+5. V28 GitHub Actions CI 41299334042 passed 17 deterministic tests, genuine market study, artifact recovery, news sync, corpus merge and read-back; PR #12 open for merge at this checkpoint.
+
+### DONE
+- Added `research/v28_recent_bridge.py`, `news_intelligence/corpus.py`, six deterministic tests and GitHub Actions workflow. Live Kraken data validated for contiguity and completed candles. V27 fee/risk model remains unchanged.
+- All seven fixed strategy diagnostics lost NET after 80bps taker + 5bps half-spread + 5bps slippage each side. No hindsight selection. Full trade audit, gross, fee, spread, slippage, drawdown, return, cost sensitivity and buy/hold in artifact 13080044027.
+- News corpus merges hashed prior CI SQLite snapshots and current observed RSS; writes deterministic JSONL, records source hashes, verifies read-back and refuses invalid/future-dated first-seen timestamps. 135 distinct URLs in PR CI artifact, not yet durable on main until merge/push.
+- Source PR: https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/12 ; CI: https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41299334042 ; official fee schedule https://www.kraken.com/au/pro/fees.
+
+### PARTIAL / BLOCKED / NOT ATTEMPTED
+- PARTIAL: Durable JSONL persistence to main is designed but awaits merge-triggered main CI read-back.
+- BLOCKED: Future unseen data, mature news return labels, realistic maker queue/fill evidence and Android strategy parity. October test is exploratory, not untouched.
+- NOT ATTEMPTED: Real-money orders, exchange API keys, Android UI changes, new APK, paid data, spending.
+- NEXT: Verify main-branch corpus commit; prospectively record new completed candles and run leakage-safe event studies. Keep PAPER-ONLY, HOLD, no promises of profit.
+
+---
+
 # V27 risk-cap and current-fee correction — 2026-11-01 (PR #11, PAPER-ONLY)
 
 **CRITICAL FINDING / BLOCKER:** The V24–V26 research assumed a 16bps taker fee per side. Kraken's current standard tier-1 spot schedule shows **80bps taker / 40bps maker** (https://www.kraken.com/au/pro/fees; accessed 2026-11-01). For a small account without volume discounts, the previous 16bps model was too optimistic. Actual pair/account discounts may differ; these are research scenarios, not observed fills. No algorithm has demonstrated prospective positive NET performance under the 80bps taker model.
