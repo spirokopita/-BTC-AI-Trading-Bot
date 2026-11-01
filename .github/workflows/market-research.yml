@@ -1,0 +1,29 @@
+name: BTC AUD causal market research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/market_experiment.py'
+      - 'tests/test_market_experiment.py'
+      - '.github/workflows/market-research.yml'
+permissions:
+  contents: read
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Python version
+        run: python3 --version
+      - name: Run deterministic offline controls
+        run: python3 -m unittest discover -s tests -p 'test_market_experiment.py' -v
+      - name: Run real public Kraken BTC/AUD research
+        run: python3 -m research.market_experiment --output audit/market-experiment.json
+      - name: Preserve source-hashed NET research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BTC-AUD-Research-OOS-Report
+          path: audit/market-experiment.json
+          if-no-files-found: warn
