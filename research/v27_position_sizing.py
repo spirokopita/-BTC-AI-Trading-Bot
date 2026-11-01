@@ -16,9 +16,9 @@ from research.forward_gap_experiment import (
 )
 
 
-def compare_stakes(bars, provenance):
-    old = run_experiment(bars, provenance, position_cap_aud=50.)
-    new = run_experiment(bars, provenance, position_cap_aud=100.)
+def compare_stakes(bars, provenance, *, taker_fee_bps=80):
+    old = run_experiment(bars, provenance, position_cap_aud=50., taker_fee_bps=taker_fee_bps)
+    new = run_experiment(bars, provenance, position_cap_aud=100., taker_fee_bps=taker_fee_bps)
     if old["training_segment"] != new["training_segment"] or old["later_segment"] != new["later_segment"]:
         raise AssertionError("Research intervals changed between position sizes")
     if len(old["folds"]) != len(new["folds"]):
@@ -61,6 +61,7 @@ def compare_stakes(bars, provenance):
     return {
         "mode": "PAPER_ONLY_V27_POSITION_SIZE_SENSITIVITY",
         "source": provenance,
+        "taker_fee_bps_per_side": taker_fee_bps,
         "tested_caps_aud": [50, 100],
         "initial_balance_per_fold_aud": 1000,
         "same_bars_same_folds": True,
@@ -71,6 +72,7 @@ def compare_stakes(bars, provenance):
         "news_predictive_effect": "NOT TESTED: no matured future returns after first-observed Nov 1 2026 news",
         "data_integrity": "V25/V26 already inspected later-period market data; NOT UNTOUCHED",
         "promotion": "REJECTED: historical diagnostics and size change do not establish prospective NET edge",
+        "fee_note": "Current Kraken Pro tier-1 spot taker fee is 80bps (0.80%) per side as of 2026-11-01; legacy V26 assumption 16bps was too optimistic for tier-1. Applying current fee to historical prices is a scenario, not a claim of historical exchange fees.",
         "app_risk_budget": "PAPER ONLY min(10% available cash, A$100) including entry friction",
         "limitations": "No exchange fills, intra-bar order book, queue position, future unseen validation or news causal effect. Separate reset A$1000 accounts, no compounded totals.",
     }
@@ -81,8 +83,15 @@ def main():
     parser.add_argument("--output", default="audit/v27-position-sizing.json")
     args = parser.parse_args()
     bars, provenance = load_archive_all()
-    result = compare_stakes(bars, provenance)
-    result["run_utc"] = datetime.now(timezone.utc).isoformat()
+    result = {
+        "mode": "PAPER_ONLY_V27_CURRENT_AND_LEGACY_FEE_COMPARISON",
+        "source": provenance,
+        "current_80bps_taker": compare_stakes(bars, provenance, taker_fee_bps=80),
+        "legacy_16bps_taker": compare_stakes(bars, provenance, taker_fee_bps=16),
+        "current_fee_source": "https://www.kraken.com/au/pro/fees",
+        "run_utc": datetime.now(timezone.utc).isoformat(),
+        "promotion": "REJECTED: no new independent prospective positive NET evidence",
+    }
     path = Path(args.output)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
@@ -90,10 +99,12 @@ def main():
         "report": str(path),
         "source_sha256": provenance["member_sha256"],
         "bars": provenance["observed_bars"],
-        "selected": result["candidate_selection"],
-        "net_by_strategy": {k: {cap: v[cap]["net_aud"] for cap in ("50", "100")}
-                            for k, v in result["comparison"].items()},
-        "buy_hold": result["same_stake_buy_hold"],
+        "selected": result["current_80bps_taker"]["candidate_selection"],
+        "current_80bps_net_by_strategy": {k: {cap: v[cap]["net_aud"] for cap in ("50", "100")}
+                            for k, v in result["current_80bps_taker"]["comparison"].items()},
+        "legacy_16bps_net_by_strategy": {k: {cap: v[cap]["net_aud"] for cap in ("50", "100")}
+                            for k, v in result["legacy_16bps_taker"]["comparison"].items()},
+        "current_fee_buy_hold": result["current_80bps_taker"]["same_stake_buy_hold"],
         "promotion": result["promotion"],
     }, indent=2))
 
