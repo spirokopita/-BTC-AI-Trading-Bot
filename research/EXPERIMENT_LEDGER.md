@@ -1,5 +1,31 @@
 # BTC/AUD Research Experiment Ledger
 
+## V25 — 2026-11-01, official Kraken multi-year sparse-archive BTC/AUD experiment
+
+**Status: DONE (data extraction, 6 tests, real-market experiment); PARTIAL (multi-year coverage and news study); NOT ATTEMPTED (Android strategy promotion, real orders).** PR #9 is a DRAFT pending final CI and review. First attempt used the most recent contiguous segment (1,999 bars, Nov 2025–Sep 2026) and returned train/validation all NET-negative, selected HOLD. A follow-up data-quality correction selected the longest contiguous segment by BAR COUNT ONLY, not by returns, to obtain a multi-year retrospective study; one transient CI failure occurred because code and test rename commits raced. The subsequent complete commit passed all six deterministic tests and official archive research in GitHub Actions run **41294883216**.
+
+**Official source:** Kraken OHLCVT full ZIP (five parts), fetched with HTTP Range HEAD/206 from assets.kraken.com. The ZIP member is `XBTAUD_240.csv`, SHA-256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, CRC32 `61c06c60`. Source contains **13,763 actual BTC/AUD 4h candles** and **20 gaps** (not filled). Five part sizes: 2,097,152,000 bytes each for parts 00–03, 1,157,945,626 bytes for part 04. The full 10GB ZIP SHA was NOT verified; only member CRC and extracted SHA were checked. The published support page describes a full archive through June 2026, but observed member data extends into September 2026; do not infer that the documentation cutoff exactly describes the current archive.
+
+**Predeclared analysis segment:** Longest gap-free stretch **6,863 bars, UTC 2020-12-02 20:00 through 2024-01-20 12:00**. The remaining archive history is not silently zero-filled or used to tune this segment. 50% train / 25% validation / 25% test with 20-bar chronological embargoes. Train ends 2022-06-27; validation 2022-07-01 through 2023-04-06; two test folds 2023-04-09–08-30 and 2023-08-30–2024-01-20. Five frozen V24 research candidates, next-candle OPEN fills, spot long-only, A$1,000 reset per test fold, A$50 maximum position, 16bps taker fee + 5bps half-spread + 5bps slippage PER SIDE; hypothetical fills and terminal liquidation. These are NOT parity-verified with the Android paper engine.
+
+**Training/validation selection:** All five strategies lost NET during training (SMA −A$21.065211, momentum −A$69.983804, RSI −A$19.558916, breakout −A$43.836674, regime −A$39.481583). Although SMA gained A$8.946109 NET on validation, it failed the positive-training requirement. **Selected policy: HOLD, 0 paper trades and A$0 NET across the two test folds.** Do not retrospectively select SMA using the test outcomes.
+
+**Exploratory out-of-sample strategy diagnostics, not the selected policy:**
+
+| Test fold | SMA trades | SMA gross A$ | SMA fees A$ | SMA spread A$ | SMA slippage A$ | SMA NET A$ | Same-A$50 buy/hold NET A$ |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2023 Apr–Aug | 30 | +4.601008 | 4.792387 | 1.497623 | 1.497623 | **−3.186626** | +0.300933 |
+| 2023 Aug–2024 Jan | 26 | +21.415450 | 4.180905 | 1.306544 | 1.306544 | **+14.621458** | +24.970585 |
+
+Across the two reset test wallets, diagnostic SMA gross +A$26.016458, fees A$8.973292, spread A$2.804167, slippage A$2.804167, NET **+A$11.434832**, versus equal-stake buy/hold **+A$25.271518**. This does NOT establish SMA as deployable: it failed predeclared train/validation eligibility and lagged buy/hold. Other test NET aggregates: momentum −A$16.597643, RSI −A$14.586487, breakout −A$0.155196, regime −A$25.957521. Costs and regime dependence remain material. Fee sensitivity for diagnostic SMA: first fold NET +A$0.717295 at half costs, −A$3.186626 at base costs, −A$10.911715 at double costs; second fold +A$18.056357, +A$14.621458, +A$7.783360 respectively.
+
+**News watch, NOT a predictive backtest:** Reuters published 2026-11-01 05:49 UTC on Binance withdrawal restoration after the reported hack (source: https://www.reuters.com/legal/government/binance-resumes-bitcoin-withdrawals-after-covering-bulk-stolen-63-billion-2026-11-01/). ASIC has published CP392 on digital asset platform licensing (source: https://www.asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-245mr-asic-consults-on-implementation-of-new-digital-asset-laws). These are contextual observations discovered on 2026-11-01, NOT reconstructed historical first-observed signals. Do not backfill them as if the bot knew them at publication time.
+
+**Verified commands:** `python3 -m unittest discover -s tests -p 'test_kraken_archive.py' -v` (6 passed); `python3 -m research.kraken_archive --output audit/kraken-archive-experiment.json` (real official archive, 6,863 bars). CI run 41294883216, artifact ID 13078523908. A subsequent provenance-label-only code update is awaiting CI read-back. Report in GitHub Actions artifact; no real trades, no Android APK built.
+
+**Next executable action:** Keep 2025–2026 as a separate strictly chronological future-period evaluation after training on pre-2025 history, with 102-bar post-gap warmup and no position spanning a missing candle. Test fewer-turnover controls and fee sensitivity on this separate, not-yet-promoted period. Build point-in-time first-observed news capture and a timestamped matched-control event study; until then NEWS PREDICTIVE VALUE = NOT TESTED. No strategy promotion without positive robust OOS NET and Android execution parity.
+
+
 ## V24 — 2026-11-01, verified public Kraken 4h OHLC, exploratory 3-fold walk-forward
 
 **Status:** Research runner and 6 deterministic tests passed GitHub Actions run 41293127006. PAPER ONLY. No Android strategy promotion, no real orders, no AI-training claim.
