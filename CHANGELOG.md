@@ -3,11 +3,11 @@
 **CRITICAL FINDING / BLOCKER:** The V24–V26 research assumed a 16bps taker fee per side. Kraken's current standard tier-1 spot schedule shows **80bps taker / 40bps maker** (https://www.kraken.com/au/pro/fees; accessed 2026-11-01). For a small account without volume discounts, the previous 16bps model was too optimistic. Actual pair/account discounts may differ; these are research scenarios, not observed fills. No algorithm has demonstrated prospective positive NET performance under the 80bps taker model.
 
 ### Current state — exactly five lines
-1. Native Android PAPER-ONLY source raised the entry debit cap to A$100 and 10% of available simulated cash, with cent-rounding safety; 80bps fee assumption; build/emulator CI pending.
+1. Native Android PAPER-ONLY source raised the entry debit cap to A$100 and 10% of available simulated cash, with cent-rounding safety; 80bps fee assumption; Android CI 41297522950 passed 19/19 instrumentation tests; APK built.
 2. Official Kraken BTC/AUD archive revalidated: 13,763 4h bars, 20 gap boundaries, member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e.
 3. V27 compared all seven fixed strategies at A$50/A$100 and 16bps/80bps per-side taker fees, same historical windows and hypothetical next-open fills.
 4. At current 80bps and A$100 cap: slow SMA +0.5% NET **−A$1.626688** (6 trades), SMA NET **−A$96.804378** (51 trades), equal-stake buy/hold **−A$16.092737**.
-5. Research CI 41297183117 passed 11 deterministic tests and genuine Kraken study, and observed 114 first-seen RSS articles; HOLD selected, no strategy promoted.
+5. Research CI 41297527028 passed 11 deterministic tests and genuine Kraken study, and observed 114 first-seen RSS articles; HOLD selected, no strategy promoted.
 
 ### DONE — reproducible research and safety changes
 - Updated Android `PaperDecisionEngine` to min(10% simulated cash, A$100) INCLUDING all rounded entry costs. The buy quantity is reduced by satoshis if independently rounded fee/spread/slippage would exceed the hard budget. Fee model changed from 16bps to **80bps** current standard tier-1 taker. No live order path or exchange credentials.
@@ -16,13 +16,13 @@
 - Current 80bps A$100 slow SMA +0.5%: 6 completed trades, gross **+A$9.106192**, fees **A$9.540331**, spread **A$0.596275**, slippage **A$0.596275**, NET **−A$1.626688**. Its pre-2025 validation was **−A$17.936265**, so selection remained HOLD.
 - At legacy 16bps, A$100 slow SMA +0.5% diagnostic NET was **+A$6.086363**, but still failed validation; it is not a deployable edge. At current 80bps all seven later-period A$100 diagnostics were NET negative.
 - Same-A$100 buy/hold at 80bps NET **−A$16.092737** across two independent A$1,000 reset wallets. Max worst-fold full-account drawdown for slow SMA was **−1.574483%**.
-- Research CI https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297183117 completed successfully. Official historical archive member SHA256 matches V26; member ZIP CRC checked, whole multipart ZIP SHA not verified. V27 artifact contains complete gross/cost/NET fold results and a news SQLite snapshot. First-observed news at 2026-11-01 10:22:41 UTC: **114** articles (CoinDesk 25, Cointelegraph 30, Decrypt 39, The Block 20); Bloomberg redirect failed closed. Snapshots are NOT cumulative across runs.
+- Research CI https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297527028 completed successfully. Official historical archive member SHA256 matches V26; member ZIP CRC checked, whole multipart ZIP SHA not verified. V27 artifact contains complete gross/cost/NET fold results and a news SQLite snapshot. First-observed news at 2026-11-01 10:22:41 UTC: **114** articles (CoinDesk 25, Cointelegraph 30, Decrypt 39, The Block 20); Bloomberg redirect failed closed. Snapshots are NOT cumulative across runs.
 
 ### PARTIAL / BLOCKED / NOT ATTEMPTED
-- PARTIAL: Android build, JVM tests, emulator instrumentation and APK artifact still pending; source changes committed but not yet released. Current Kraken 80bps is a **scenario applied to historical bars**, not a claim that this fee applied in 2020–2024.
+- DONE: Android CI https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297522950 passed Kotlin JVM unit tests, APK compilation, public Kraken source audit and **19/19 Android 15 emulator instrumentation tests** (zero failures/errors/skips). Downloaded debug APK SHA256 `4d660e840b71ffc7804c51d8d1f5b5fc0e1807c0dcf3ba27477fbdc2e794c08e`. No stable signing secret configured; reinstall may be necessary for devices with a differently signed prior APK. An initial CI run failed because expanded Kotlin test referenced an out-of-scope `price`; corrected in commit `32c4a555` and verified full green CI. PR #11 merged as `763dcf704e4d72998bcb8a81ab78d40c5b1b6dcf`. Current Kraken 80bps is a **scenario applied to historical bars**, not a claim that this fee applied in 2020–2024.
 - BLOCKED: No genuinely untouched prospective later-period performance; V25 already inspected 2025–2026. No mature post-first-observation news returns, durable merged news history or Android strategy parity. At 80bps taker + 5bps half-spread + 5bps slippage each side, approximate round-trip break-even move is **1.82%**.
 - NOT ATTEMPTED: Live orders, APK distribution before verification, paid datasets or destructive changes.
-- NEXT: verify Android CI, then accumulate future first-observed news snapshots durably and test low-turnover signals prospectively with 80bps fee assumptions. Preserve HOLD and PAPER ONLY.
+- NEXT: accumulate future first-observed news snapshots durably and test low-turnover signals prospectively with 80bps fee assumptions. Preserve HOLD and PAPER ONLY.
 
 ---
 
