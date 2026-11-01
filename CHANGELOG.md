@@ -1,3 +1,29 @@
+# V29 historical news point-in-time research — 2026-11-02 (PR #13)
+
+**BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can we obtain a representative, revision-aware historical BTC/AUD-relevant news corpus with defensible publication/availability timestamps and a genuinely untouched prospective test period? Ten retrospectively chosen high-profile articles do NOT establish a predictive news edge, even with leakage-safe replay. No strategy has independently validated positive NET performance.
+
+### Current state — exactly five lines
+1. Native Android V27 remains PAPER-ONLY: A$100 max entry debit including rounded costs / 10% cash, 80bps taker, no new APK or strategy promotion.
+2. Official Kraken archive revalidated 13,763 BTC/AUD 4h candles, 20 gaps; 6,863-candle longest contiguous segment from 2020-12-02 to 2024-01-20, ZIP member CRC/SHA verified.
+3. Reconstructed 10 sourced historical article timestamps (NOT first-observed), applied +1h after latest revision, tested 30 forward event returns at 4h/24h/48h.
+4. Twelve strategies/controls in five expanding chronological exploratory folds: price-only trend+ATR breakout 87 trades NET -A$154.604; news 48h/7d veto identical; 24h positive news pulse 4 trades NET -A$11.085, shifted placebo -A$1.752.
+5. GitHub Actions run 41322453783 PASSED 20 deterministic tests and real-market study; HOLD retained, no live execution.
+
+### DONE
+- Added `research/v29_point_in_time.py`, `data/historical_news_reconstructed.json`, `tests/test_v29_point_in_time.py`, and V29 Actions workflow.
+- Implemented next-open decisions from completed bars and timestamped revised news only; zero future bars/headlines at decision time, 20-bar fold embargo, gap rejection, A$100 inclusive paper cap, 80bps taker plus 5bps half-spread and 5bps slippage per side, audited gross/fees/spread/slippage/NET and drawdown.
+- Tested SMA, momentum, RSI, breakout, regime, trend+ATR breakout, 48h/7d negative-news veto, shifted negative placebo, news-delayed trend, 24h positive-news pulse and shifted positive placebo. Full per-fold trade counts, NET, costs, sensitivity and buy/hold in artifact `13089114010`. Combined A$100 buy/hold +A$92.018 NET across 5 separately reset accounts; selected HOLD A$0.
+- First test 41322194372 passed, 2 intermediate failed on a literal newline escape introduced during an exploratory variant, corrected and rerun. Final [CI 41322453783](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41322453783) passed 9+6+5 tests and official Kraken extraction.
+- Historical news sources include Reuters via Euronews (China, El Salvador, Celsius, FTX), Reuters via Business Standard (Terra), TechCrunch (Tesla), The Block (banking crisis), and Reuters via Yahoo (ETF). Times and URLs preserved in the curated JSON. These are retrospective reconstructions, NOT bot first-seen evidence.
+
+### PARTIAL / BROKEN / NOT ATTEMPTED
+- PARTIAL: News set only 10 famous events, selected retrospectively. News veto changed no trades; positive-news pulse underperformed shifted placebo. No news predictive claim. Previously inspected historical folds are NOT untouched OOS.
+- BLOCKED: Positive independent NET evidence for promotion; robust large historical news archive with original revision times and coverage control; realistic maker queue fills.
+- NOT ATTEMPTED: Real-money trading, credentials, destructive changes, Android UI or new APK.
+- NEXT: Scale timestamp-verified historical news beyond selected headline events; add coverage/selection-bias diagnostics, event-conditioned risk features and controls; freeze parameters before prospective evaluation. No waiting for arbitrary future dates to continue historical research.
+
+---
+
 # V28 frozen current-fee research and cumulative first-seen news — 2026-11-01 (PR #12)
 
 **NEXT BLOCKER:** Need genuinely unseen BTC/AUD candles after the November 1 observation, with mature 4h/24h/48h outcomes for news event studies. October prices were already inspected in V24. No candidate has demonstrated independent positive NET OOS; HOLD remains the only eligible policy. Maker order fills cannot be inferred from OHLC highs/lows alone.
