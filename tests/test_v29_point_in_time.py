@@ -21,7 +21,7 @@ class TestV29(unittest.TestCase):
         self.assertEqual(asof([news(t+STEP)],t),[])
         self.assertEqual(len(asof([news(t+STEP)],t+STEP)),1)
     def test_future_headline_does_not_change_past_signal(self):
-        for name in ('news_veto','news_delay'):
+        for name in ('news_veto','news_veto_7d','news_delay'):
             self.assertEqual(signal(self.bars,550,name,[]),
                              signal(self.bars,550,name,[news(self.bars[900][0])]))
     def test_future_bar_close_does_not_change_decision(self):
@@ -37,7 +37,7 @@ class TestV29(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'gap'):
             simulate(changed,600,850,'sma')
     def test_trade_cost_reconciliation(self):
-        for name in ('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto'):
+        for name in ('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_veto_7d'):
             x=simulate(self.bars,250,1000,name,[],audit=True)
             self.assertEqual(x['trades'],len(x['trade_audit']))
             self.assertAlmostEqual(x['net_aud'],
@@ -67,7 +67,7 @@ class TestV29(unittest.TestCase):
     def test_research_cannot_promote(self):
         report=run(self.bars,[news(self.bars[400][0])],{'source':'SYNTHETIC'},'fixture')
         self.assertEqual(report['selection'],'HOLD')
-        self.assertEqual(len(report['chronological_expanding_folds']),3)
+        self.assertEqual(len(report['chronological_expanding_folds']),5)
         self.assertIn('RETROSPECTIVE',report['news_data_kind'])
 
 if __name__=='__main__':unittest.main()
