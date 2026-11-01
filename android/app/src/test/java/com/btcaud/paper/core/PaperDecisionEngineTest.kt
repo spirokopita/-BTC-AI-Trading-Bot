@@ -45,6 +45,11 @@ class PaperDecisionEngineTest {
         assertTrue(paper.cashCents >= 90_000L)
     }
 
+    @Test fun conservativeKrakenTierOneTakerFee() {
+        assertEquals(80, PaperDecisionEngine.FEE_BPS)
+        assertEquals(90, PaperDecisionEngine.COST_BPS)
+    }
+
     @Test fun paperSizingNeverExceedsAud100EvenAfterRefills() {
         val price = 15_000_000L
         for (cash in listOf(1_000L, 10_000L, 100_000L, 200_000L, 10_000_000L)) {
