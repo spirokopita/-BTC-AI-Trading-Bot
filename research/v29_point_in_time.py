@@ -65,7 +65,8 @@ def signal(bars,i,name,events=()):
     if name in ('news_veto','news_veto_7d','news_delay','placebo_veto'):
         # placebo is a negative control only, NOT a deployable news feature.
         shift=7*86400 if name=='placebo_veto' else 0
-        risk=any(e['sentiment']<0 for e in asof(events,bars[i][0]+STEP,shift,\n             window=7*86400 if name=='news_veto_7d' else WINDOW))
+        risk=any(e['sentiment']<0 for e in asof(events,bars[i][0]+STEP,shift,
+             window=7*86400 if name=='news_veto_7d' else WINDOW))
         if name=='news_delay': return trend and close>ma50*1.01 and not risk
         return base and not risk
     raise ValueError('Unknown strategy')
