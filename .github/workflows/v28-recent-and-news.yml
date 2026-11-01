@@ -1,0 +1,72 @@
+name: V28 frozen recent BTC/AUD and cumulative first-seen news
+on:
+  pull_request:
+    paths:
+      - 'research/v28_recent_bridge.py'
+      - 'news_intelligence/corpus.py'
+      - 'tests/test_v28_bridge_corpus.py'
+      - '.github/workflows/v28-recent-and-news.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/v28_recent_bridge.py'
+      - 'news_intelligence/corpus.py'
+      - '.github/workflows/v28-recent-and-news.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: v28-first-seen-corpus-main
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: V28 deterministic controls
+        run: |
+          python3 -m unittest discover -s tests -p 'test_v28_bridge_corpus.py' -v
+          python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v
+          python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Frozen recent BTC/AUD market experiment, current 80bps taker
+        run: python3 -m research.v28_recent_bridge --output audit/v28-recent-bridge.json
+      - name: Recover V26 and V27 immutable first-seen snapshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p audit/v28-seed/v26 audit/v28-seed/v27
+          gh run download 41296254494 --repo "$GITHUB_REPOSITORY" -n V26-BTC-AUD-Gap-Safe-Research -D audit/v28-seed/v26
+          gh run download 41297527028 --repo "$GITHUB_REPOSITORY" -n V27-BTC-AUD-Position-Research -D audit/v28-seed/v27
+          find audit/v28-seed -name '*.sqlite' -print
+      - name: Capture current first-observed RSS snapshot
+        continue-on-error: true
+        run: python3 -m news_intelligence.cli --news-db audit/v28-current.sqlite sync
+      - name: Merge cumulative first-seen evidence, verify readback
+        run: |
+          python3 -m news_intelligence.corpus --existing data/first_observed_news.jsonl \
+            --snapshot audit/v28-seed/v26 --snapshot audit/v28-seed/v27 \
+            --snapshot audit/v28-current.sqlite --output data/first_observed_news.jsonl \
+            --manifest audit/v28-corpus-manifest.json
+      - name: Preserve real-market and news research artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V28-Recent-Research-First-Seen-Corpus
+          path: |
+            audit/v28-recent-bridge.json
+            audit/v28-corpus-manifest.json
+            data/first_observed_news.jsonl
+            audit/v28-current.sqlite
+          if-no-files-found: warn
+      - name: Persist cumulative corpus to main after merged source push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/first_observed_news.jsonl
+          if ! git diff --cached --quiet; then
+            git commit -m 'V28: persist actual first-observed news corpus (no backdating)'
+            git push origin HEAD:main
+          fi
