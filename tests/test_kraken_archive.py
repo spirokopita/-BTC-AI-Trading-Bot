@@ -5,7 +5,7 @@ import unittest
 import zipfile
 from pathlib import Path
 from research.kraken_archive import (
-    MultipartReader, member_name, parse_csv, latest_contiguous, load, run_experiment, STEP)
+    MultipartReader, member_name, parse_csv, longest_contiguous, load, run_experiment, STEP)
 
 class KrakenArchiveTest(unittest.TestCase):
     def test_multipart_zip_crosses_part_boundaries(self):
@@ -31,7 +31,7 @@ class KrakenArchiveTest(unittest.TestCase):
         bars=[(i*STEP,100,101,99,100,1) for i in (1,2,3,7,8,9)]
         # No segment is long enough; fail closed rather than interpolate prices.
         with self.assertRaises(ValueError):
-            latest_contiguous(bars)
+            longest_contiguous(bars)
 
     def test_invalid_candle_and_duplicate_rejected(self):
         with self.assertRaisesRegex(ValueError,'invalid'):
