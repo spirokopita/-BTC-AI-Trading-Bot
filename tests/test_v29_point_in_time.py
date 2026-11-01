@@ -56,8 +56,8 @@ class TestV29(unittest.TestCase):
                     updated_at_utc='2022-01-01T03:00:00Z',
                     sentiment=-1,url='https://example.com/a')])))
             ev,_=news_load(p)
-            self.assertEqual(ev[0]['available_ts']-1641006000, 0)
-            self.assertEqual(asof(ev,1641006000-1),[])
+            self.assertEqual(ev[0]['available_ts'], 1641009600)
+            self.assertEqual(asof(ev,1641009600-1),[])
     def test_event_open_after_available(self):
         t=self.bars[450][0]
         x=news(t+1)
