@@ -16,9 +16,7 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Sep 5–25 | 3 | +4.786721 | 0.486201 | 0.151940 | 0.151940 | **+3.996640** | -0.2364% | +4.064618 |
 | Sep 25–Oct 15 | 4 | -0.987580 | 0.636145 | 0.198795 | 0.198795 | **-2.021314** | -0.2613% | -1.179425 |
-| Oct 15–Nov 1 | 5 | -2.555495 | 0.789? | 0.250? | 0.250? | **-3.844817** | -0.4007% | -3.778457 |
-
-**Correction for fold 3 cost breakdown:** The authoritative JSON report gives total costs **A$1.289322**; consult it for exact fee/spread/slippage fields. Do not use approximate question-mark cells above as measured values.
+| Oct 15–Nov 1 | 5 | -2.555495 | 0.793430 | 0.247946 | 0.247946 | **-3.844817** | -0.4007% | -3.778457 |
 
 **Aggregate of three separate, reset A$1,000 test wallets:** SMA 12 trades, gross **+A$1.243646**, fees **A$1.915776**, spread **A$0.598681**, slippage **A$0.598681**, NET **−A$1.869491**. Fees/friction turned positive gross P&L into a loss. Equal-A$50 buy-and-hold across the same three independent windows: **−A$0.893264 NET**.
 
