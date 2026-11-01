@@ -18,10 +18,15 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v
       - name: Verified official Kraken historical BTC/AUD forward experiment
         run: python3 -m research.forward_gap_experiment --output audit/v26-forward-gap-experiment.json
-      - name: Preserve research report even on failure
+      - name: Observe public news prospectively with actual first-seen timestamps
+        continue-on-error: true
+        run: python3 -m news_intelligence.cli --news-db audit/v26-news-observed.sqlite sync
+      - name: Preserve research report and first-observed news snapshot
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: V26-BTC-AUD-Gap-Safe-Research
-          path: audit/v26-forward-gap-experiment.json
+          path: |
+            audit/v26-forward-gap-experiment.json
+            audit/v26-news-observed.sqlite
           if-no-files-found: warn
