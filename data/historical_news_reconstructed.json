@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "dataset_type": "RETROSPECTIVE_PUBLISHED_TIMESTAMP_RECONSTRUCTION_NOT_FIRST_OBSERVED",
+  "warning": "Ten manually selected prominent events, not a random sample. Timestamps reconstructed from displayed source timezones. Revised content is delayed until latest known update plus 1h. NOT actual first-observed times; no causal or production news edge can be inferred.",
+  "events": [
+    {
+      "id": "tesla_20210208",
+      "published_at_utc": "2021-02-08T13:02:00Z",
+      "updated_at_utc": "2021-02-09T04:37:00Z",
+      "category": "institutional_adoption",
+      "sentiment": 1,
+      "source": "TechCrunch",
+      "url": "https://techcrunch.com/2021/02/08/tesla-buys-1-5b-in-bitcoin-may-accept-the-cryptocurrency-as-payment-in-the-future/",
+      "source_timezone": "05:02 PST publication; 23:37 EST last modified"
+    },
+    {
+      "id": "china_20210521",
+      "published_at_utc": "2021-05-21T17:45:00Z",
+      "category": "regulatory_crackdown",
+      "sentiment": -1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2021/05/21/us-china-finance-regulation",
+      "source_timezone": "19:45 GMT+2"
+    },
+    {
+      "id": "elsalvador_20210625",
+      "published_at_utc": "2021-06-25T04:50:00Z",
+      "category": "legal_adoption",
+      "sentiment": 1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2021/06/25/uk-el-salvador-bitcoin-bukele",
+      "source_timezone": "06:50 GMT+2"
+    },
+    {
+      "id": "elsalvador_20210907",
+      "published_at_utc": "2021-09-07T19:46:00Z",
+      "updated_at_utc": "2021-09-07T20:27:00Z",
+      "category": "market_disruption",
+      "sentiment": -1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2021/09/07/price-of-bitcoin-and-other-altcoins-plunge-and-exchange-trading-falters-on-pivotal-day-for",
+      "source_timezone": "21:46 GMT+2; revised 22:27 GMT+2"
+    },
+    {
+      "id": "terra_20220512",
+      "published_at_utc": "2022-05-12T13:27:00Z",
+      "category": "stablecoin_crisis",
+      "sentiment": -1,
+      "source": "Reuters via Business Standard",
+      "url": "https://www.business-standard.com/article/finance/crypto-meltdown-deepens-as-stablecoin-tether-drops-below-dollar-peg-122051201107_1.html",
+      "source_timezone": "18:57 IST"
+    },
+    {
+      "id": "terra_reg_20220516",
+      "published_at_utc": "2022-05-16T10:29:00Z",
+      "updated_at_utc": "2022-05-16T10:41:00Z",
+      "category": "stablecoin_crisis",
+      "sentiment": -1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/05/16/bitcoin-slips-back-below-30-000-as-european-regulators-renew-crypto-warnings-after-terra-l",
+      "source_timezone": "12:29 GMT+2; revised 12:41 GMT+2"
+    },
+    {
+      "id": "celsius_20220613",
+      "published_at_utc": "2022-06-13T08:50:00Z",
+      "updated_at_utc": "2022-06-13T12:28:00Z",
+      "category": "exchange_liquidity",
+      "sentiment": -1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/2022/06/13/bitcoin-drops-below-25000-crypto-lending-platform-celsius-halts-withdrawals-and-transfers",
+      "source_timezone": "10:50 GMT+2; revised 14:28 GMT+2"
+    },
+    {
+      "id": "ftx_20221111",
+      "published_at_utc": "2022-11-11T15:25:00Z",
+      "category": "exchange_liquidity",
+      "sentiment": -1,
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/2022/11/11/fintech-crypto-currency-ftx",
+      "source_timezone": "16:25 GMT+1"
+    },
+    {
+      "id": "banks_20230313",
+      "published_at_utc": "2023-03-13T14:46:00Z",
+      "updated_at_utc": "2023-03-13T14:54:00Z",
+      "category": "banking_crisis",
+      "sentiment": 1,
+      "source": "The Block",
+      "url": "https://www.theblock.co/news/markets/2023-03-13-bitcoin-hurtles-back-above-23000-as-crypto-prices-buoyed-amid-us-banking-woes-219217",
+      "source_timezone": "10:46 EDT; revised 10:54 EDT"
+    },
+    {
+      "id": "etf_20240110",
+      "published_at_utc": "2024-01-10T22:13:00Z",
+      "category": "etf_approval",
+      "sentiment": 1,
+      "source": "Reuters via Yahoo",
+      "url": "https://www.yahoo.com/news/us-sec-approves-spot-bitcoin-205740352.html",
+      "source_timezone": "22:13 UTC update; original publication unverified, conservative"
+    }
+  ]
+}
