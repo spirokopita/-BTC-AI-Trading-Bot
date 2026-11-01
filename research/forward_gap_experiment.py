@@ -110,7 +110,7 @@ def extended_signal(bars, i, name):
     return statistics.mean(closes[-50:]) > margin * statistics.mean(closes)
 
 
-def slow_simulate(bars, start, end, name, *, fee_multiplier=1.0, position_cap_aud=50.0):
+def slow_simulate(bars, start, end, name, *, fee_multiplier=1.0, position_cap_aud=50.0, taker_fee_bps=16):
     """Same next-open execution/cost accounting as V24 for new slow signals."""
     if name not in ("slow_sma_005", "slow_sma_020"):
         raise ValueError("Not a slow candidate")
@@ -122,8 +122,10 @@ def slow_simulate(bars, start, end, name, *, fee_multiplier=1.0, position_cap_au
         raise ValueError("Invalid cost multiplier")
     if position_cap_aud not in (50.0, 100.0):
         raise ValueError("Only approved paper research caps A$50/A$100")
+    if taker_fee_bps not in (16, 80):
+        raise ValueError("Only documented 16bps legacy or 80bps current taker scenarios")
     costs = FeeSettings(
-        tiers=(FeeTier(0, .0016 * fee_multiplier, .0016 * fee_multiplier),),
+        tiers=(FeeTier(0, taker_fee_bps/10_000 * fee_multiplier, taker_fee_bps/10_000 * fee_multiplier),),
         spread_bps=10 * fee_multiplier,
         base_slippage_bps=5 * fee_multiplier,
         volatility_slippage_multiplier=0,
@@ -180,6 +182,7 @@ def slow_simulate(bars, start, end, name, *, fee_multiplier=1.0, position_cap_au
     return {
         "strategy": name,
         "position_cap_aud": position_cap_aud,
+        "taker_fee_bps": taker_fee_bps,
         "start_utc": utc(bars[start][0]),
         "end_utc": utc(bars[end - 1][0]),
         "trades": len(trades),
@@ -196,23 +199,25 @@ def slow_simulate(bars, start, end, name, *, fee_multiplier=1.0, position_cap_au
     }
 
 
-def replay(bars, start, end, name, fee_multiplier=1.0, position_cap_aud=50.0):
+def replay(bars, start, end, name, fee_multiplier=1.0, position_cap_aud=50.0, taker_fee_bps=16):
     if name in STRATEGIES:
         return simulate(bars, start, end, name, fee_multiplier=fee_multiplier,
-                        position_cap_aud=position_cap_aud)
+                        position_cap_aud=position_cap_aud, taker_fee_bps=taker_fee_bps)
     return slow_simulate(bars, start, end, name, fee_multiplier=fee_multiplier,
-                         position_cap_aud=position_cap_aud)
+                         position_cap_aud=position_cap_aud, taker_fee_bps=taker_fee_bps)
 
 
-def same_stake_buy_hold(bars, start, end, position_cap_aud=50.0):
+def same_stake_buy_hold(bars, start, end, position_cap_aud=50.0, taker_fee_bps=16):
     fee = FeeSettings(
-        tiers=(FeeTier(0, .0016, .0016),), spread_bps=10,
+        tiers=(FeeTier(0, taker_fee_bps/10_000, taker_fee_bps/10_000),), spread_bps=10,
         base_slippage_bps=5, volatility_slippage_multiplier=0,
         size_slippage_bps=0, max_slippage_bps=5,
     )
     first, last = bars[start][1], bars[end - 1][1]
     if position_cap_aud not in (50.0, 100.0):
         raise ValueError("Only approved paper research caps A$50/A$100")
+    if taker_fee_bps not in (16, 80):
+        raise ValueError("Only documented 16bps legacy or 80bps current taker scenarios")
     probe = estimate_execution(first, position_cap_aud / first, "buy", "taker", fee)
     qty = position_cap_aud / (probe.execution_price * (1 + probe.fee_rate))
     buy = estimate_execution(first, qty, "buy", "taker", fee)
@@ -235,17 +240,19 @@ def no_log(result):
     return {k: v for k, v in result.items() if k != "trade_log"}
 
 
-def run_experiment(all_bars, provenance, *, position_cap_aud=50.0):
+def run_experiment(all_bars, provenance, *, position_cap_aud=50.0, taker_fee_bps=16):
     if position_cap_aud not in (50.0, 100.0):
         raise ValueError("Only approved paper research caps A$50/A$100")
+    if taker_fee_bps not in (16, 80):
+        raise ValueError("Only documented 16bps legacy or 80bps current taker scenarios")
     reference, recent = select_periods(all_bars)
     n = len(reference)
     train_end, val_start = n // 2, n // 2 + EMBARGO
     val_end = n * 3 // 4 - EMBARGO
     if train_end < WARMUP + 150 or val_end - val_start < 150:
         raise ValueError("Insufficient pre-2025 purged training/validation")
-    train = {s: replay(reference, WARMUP, train_end, s, position_cap_aud=position_cap_aud) for s in CANDIDATES}
-    validation = {s: replay(reference, val_start, val_end, s, position_cap_aud=position_cap_aud) for s in CANDIDATES}
+    train = {s: replay(reference, WARMUP, train_end, s, position_cap_aud=position_cap_aud, taker_fee_bps=taker_fee_bps) for s in CANDIDATES}
+    validation = {s: replay(reference, val_start, val_end, s, position_cap_aud=position_cap_aud, taker_fee_bps=taker_fee_bps) for s in CANDIDATES}
     eligible = [
         s for s in CANDIDATES
         if train[s]["trades"] >= 5 and validation[s]["trades"] >= 3
@@ -258,12 +265,12 @@ def run_experiment(all_bars, provenance, *, position_cap_aud=50.0):
         raise ValueError("Recent period too short for two test folds")
     folds = []
     for a, b in ((start, midpoint), (midpoint, len(recent))):
-        results = {s: replay(recent, a, b, s, position_cap_aud=position_cap_aud) for s in CANDIDATES}
+        results = {s: replay(recent, a, b, s, position_cap_aud=position_cap_aud, taker_fee_bps=taker_fee_bps) for s in CANDIDATES}
         sensitivity = {
             s: {
-                "half_cost_net_aud": replay(recent, a, b, s, .5, position_cap_aud)["net_aud"],
+                "half_cost_net_aud": replay(recent, a, b, s, .5, position_cap_aud, taker_fee_bps)["net_aud"],
                 "base_cost_net_aud": results[s]["net_aud"],
-                "double_cost_net_aud": replay(recent, a, b, s, 2., position_cap_aud)["net_aud"],
+                "double_cost_net_aud": replay(recent, a, b, s, 2., position_cap_aud, taker_fee_bps)["net_aud"],
             }
             for s in CANDIDATES
         }
@@ -273,13 +280,14 @@ def run_experiment(all_bars, provenance, *, position_cap_aud=50.0):
             "selected_from_pre2025_train_validation": selected,
             "selected_net_aud": 0. if selected == "HOLD" else results[selected]["net_aud"],
             "strategies": {s: no_log(v) for s, v in results.items()},
-            f"same_AUD{int(position_cap_aud)}_buy_hold": same_stake_buy_hold(recent, a, b, position_cap_aud),
+            f"same_AUD{int(position_cap_aud)}_buy_hold": same_stake_buy_hold(recent, a, b, position_cap_aud, taker_fee_bps),
             "fee_sensitivity": sensitivity,
         })
     return {
         "mode": "PAPER_ONLY_EXPLORATORY_LATER_PERIOD",
         "source": provenance,
         "position_cap_aud": position_cap_aud,
+        "taker_fee_bps": taker_fee_bps,
         "max_cash_fraction": position_cap_aud / 1000.,
         "selection_rule": "pre-2025 training AND validation positive NET with min 5/3 trades; else HOLD",
         "candidates_predeclared": list(CANDIDATES),
@@ -302,7 +310,7 @@ def run_experiment(all_bars, provenance, *, position_cap_aud=50.0):
         "test_integrity": "NOT UNTOUCHED: V25 already inspected a 2025-2026 contiguous segment. This is exploratory chronological evaluation, NOT independent confirmation.",
         "news_signal": "NOT TESTED: no verified historical first_observed_at event corpus",
         "promotion": "REJECTED_PENDING_INDEPENDENT_PROSPECTIVE_NET_AND_ANDROID_PARITY",
-        "assumptions": f"A$1000 reset per fold, A${int(position_cap_aud)} cap, {int(position_cap_aud/10)}% cash fraction, next-open long-only, 16bps fee+5bps half spread+5bps slippage each side, terminal last-open liquidation; no real orders",
+        "assumptions": f"A$1000 reset per fold, A${int(position_cap_aud)} cap, {int(position_cap_aud/10)}% cash fraction, next-open long-only, {taker_fee_bps}bps fee+5bps half spread+5bps slippage each side, terminal last-open liquidation; no real orders",
     }
 
 
