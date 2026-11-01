@@ -7,14 +7,14 @@
 2. Official Kraken BTC/AUD archive revalidated: 13,763 observed 4h candles, 20 gap boundaries, verified member CRC and SHA256; whole archive SHA not checked.
 3. Pre-2025 training/validation evaluated five original algorithms and two fixed slow 50/200 SMA variants; all failed eligibility, so selected policy HOLD.
 4. Later 2025–2026 exploratory folds: baseline SMA 51 trades NET **−A$17.194309**; diagnostic slow SMA 0.5% 6 trades NET **+A$3.069562**, but validation NET **−A$4.568657**.
-5. GitHub Actions run 41296254494 passed six safety tests, real-market study and prospective RSS snapshot; 114 articles captured with actual first-seen timestamps.
+5. GitHub Actions run 41296254494 passed six safety tests, real-market study and prospective RSS snapshot; 134 articles captured with actual first-seen timestamps.
 
 ### DONE — evidence-backed algorithm and news research
 - Added `research/forward_gap_experiment.py`, six deterministic causal/gap/fee tests, and CI with official Kraken archive plus a first-observed news snapshot. Both chronological later folds use 202-bar post-gap warmup and independent A$1,000 wallets, A$50 cap, no synthetic candles or position spanning missing intervals.
 - Selected policy **HOLD** on pre-2025 train/validation: 0 trades, A$0 NET. The slow 50/200 +0.5% candidate's positive training (+A$25.816029) but negative validation (−A$4.568657) makes it ineligible despite later +A$3.069562 diagnostic NET.
 - Later two-fold diagnostic comparison: SMA −A$17.194309; momentum −A$30.501404; RSI −A$18.591867; breakout −A$14.487988; regime −A$26.421136; slow SMA +0.5% +A$3.069562; slow SMA +2% −A$4.588182. Same-A$50 buy/hold −A$6.861765. Six trades is too few for a reliable edge.
 - For slow SMA +0.5%: gross +A$4.634684, fees A$0.963150, spread A$0.300987, slippage A$0.300987, NET +A$3.069562 across two reset folds; full-account max DD −0.680733% and −0.454882%. Half/double fee sensitivity recorded per fold.
-- Collected **114 real first-observed RSS articles** on 2026-11-01 10:09:33 UTC (CoinDesk 25, Cointelegraph 30, Decrypt 39, The Block 20). Bloomberg feed redirect failed the host allowlist. Captured in SQLite artifact, not retroactively injected into 2025–2026 price research; historical news predictive effect NOT TESTED.
+- Collected **134 real first-observed RSS articles** on 2026-11-01 10:10:09 UTC (CoinDesk 25, Cointelegraph 30, Decrypt 59, The Block 20) in the final CI artifact. Earlier run captured 114; final count verified by SQLite read-back. Bloomberg feed redirect failed the host allowlist. Captured in SQLite artifact, not retroactively injected into 2025–2026 price research; historical news predictive effect NOT TESTED.
 - Verified `python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v` (6/6) and `python3 -m research.forward_gap_experiment --output audit/v26-forward-gap-experiment.json` (official Kraken). CI: https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41296254494. Detailed ledger: `research/EXPERIMENT_LEDGER.md`.
 
 ### PARTIAL / BLOCKED / NOT ATTEMPTED
