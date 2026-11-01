@@ -1,22 +1,21 @@
-# V23 engineering summary — 2026-11-01 AEDT
+# V26 research run summary — 2026-11-01 AEDT
 
-1. Native Android BTC/AUD application remains strictly paper-only, with trading OFF by default.
-2. SQLite v4 keeps gross, costs, signed NET cash flow and realised NET P&L separate.
-3. V23 adds populated V2->V4 migration and reopen regression for account, position, funding, candle, trade and news schema.
-4. V23 Android 15 emulator executed 19/19 tests (0 failures/errors/skips); JVM tests and debug APK build passed.
-5. Genuine BTC/AUD strategy gross, costs and NET: NOT MEASURED; real orders: 0.
+1. Android V23 is unchanged and strictly PAPER-ONLY; no APK built or live order route enabled.
+2. Verified official Kraken BTC/AUD 4h member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e; 13,763 observed bars and 20 gap boundaries.
+3. Pre-2025 train/validation rejected all seven candidates; selected policy HOLD with zero trades and A$0 NET.
+4. Later 2025–2026 diagnostic: baseline SMA NET -A$17.194309 (51 trades), slow 50/200 SMA 0.5% NET +A$3.069562 (6 trades), but slow validation NET -A$4.568657; no promotion.
+5. V26 CI 41296254494 passed 6/6 safety tests and official-market research; captured 114 articles at actual first-seen time for future non-leaking event study.
 
-**Source branch:** v23-v2-migration-regression
+**DONE:** Gap-safe two-fold forward-period experiment, explicit fee/spread/slippage ledger, fee sensitivity, same-stake buy/hold comparison and prospective RSS snapshot.
 
-**Completed and emulator-verified:** V2 migration/reopen regression, versionCode 23, changelog.
+**PARTIAL:** News event study pending future observed price labels; 2025–2026 was previously inspected in V25 and is not untouched.
 
-**CI:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077
-**Test XML/logcat:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059474276
-**APK artifact:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41246248077/artifacts/13059647916
-**APK SHA-256:** af114cb4757718ba1e38b351b44d06f38de77932bf92b590061dce0265667d92
+**BLOCKED:** Independent prospective positive NET evidence and Android strategy parity.
 
-**Broken / unverified:** Samsung device, persistent signing, Doze recovery, real-market after-fee performance.
+**NOT ATTEMPTED:** Android APK, real-money orders, paid datasets, destructive changes.
 
-**Synthetic accounting fixture:** partial SELL realised NET -A$59.50 (loss), not actual market P&L.
+**Source branch:** v26-gap-safe-forward-evaluation
 
-**Next:** verify emulator test and APK, then physical-device signing/widget/notification behaviour and longer BTC/AUD out-of-sample research.
+**CI:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41296254494
+
+**Next:** Consolidate first-seen news snapshots, evaluate post-observation candles when matured, then run frozen slow SMA prospectively. Preserve HOLD and PAPER ONLY.
