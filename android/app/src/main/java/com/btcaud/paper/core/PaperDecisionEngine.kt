@@ -58,8 +58,16 @@ object PaperDecisionEngine {
         if (cashCents <= 0L || priceCents <= 0L) return 0L
         val budget = minOf(cashCents / MAX_CASH_FRACTION_DIVISOR, MAX_PAPER_ORDER_CENTS)
         if (budget < 100L) return 0L
-        return Math.multiplyExact(Math.multiplyExact(budget, 100_000_000L), 10_000L) /
+        // Fill components round independently to whole cents. Verify the
+        // ACTUAL debit after rounding, not merely the theoretical bps budget.
+        var qty = Math.multiplyExact(Math.multiplyExact(budget, 100_000_000L), 10_000L) /
             Math.multiplyExact(priceCents, 10_000L + COST_BPS)
+        while (qty > 0L) {
+            val entry = fill(PaperFill.Side.BUY, qty, priceCents)
+            if (Math.addExact(entry.grossCents, entry.costsCents) <= budget) return qty
+            qty--
+        }
+        return 0L
     }
 
     fun fill(side: PaperFill.Side, sats: Long, priceCents: Long) =
