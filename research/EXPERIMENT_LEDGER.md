@@ -1,5 +1,41 @@
 # BTC/AUD Research Experiment Ledger
 
+## V29 — 2026-11-02, historical news cross-reference and causal event-driven replay (PR #13)
+
+**STATUS:** DONE: 10 timestamp-sourced retrospective articles, 30 post-availability event-horizon observations, 12 fixed strategy/ablation variants, 5 expanding chronological folds, 80bps taker plus spread/slippage, deterministic causality tests and real official Kraken archive CI. PARTIAL: historical news representativeness and market regime/news causal attribution. BLOCKED: strategy promotion absent independent prospective positive NET. NOT ATTEMPTED: live trading, Android changes/APK, paid data, maker queue fills.
+
+**Evidence and provenance:** Kraken official `XBTAUD_240.csv`, 13,763 4h rows, 20 gaps, longest contiguous interval selected by length ONLY: 6,863 bars 2020-12-02T20:00:00Z to 2024-01-20T12:00:00Z. ZIP member CRC `61c06c60`, SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`; full multipart archive SHA unverified. Research: `data/historical_news_reconstructed.json` contains 10 sourced UTC article times with source URLs, revision times where visible, conservative +1h availability delay and hand-coded event labels. These are NOT actual historical first-seen bot observations, and this set is heavily selection-biased. The 135 genuinely first-observed articles from November 2026 remain separate.
+
+**PAPER simulations:** A$1,000 account reset for EACH of 5 chronological folds; A$100 maximum entry debit INCLUDING costs and <=10% cash; 80bps taker, 5bps half-spread, 5bps slippage per side. Signal uses completed 4h bar only; fill at next open; 20-bar fold embargo; terminal open liquidation; no gap bridging. Historical prices were previously inspected, so this is *point-in-time simulated*, but **NOT untouched OOS**. Aggregate figures below are SUMS ACROSS 5 INDEPENDENTLY RESET ACCOUNTS, not compounded.
+
+| Frozen hypothesis | Trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+|---|---:|---:|---:|---:|---:|---:|
+| SMA 10/20 | 197 | +82.202 | 305.945 | 19.122 | 19.122 | **-261.987** |
+| Momentum | 434 | +7.508 | 636.125 | 39.758 | 39.758 | **-708.133** |
+| RSI mean reversion | 290 | +41.553 | 440.850 | 27.553 | 27.553 | **-454.403** |
+| ATR-free price breakout | 231 | +12.658 | 347.564 | 21.723 | 21.723 | **-378.351** |
+| Volatility regime | 428 | -9.103 | 625.881 | 39.118 | 39.118 | **-713.219** |
+| Trend + ATR + breakout | 87 | -4.348 | 133.561 | 8.348 | 8.348 | **-154.604** |
+| News risk veto 48h | 87 | -4.348 | 133.561 | 8.348 | 8.348 | **-154.604** |
+| News risk veto 7d (post-hoc) | 87 | -4.348 | 133.561 | 8.348 | 8.348 | **-154.604** |
+| News +7d shifted veto placebo | 87 | -4.348 | 133.561 | 8.348 | 8.348 | **-154.604** |
+| News-delay trend | 133 | +52.693 | 207.818 | 12.989 | 12.989 | **-181.102** |
+| 24h positive-headline pulse (post-hoc) | 4 | -3.993 | 6.305 | 0.394 | 0.394 | **-11.085** |
+| Positive-headline +7d placebo | 4 | +5.432 | 6.386 | 0.399 | 0.399 | **-1.752** |
+| Equal A$100 buy-and-hold | 5 independent positions | — | — | — | — | **+92.018** |
+| Selected HOLD | 0 | 0 | 0 | 0 | 0 | **0** |
+
+**Fold detail / max drawdown:** For trend breakout, fold NET A$: -90.220697, -10.263097, -30.770499, -20.055090, -3.294585; worst fold full-account DD -9.02207%. For direct positive news pulse, fold NET -14.899083, 0, 0, +6.324526, -2.510596; worst fold DD -1.489908%. Other strategy/fold drawdowns and half/double-cost sensitivity for news/low-turnover variants are in the artifact. Buy-and-hold fold NET: +41.177772, -56.239730, -15.083632, +83.047670, +39.115992. No strategy has reproducible positive NET across folds.
+
+**Event cross-reference:** 10 articles each evaluated at 4h, 24h and 48h from first tradable open AFTER conservative article availability; 30 total event-horizon rows. At 24h, 3/10 hypothetical taker roundtrips positive; mean gross +0.16%, mean NET -1.6293%. Event labels were assigned retrospectively, so neither causality nor predictive power follows. Example: 2023-03-13 US banking article +6.3245% NET 24h, but 2024-01-10 ETF approval article -2.5106% NET 24h. The news-veto variants made ZERO different trades versus the price-only control because no curated negative event overlapped a qualifying breakout entry; no news value was observed. The 24h positive pulse performed worse than its +7d placebo; the placebo is not a valid tradable signal.
+
+**Reproduction / verified CI:** `python3 -m unittest discover -s tests -p 'test_v29_point_in_time.py' -v` (9 passed); `python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v` (6 passed); `python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v` (5 passed); `python3 -m research.v29_point_in_time --output audit/v29-point-in-time.json`. GitHub Actions run [41322453783](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41322453783) PASSED 20 tests, official market extraction and report. Artifact ID `13089114010` contains complete JSON with all 5 folds, 12 strategies, costs, drawdowns, sensitivity and event rows. Initial CI 41322194372 passed baseline, then two intermediate CI attempts 41322280526 / 41322287207 failed on a literal newline escape in the added 7d variant; corrected in commit `6d6f1d3` and latest CI passed. Changes were tested and read back; no strategy promotion.
+
+**NEXT EXECUTABLE ACTION:** Systematically reconstruct a MUCH larger historical news sample using archived feeds/primary filings with timestamp+revision provenance, document coverage gaps and include random/non-event controls. Run news-feature ablations with purged chronological evaluation and evaluate whether signal value survives transaction costs, then freeze a candidate for genuinely new observations. Do not repeatedly optimize the same previously inspected periods. Keep HOLD, PAPER ONLY.
+
+---
+
+
 ## V28 — 2026-11-01, 80bps post-archive research and cumulative first-observed news
 
 **Status:** DONE: V28 source, six new deterministic tests, 11 prior causal/risk tests, real Kraken OHLC diagnostic, recovery of two immutable prior news artifacts, cumulative news merge and SHA read-back in PR CI [41299334042](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41299334042). DONE: permanent main-branch corpus committed by GitHub Actions as f79b7005fe6b0afd9fae1ebad19ceebba41706a8 (135 rows read back). BLOCKED: genuinely untouched prospective OOS NET edge, matured news returns and Android strategy parity. NOT ATTEMPTED: real-money orders, maker fills, UI/APK rebuild, paid data.
