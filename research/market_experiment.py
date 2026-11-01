@@ -83,18 +83,20 @@ def signal(bars, i, name):
         return c > ma100 and c > closes[-7] and statistics.pstdev(recent) < .035
     raise ValueError('Unknown strategy')
 
-def simulate(bars, start, end, name, *, fee_multiplier=1, position_cap_aud=50.0):
+def simulate(bars, start, end, name, *, fee_multiplier=1, position_cap_aud=50.0, taker_fee_bps=16):
     if not (102 <= start < end <= len(bars)) or end-start < 2:
         raise ValueError('Invalid backtest interval')
     if position_cap_aud not in (50.0, 100.0):
         raise ValueError('Only approved paper research caps A$50/A$100')
     if not math.isfinite(fee_multiplier) or fee_multiplier < 0:
         raise ValueError('Invalid fee multiplier')
+    if taker_fee_bps not in (16, 80):
+        raise ValueError('Only documented 16bps legacy or 80bps current taker scenarios')
     cash, qty, entry_mid, entry_fill = 1000., 0., 0., None
     equity = [cash]
     totals = {'gross': 0., 'fees': 0., 'spread': 0., 'slippage': 0., 'net': 0.}
     trades = []
-    costs = FeeSettings(tiers=(FeeTier(0, .0016*fee_multiplier, .0016*fee_multiplier),),
+    costs = FeeSettings(tiers=(FeeTier(0, taker_fee_bps/10_000*fee_multiplier, taker_fee_bps/10_000*fee_multiplier),),
                         spread_bps=10*fee_multiplier, base_slippage_bps=5*fee_multiplier,
                         volatility_slippage_multiplier=0, size_slippage_bps=0,
                         max_slippage_bps=5*fee_multiplier)
@@ -139,6 +141,7 @@ def simulate(bars, start, end, name, *, fee_multiplier=1, position_cap_aud=50.0)
         drawdown = min(drawdown, e/peak-1)
     assert qty == 0 and math.isclose(cash-1000, totals['net'], abs_tol=1e-7)
     return {'strategy': name, 'position_cap_aud': position_cap_aud,
+            'taker_fee_bps': taker_fee_bps,
             'start_utc': datetime.fromtimestamp(bars[start][0],timezone.utc).isoformat(),
             'end_utc': datetime.fromtimestamp(bars[end-1][0],timezone.utc).isoformat(),
             'trades': len(trades), 'wins': sum(t['net_aud']>0 for t in trades),
