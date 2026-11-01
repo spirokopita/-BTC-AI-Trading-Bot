@@ -1,5 +1,28 @@
 # BTC/AUD Research Experiment Ledger
 
+## V30 — 2026-11-02, strictly prior matched historical news controls (PR #14)
+
+**STATUS:** DONE: prior-time event controls, synthetic leakage tests, official Kraken historical matched study and reproduction of 12 strategy/news ablations. PARTIAL: historical news representativeness, matched-regime validity. BLOCKED: untouched positive NET edge. NOT ATTEMPTED: Android changes, live orders, paid data.
+
+**Market/news provenance:** Kraken official `XBTAUD_240.csv`, 13,763 4h candles, 20 gaps; selected 6,863 contiguous bars from 2020-12-02 through 2024-01-20, member SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e` (full archive SHA NOT checked). News = 10 manually selected historical publications in `data/historical_news_reconstructed.json`, +1h after latest known revision, **NOT first observed**. All periods already inspected; exploratory, not untouched OOS.
+
+**Matched-control hypothesis:** For each news event's first eligible four-hour OPEN, choose up to five strictly EARLIER, non-event control opens from the previous 180 days, matched to the same UTC weekday/4h slot and ranked by completed-bar 24h return direction and seven-day volatility. Exclude +/-7 days around all known news events; never use future candidate dates or future features to select controls. Compute hypothetical 4h/24h/48h long round-trip NET at 80bps taker + 5bps half-spread + 5bps slippage per side. This is descriptive and NOT a causal or deployable signal.
+
+| Horizon | Matched events | Mean news NET | Mean control NET | News excess NET | Sentiment-aligned excess | Aligned positive | Descriptive sign-flip p |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 4h | 10 | -2.057950% | -0.632214% | -1.425736% | -0.420852% | 5/10 | 0.703125 |
+| 24h | 10 | -1.629283% | -0.073195% | -1.556088% | +0.245267% | 6/10 | 0.884766 |
+| 48h | 10 | -5.146879% | -0.228110% | -4.918770% | +1.158687% | 6/10 | 0.617188 |
+
+**Result:** At 24h, event NET underperformed prior matched controls by 1.556 percentage points on average. Direction-aligned excess is weak, mixed, and statistically unconvincing even before accounting for severe selection bias and event dependence. **REJECT news-edge claim.** V29 strategy baseline reproduced: 12 controls, 5 chronological independently reset folds, price-only trend breakout 87 trades NET -A$154.604, negative-news veto identical, positive-news pulse 4 trades NET -A$11.085; same-stake buy/hold +A$92.018. HOLD stays selected; no Android strategy promotion. Gross, fees, spread, slippage, max DD, sensitivity and fold details are in V30 CI artifact, not omitted or claimed as new performance.
+
+**Verified:** CI [41355350343](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41355350343) passed 8 V30 + 9 V29 + 5 V27 tests, official Kraken sparse archive research, full 12-strategy rerun. Artifact `13102518396` includes `audit/v30-matched-news.json` and `audit/v30-strategy-control.json`. Reproduce with `python3 -m research.v30_matched_news --output audit/v30-matched-news.json` and `python3 -m research.v29_point_in_time --output audit/v30-strategy-control.json`. Local 8 synthetic tests also passed (stand-in V29 module with identical constants; official repo CI is authoritative).
+
+**NEXT:** Obtain systematically sampled timestamped historic financial/crypto news with publication revisions and coverage gaps; run non-event controls across regimes, then test new low-turnover hysteresis strategies under 80bps fees. Freeze parameters before later genuinely unseen validation; do not infer news predictiveness from famous headlines. Paper only.
+
+---
+
+
 ## V29 — 2026-11-02, historical news cross-reference and causal event-driven replay (PR #13)
 
 **STATUS:** DONE: 10 timestamp-sourced retrospective articles, 30 post-availability event-horizon observations, 12 fixed strategy/ablation variants, 5 expanding chronological folds, 80bps taker plus spread/slippage, deterministic causality tests and real official Kraken archive CI. PARTIAL: historical news representativeness and market regime/news causal attribution. BLOCKED: strategy promotion absent independent prospective positive NET. NOT ATTEMPTED: live trading, Android changes/APK, paid data, maker queue fills.

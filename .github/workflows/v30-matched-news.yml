@@ -1,0 +1,56 @@
+name: V30 historical news matched-control study
+on:
+  pull_request:
+    paths:
+      - 'research/v30_matched_news.py'
+      - 'tests/test_v30_matched_news.py'
+      - '.github/workflows/v30-matched-news.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify point-in-time and matched-control tests
+        run: |
+          python3 -m unittest discover -s tests -p 'test_v30_matched_news.py' -v
+          python3 -m unittest discover -s tests -p 'test_v29_point_in_time.py' -v
+          python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Run historical official Kraken BTC/AUD matched news analysis
+        run: python3 -m research.v30_matched_news --output audit/v30-matched-news.json
+      - name: Reproduce twelve-strategy price and news ablation at real current-fee scenario
+        run: python3 -m research.v29_point_in_time --output audit/v30-strategy-control.json
+      - name: Check cost and news comparison report
+        run: |
+          python3 - <<'PY'
+          import json
+          m=json.load(open('audit/v30-matched-news.json'))
+          s=json.load(open('audit/v30-strategy-control.json'))
+          assert m['market']['source']=='OFFICIAL_KRAKEN_FULL_OHLCVT_ARCHIVE'
+          assert m['news_events_matched']>=1
+          assert len(m['summary'])==3
+          assert m['promotion']=='REJECTED_NO_INDEPENDENT_OOS_NET_BENEFIT'
+          assert s['selection']=='HOLD'
+          assert len(s['chronological_expanding_folds'])==5
+          print('Matched controls:',json.dumps(m['summary'],indent=2))
+          for f in s['chronological_expanding_folds']:
+              print('fold',f['start_utc'],f['end_utc'],'buyhold',f['same_AUD100_buyhold_net_aud'])
+              for name in ('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_positive_pulse'):
+                  x=f['results'][name]
+                  print(name,'trades',x['trades'],'gross',x['gross_aud'],'fees',x['fees_aud'],
+                        'spread',x['spread_aud'],'slippage',x['slippage_aud'],'NET',x['net_aud'],
+                        'drawdown',x['max_drawdown_pct'])
+          PY
+      - name: Preserve complete V30 reproducible research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V30-Official-Kraken-News-Matched-Controls
+          path: |
+            audit/v30-matched-news.json
+            audit/v30-strategy-control.json
+            data/historical_news_reconstructed.json
+          if-no-files-found: warn
