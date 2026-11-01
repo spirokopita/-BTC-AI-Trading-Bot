@@ -21,7 +21,7 @@ class TestV29(unittest.TestCase):
         self.assertEqual(asof([news(t+STEP)],t),[])
         self.assertEqual(len(asof([news(t+STEP)],t+STEP)),1)
     def test_future_headline_does_not_change_past_signal(self):
-        for name in ('news_veto','news_veto_7d','news_delay'):
+        for name in ('news_veto','news_veto_7d','news_delay','news_positive_pulse','news_positive_placebo'):
             self.assertEqual(signal(self.bars,550,name,[]),
                              signal(self.bars,550,name,[news(self.bars[900][0])]))
     def test_future_bar_close_does_not_change_decision(self):
