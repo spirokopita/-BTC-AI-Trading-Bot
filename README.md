@@ -5,7 +5,7 @@
 **Android app: paper trading ONLY. No real wallet, exchange credentials, deposits, live orders, or guaranteed profits.**
 
 - **Monitor:** Live-public Kraken BTC/AUD ticker, up to ~700 completed 4-hour candles, WorkManager background checks requested roughly every 15 minutes (Android can defer them), purple notification, toggle and dashboard widgets.
-- **Simulated trading:** Optional, OFF by default. Rule-based SMA10/SMA20 crossover research baseline, A$1,000 initial balance, min(5% cash, A$50) position sizing, 16bps simulated fee + 5bps spread + 5bps slippage on both entry and exit. Paper stop/target checks depend on polling; **not real exchange stops**.
+- **Simulated trading:** Optional, OFF by default. Rule-based SMA10/SMA20 crossover research baseline, A$1,000 initial balance, V27 min(10% cash, A$100) position sizing, 80bps tier-1 simulated taker fee + 5bps half-spread + 5bps slippage on both entry and exit. Paper stop/target checks depend on polling; **not real exchange stops**.
 - **Ledger:** Local SQLite trades, open BTC position, net liquidation equity including exit-cost estimates, realised net P&L, deposited funding audit and additive migration from V15.
 - **Multiple eyes:** Kraken price observations and a separate first-observed-timestamped **read-only RSS news eye**. News topics are *not* used to trade until validated out of sample.
 - **Research:** Isolated causal history replay with next-candle-open simulated fills, the same cost model and explicit insufficient-history warnings. Python V12 research and LightGBM prototype remain separate from the Android execution strategy.

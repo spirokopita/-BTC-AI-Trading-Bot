@@ -1,21 +1,21 @@
-# V26 research run summary — 2026-11-01 AEDT
+# V27 algorithm and risk-sizing run summary — 2026-11-01 AEDT
 
-1. Android V23 is unchanged and strictly PAPER-ONLY; no APK built or live order route enabled.
-2. Verified official Kraken BTC/AUD 4h member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e; 13,763 observed bars and 20 gap boundaries.
-3. Pre-2025 train/validation rejected all seven candidates; selected policy HOLD with zero trades and A$0 NET.
-4. Later 2025–2026 diagnostic: baseline SMA NET -A$17.194309 (51 trades), slow 50/200 SMA 0.5% NET +A$3.069562 (6 trades), but slow validation NET -A$4.568657; no promotion.
-5. V26 CI 41296254494 passed 6/6 safety tests and official-market research; captured 134 articles at actual first-seen time (final SQLite read-back) for future non-leaking event study.
+1. Android PAPER-ONLY source now budgets min(10% cash, A$100) including entry friction; models current standard Kraken Pro tier-1 80bps taker fee; APK/emulator CI pending.
+2. Official Kraken BTC/AUD 4h archive reverified: 13,763 observed candles, 20 gap boundaries, member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e.
+3. Matched A$50/A$100 experiments under legacy 16bps and current 80bps per-side taker fee used frozen seven strategies, chronological training/validation and two exploratory later folds.
+4. At current 80bps, A$100 slow SMA +0.5%: 6 round trips, gross +A$9.106192, total costs A$10.732881, NET -A$1.626688; SMA NET -A$96.804378, same-stake buy/hold -A$16.092737.
+5. V27 CI 41297183117 passed 6 prior plus 5 new deterministic research tests and official archive study; 114 first-seen news articles observed in that run; selected HOLD and no strategy promoted.
 
-**DONE:** Gap-safe two-fold forward-period experiment, explicit fee/spread/slippage ledger, fee sensitivity, same-stake buy/hold comparison and prospective RSS snapshot.
+**DONE:** Paper budget and conservative fee model source changes, A$50/A$100 x 16bps/80bps research, fee sensitivity, benchmark, verified real-market CI and news snapshot.
 
-**PARTIAL:** News event study pending future observed price labels; 2025–2026 was previously inspected in V25 and is not untouched.
+**PARTIAL:** Android build/instrumentation still running; prospective news outcome study unavailable; earlier 2025-26 diagnostic prices already inspected.
 
-**BLOCKED:** Independent prospective positive NET evidence and Android strategy parity.
+**BLOCKED:** Independently new positive NET evidence, Android/research strategy parity, durable cumulative first-seen news history.
 
-**NOT ATTEMPTED:** Android APK, real-money orders, paid datasets, destructive changes.
+**NOT ATTEMPTED:** Live trading, private order API, paid datasets, spending or destructive changes.
 
-**Source branch:** v26-gap-safe-forward-evaluation
+**CI research:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297183117
 
-**CI:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41296254494
+**CI Android pending:** https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297183119
 
-**Next:** Consolidate first-seen news snapshots, evaluate post-observation candles when matured, then run frozen slow SMA prospectively. Preserve HOLD and PAPER ONLY.
+**Next:** Verify Android build/emulator and read back artifact, preserve multi-run news history, and prospectively test frozen low-turnover strategies at current 80bps costs. PAPER ONLY.

@@ -1,5 +1,36 @@
 # BTC/AUD Research Experiment Ledger
 
+## V27 — 2026-11-01, approved A$100 paper cap and 2026 Kraken fee reality check
+
+**Status:** DONE: paper sizing source, realistic fee model, four matched research scenarios, 11 deterministic research tests, official-market CI and new news snapshot. PARTIAL: Android build/emulator verification pending. BLOCKED: independent prospective NET edge and cumulative point-in-time news history. NOT ATTEMPTED: live orders.
+
+**Verified official-market evidence:** GitHub Actions run [41297183117](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297183117) passed V26's six gap/causal tests plus five V27 risk/fee tests, ran `python3 -m research.v27_position_sizing --output audit/v27-position-sizing.json`, and saved full JSON + first-observed news SQLite. Same official Kraken `XBTAUD_240.csv` member SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, 13,763 observed candles and 20 gap boundaries. Two later 2025–2026 folds are exploratory (V25 inspected these years), not untouched. Independent A$1,000 wallet reset for each fold. **No promotion**: train+validation selection HOLD at both caps under current 80bps.
+
+**Important corrected fee assumption:** Official Kraken Pro Australian spot fee page https://www.kraken.com/au/pro/fees, checked 2026-11-01, lists standard tier-1 spot **40bps maker and 80bps taker**. V24–V26's 16bps taker was too optimistic for a low-volume account under current schedule. V27 applies current 80bps per side as a scenario to past price history, not actual 2020–2024 exchange fees; actual user tier and discounted pair eligibility remain unverified. Retains 5bps half-spread + 5bps slippage each side. Approximate round-trip break-even price move (1.009/0.991 - 1) = **1.816%** before extra impact.
+
+**Current standard tier-1 taker scenario (80bps per side), two reset diagnostic folds:**
+
+| Strategy | Completed trades | A$50 NET | A$100 gross | A$100 fees | A$100 spread | A$100 slippage | **A$100 NET** | Worst A$100 fold DD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| SMA | 51 | -48.897141 | -8.596029 | 78.407428 | 4.900460 | 4.900460 | **-96.804378** | -5.678372% |
+| Momentum | 110 | -97.863777 | -5.177700 | 165.301403 | 10.331335 | 10.331335 | **-191.141773** | -9.914884% |
+| RSI | 82 | -69.391597 | +4.170229 | 125.043992 | 7.815252 | 7.815252 | **-136.504266** | -7.336663% |
+| Breakout | 54 | -48.127962 | -1.210979 | 83.506287 | 5.219142 | 5.219142 | **-95.155551** | -4.938759% |
+| Volatility regime | 108 | -92.735012 | +1.759229 | 162.737643 | 10.171103 | 10.171103 | **-181.320621** | -9.993421% |
+| Slow SMA 50/200 +0.5% | 6 | -0.786221 | +9.106192 | 9.540331 | 0.596275 | 0.596275 | **-1.626688** | -1.574483% |
+| Slow SMA 50/200 +2% | 8 | -9.603848 | -5.028210 | 12.579334 | 0.786205 | 0.786205 | **-19.179955** | -1.644612% |
+
+**Legacy 16bps sensitivity:** A$100 slow SMA +0.5% diagnostic NET **+A$6.086363** (six trades) vs **−A$1.626688** at current 80bps; legacy A$50 +A$3.069562, current A$50 −A$0.786221. Pre-2025 A$100 slow SMA 0.5% training +A$41.988147, validation **−A$17.936265** under current fees. No training/validation eligibility; HOLD earns A$0 by avoiding trades. Same-stake A$100 buy/hold current-fee benchmark: gross −A$12.638522, fees A$3.070425, spread A$0.191895, slippage A$0.191895, **NET −A$16.092737**. Results are sums across independent reset accounts, not a single compounded history.
+
+**News and leakage:** Latest V27 run observed 114 articles at actual first-seen time 2026-11-01 10:22:41 UTC (CoinDesk 25, Cointelegraph 30, Decrypt 39, The Block 20). The V26 prior snapshot had 134 articles, demonstrating publisher feed variability; do not treat lower V27 count as deletion from V26 artifact. News snapshots remain separate CI artifacts rather than a durable merged corpus. No post-observation return labels mature yet, so news predictive effect NOT TESTED; historical published dates are not substituted for first-seen times.
+
+**Android and safety:** `PaperDecisionEngine` now min(A$100, 10% of cash) inclusive of actual rounded entry friction, 80bps paper taker fee; Kotlin unit assertions cover limit across cash/price combinations. Native source remains PAPER-ONLY, one long position, no live order route, stale/offline entry blocking. Android CI [41297183119](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41297183119) pending at time of this ledger entry. Research strategy proxies are not exact Android SMA10/20 crossover/stop parity.
+
+**NEXT EXECUTABLE ACTION:** Read Android build/emulator CI; if failed, fix and rerun. Persist first-observed news snapshots across runs, gather genuinely new BTC/AUD candles after 2026-11-01 observation, then evaluate frozen lower-turnover candidates with conservative 80bps taker fees and observed market costs. No strategy promotion without independent positive NET evidence.
+
+---
+
+
 ## V26 — 2026-11-01, gap-safe later-period algorithm research and prospective news capture
 
 **Status:** DONE: official-market forward evaluation, 6/6 deterministic tests, real-market CI, point-in-time news snapshot. PARTIAL: future event-study corpus (only first observation so far). BLOCKED: independently untouched prospective market evidence, historical first-observed news for earlier years and Android parity. NOT ATTEMPTED: Android APK, real trading.
