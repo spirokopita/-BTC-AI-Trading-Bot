@@ -16,7 +16,7 @@ CASH=1000.
 FEE=.008
 SPREAD=.0005
 SLIPPAGE=.0005
-STRATEGIES=('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_delay','placebo_veto')
+STRATEGIES=('sma','momentum','rsi','breakout','regime','trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto')
 
 def ts(s):
     if not isinstance(s,str) or not s.endswith('Z'): raise ValueError('UTC Z required')
@@ -37,9 +37,9 @@ def news_load(path):
     if len(set(e['id'] for e in out))!=len(out): raise ValueError('Duplicate event ID')
     return sorted(out,key=lambda e:e['available_ts']),hashlib.sha256(raw).hexdigest()
 
-def asof(events,cutoff,shift=0):
+def asof(events,cutoff,shift=0,window=WINDOW):
     """Only headlines whose publication AND known revision plus latency precede cutoff."""
-    return [e for e in events if 0<=cutoff-(e['available_ts']+shift)<WINDOW]
+    return [e for e in events if 0<=cutoff-(e['available_ts']+shift)<window]
 
 def signal(bars,i,name,events=()):
     if i<202 or i+1>=len(bars): return False
@@ -62,10 +62,10 @@ def signal(bars,i,name,events=()):
     breakout=close>max(b[2] for b in bars[i-24:i])
     base=trend and breakout and .01<=atr<=.07
     if name=='trend_breakout': return base
-    if name in ('news_veto','news_delay','placebo_veto'):
+    if name in ('news_veto','news_veto_7d','news_delay','placebo_veto'):
         # placebo is a negative control only, NOT a deployable news feature.
         shift=7*86400 if name=='placebo_veto' else 0
-        risk=any(e['sentiment']<0 for e in asof(events,bars[i][0]+STEP,shift))
+        risk=any(e['sentiment']<0 for e in asof(events,bars[i][0]+STEP,shift,\n             window=7*86400 if name=='news_veto_7d' else WINDOW))
         if name=='news_delay': return trend and close>ma50*1.01 and not risk
         return base and not risk
     raise ValueError('Unknown strategy')
@@ -157,12 +157,12 @@ def event_study(bars,events):
 def run(bars,events,provenance,news_sha):
     n=len(bars)
     if n<1200: raise ValueError('Need >=1200 contiguous historical bars')
-    cuts=[n//2,n*2//3,n*5//6,n]
+    cuts=[222,n//3,n//2,n*2//3,n*5//6,n]  # add early 2021 fold so news coverage is not discarded
     folds=[]
     for a,b in zip(cuts[:-1],cuts[1:]):
         start=a+20
         results={s:simulate(bars,start,b,s,events) for s in STRATEGIES}
-        for s in ('trend_breakout','news_veto','news_delay','placebo_veto'):
+        for s in ('trend_breakout','news_veto','news_veto_7d','news_delay','placebo_veto'):
             results[s]['half_cost_net_aud']=simulate(bars,start,b,s,events,mult=.5)['net_aud']
             results[s]['double_cost_net_aud']=simulate(bars,start,b,s,events,mult=2)['net_aud']
         folds.append(dict(start_utc=datetime.fromtimestamp(bars[start][0],timezone.utc).isoformat(),
@@ -177,7 +177,7 @@ def run(bars,events,provenance,news_sha):
         max_paper_entry_debit_aud=CAP,initial_cash_aud=CASH,
         fixed_parameters_predeclared=True,chronological_expanding_folds=folds,
         event_study=event_study(bars,events),
-        ablations='news_veto vs trend_breakout; placebo_veto shifts news +7 days',
+        ablations='news_veto 48h vs news_veto_7d vs trend_breakout; placebo_veto shifts news +7 days; 7d added post-hoc as EXPLORATORY after zero 48h veto effect',
         selection='HOLD',promotion='REJECTED_NO_UNTOUCHED_PROSPECTIVE_NET_EDGE',
         limitations=['Previously inspected historical data; chronological replay is NOT untouched OOS',
         'Manually selected famous news stories and revised publication timestamps are NOT first-seen bot data',
