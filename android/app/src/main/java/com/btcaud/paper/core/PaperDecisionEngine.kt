@@ -7,7 +7,8 @@ package com.btcaud.paper.core
  */
 object PaperDecisionEngine {
     const val INTERVAL_SECONDS = 14_400L
-    const val FEE_BPS = 16
+    /** Kraken Pro 2026-11-01 tier-1 spot taker 0.80%; conservative PAPER cost model. */
+    const val FEE_BPS = 80
     const val SPREAD_BPS = 5
     const val SLIPPAGE_BPS = 5
     const val COST_BPS = FEE_BPS + SPREAD_BPS + SLIPPAGE_BPS
