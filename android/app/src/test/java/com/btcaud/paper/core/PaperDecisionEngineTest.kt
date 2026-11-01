@@ -38,10 +38,31 @@ class PaperDecisionEngineTest {
         val qty = PaperDecisionEngine.buyQuantitySats(100_000L, priceCents)
         assertTrue(qty > 0)
         val fill = PaperDecisionEngine.fill(PaperFill.Side.BUY, qty, priceCents)
-        assertTrue(fill.grossCents + fill.costsCents <= 5_000L)
+        assertTrue(fill.grossCents + fill.costsCents <= 10_000L)
+        assertTrue(fill.grossCents + fill.costsCents >= 9_900L)
         val paper = PaperLedger(100_000L).buy(fill)
         assertTrue(paper.btcSats > 0L)
-        assertTrue(paper.cashCents >= 95_000L)
+        assertTrue(paper.cashCents >= 90_000L)
+    }
+
+    @Test fun conservativeKrakenTierOneTakerFee() {
+        assertEquals(80, PaperDecisionEngine.FEE_BPS)
+        assertEquals(90, PaperDecisionEngine.COST_BPS)
+    }
+
+    @Test fun paperSizingNeverExceedsAud100EvenAfterRefills() {
+        for (price in listOf(1_000_000L, 15_000_000L, 110_000_000L, 123_456_789L)) {
+            for (cash in listOf(1_000L, 10_000L, 100_000L, 200_000L, 10_000_000L)) {
+                val qty = PaperDecisionEngine.buyQuantitySats(cash, price)
+                if (qty == 0L) continue
+                val fill = PaperDecisionEngine.fill(PaperFill.Side.BUY, qty, price)
+                val debit = fill.grossCents + fill.costsCents
+                assertTrue("A$100 hard cap", debit <= 10_000L)
+                assertTrue("10% available cash", debit <= cash / 10L)
+            }
+        }
+        assertEquals(0L, PaperDecisionEngine.buyQuantitySats(0L, 15_000_000L))
+        assertEquals(0L, PaperDecisionEngine.buyQuantitySats(100_000L, 0L))
     }
 
     @Test fun simulatedBuySellNetMatchesLedger() {

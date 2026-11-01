@@ -1,0 +1,36 @@
+name: V27 BTC AUD paper position sizing research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/forward_gap_experiment.py'
+      - 'research/market_experiment.py'
+      - 'research/v27_position_sizing.py'
+      - 'tests/test_v27_position_sizing.py'
+      - '.github/workflows/v27-position-sizing.yml'
+permissions:
+  contents: read
+jobs:
+  position-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deterministic causal and risk-sizing regressions
+        run: |
+          python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v
+          python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Verified Kraken historical A$50 versus A$100 experiment
+        run: python3 -m research.v27_position_sizing --output audit/v27-position-sizing.json
+      - name: Collect new first-observed news (independent snapshot, not historical signals)
+        continue-on-error: true
+        run: python3 -m news_intelligence.cli --news-db audit/v27-news-observed.sqlite sync
+      - name: Preserve research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V27-BTC-AUD-Position-Research
+          path: |
+            audit/v27-position-sizing.json
+            audit/v27-news-observed.sqlite
+          if-no-files-found: warn
