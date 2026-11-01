@@ -59,6 +59,18 @@ class PositionSizingTest(unittest.TestCase):
         self.assertEqual(original["validation"], modified["validation"])
         self.assertEqual(original["folds"][0]["start_utc"], modified["folds"][0]["start_utc"])
 
+    def test_current_tier_one_fee_is_80bps_and_more_costly(self):
+        bars = make_bars(900, PRE_START)
+        for name, fn in (("sma", simulate), ("slow_sma_005", slow_simulate)):
+            legacy = fn(bars, WARMUP, 850, name, position_cap_aud=100., taker_fee_bps=16)
+            current = fn(bars, WARMUP, 850, name, position_cap_aud=100., taker_fee_bps=80)
+            self.assertEqual(current["taker_fee_bps"], 80)
+            self.assertEqual(current["trades"], legacy["trades"])
+            if current["trades"]:
+                self.assertGreater(current["fees_aud"], legacy["fees_aud"])
+            with self.assertRaisesRegex(ValueError, "documented"):
+                fn(bars, WARMUP, 850, name, position_cap_aud=100., taker_fee_bps=1000)
+
     def test_benchmark_uses_same_position_cap(self):
         bars = make_bars(900, PRE_START)
         a = same_stake_buy_hold(bars, WARMUP, 850, 50.)
