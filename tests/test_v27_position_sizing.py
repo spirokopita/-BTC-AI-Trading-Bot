@@ -5,7 +5,23 @@ from research.forward_gap_experiment import (
     WARMUP, slow_simulate, run_experiment, same_stake_buy_hold,
 )
 from research.market_experiment import simulate
-from tests.test_forward_gap_experiment import fixture, make_bars, PRE_START
+import math
+
+PRE_START = 1577836800
+LATER_START = 1761955200
+STEP = 14400
+
+
+def make_bars(n, start, price=100):
+    bars = []
+    for i in range(n):
+        mid = price + .01 * i + 3 * math.sin(i / 22)
+        bars.append((start + i * STEP, mid + .1, mid + 2, mid - 2, mid + .2, 2.))
+    return bars
+
+
+def fixture():
+    return make_bars(2800, PRE_START) + make_bars(1100, LATER_START, 150)
 
 
 class PositionSizingTest(unittest.TestCase):
