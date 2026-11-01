@@ -1,5 +1,39 @@
 # BTC/AUD Research Experiment Ledger
 
+## V26 — 2026-11-01, gap-safe later-period algorithm research and prospective news capture
+
+**Status:** DONE: official-market forward evaluation, 6/6 deterministic tests, real-market CI, point-in-time news snapshot. PARTIAL: future event-study corpus (only first observation so far). BLOCKED: independently untouched prospective market evidence, historical first-observed news for earlier years and Android parity. NOT ATTEMPTED: Android APK, real trading.
+
+**Verified evidence:** GitHub Actions run [41296254494](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41296254494) passed the 6 deterministic causal/gap/fee/future-isolation tests, Kraken archive experiment, and prospective news RSS snapshot. Earlier run 41296212862 independently produced the same market results and 114 first-observed articles. Artifact [V26-BTC-AUD-Gap-Safe-Research](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41296254494) contains JSON + news SQLite. Official Kraken `XBTAUD_240.csv` SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, ZIP member CRC `61c06c60` checked; whole multipart ZIP SHA not checked. 13,763 observed bars, 20 gap boundaries (NOT 20 missing candles). Kraken documents that OHLCVT omits intervals with no trades. No missing rows were fabricated.
+
+**Protocol:** Pre-2025 reference segment selected by contiguous bar count only: 6,863 observed 4h bars, 2020-12-02–2024-01-20 UTC. 50% training / 25% validation with 20-bar embargo, 202-bar indicator warmup, seven fixed candidates: five V24 baselines and two 50/200 slow SMA thresholds (0.5% and 2%). Require >=5 training trades, >=3 validation trades, and positive NET in both, else HOLD. Later segment selected by latest timestamp and sufficient gap-free length: 1,999 bars, 2025-11-01–2026-09-30 UTC. First 202 bars used only for warmup; two non-overlapping reset-A$1,000 folds 2025-12-05–2026-05-04 and 2026-05-04–2026-09-30. Long-only next-open hypothetical fills, A$50 cap, taker fee 16bps + half-spread 5bps + slippage 5bps PER SIDE; last-open liquidation. **V25 already inspected a 2025–2026 segment: V26 is exploratory chronological later-period evaluation, NOT a genuinely untouched holdout.**
+
+**Pre-2025 training/validation:** SMA training 92 trades NET −A$29.431310; validation 53 trades NET +A$8.946109. Slow SMA 0.5% training 7 trades NET +A$25.816029; validation 7 trades NET **−A$4.568657**. Slow SMA 2% training 7 trades NET +A$12.009348; validation 8 trades NET −A$18.195043. Other four baselines negative in both training and validation. **Predeclared selected policy HOLD; zero trades, A$0 NET in both later folds.** Do NOT promote the diagnostic slow SMA based on later-period gains.
+
+**Later-period exploratory diagnostics (two independent reset wallets; not compounded):**
+
+| Candidate | Trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+|---|---:|---:|---:|---:|---:|---:|
+| SMA baseline | 51 | −4.076202 | 8.072684 | 2.522711 | 2.522711 | **−17.194309** |
+| Momentum | 110 | −2.260472 | 17.379036 | 5.430948 | 5.430948 | **−30.501404** |
+| RSI | 82 | +2.528952 | 12.997426 | 4.061697 | 4.061697 | **−18.591867** |
+| Breakout | 54 | −0.545995 | 8.579689 | 2.681152 | 2.681152 | **−14.487988** |
+| Volatility regime | 108 | +1.350038 | 17.089953 | 5.340611 | 5.340611 | **−26.421136** |
+| Slow SMA 50/200, +0.5% | 6 | +4.634684 | 0.963150 | 0.300987 | 0.300987 | **+3.069562** |
+| Slow SMA 50/200, +2% | 8 | −2.523621 | 1.270500 | 0.397029 | 0.397029 | **−4.588182** |
+
+Slow SMA 0.5% returned +A$0.159711 (3 trades, max full-account drawdown −0.680733%) in fold 1 and +A$2.909851 (3 trades, max drawdown −0.454882%) in fold 2; total +A$3.069562. Same-A$50 fee-adjusted buy/hold returned −A$10.657851 and +A$3.796086 respectively, aggregate **−A$6.861765**. SMA baseline returned −A$13.182139 and −A$4.012170; aggregate −A$17.194309. Slow SMA 0.5% half-cost fold NET +A$0.550700/+A$3.308706; double-cost −A$0.618924/+A$2.115556. Tiny six-trade sample and negative validation make these gains insufficient for strategy promotion. No risk-free or consistently profitable edge established.
+
+**News — actual prospective first-seen, NOT historical predictive proof:** At **2026-11-01 10:09:33 UTC**, `news_intelligence.cli sync` saved 114 distinct articles in a SQLite artifact with immutable `first_seen_ts` and `available_ts >= first_seen_ts` (read-back verified). Counts: CoinDesk 25, Cointelegraph 30, Decrypt 39, The Block 20. Bloomberg Crypto feed failed closed after a cross-host redirect; 4/5 feeds succeeded. Sources included reports about Binance's breach and recovery, but historical publication timestamps are not equivalent to the bot's first observation. These articles became available to this research pipeline on Nov 1 and **cannot be used as signals for the earlier 2025–2026 candles**. No matured future price outcomes are yet available for these observations; NEWS PREDICTIVE VALUE = NOT TESTED. The workflow captures an independent snapshot per run, not a continuously maintained central news database.
+
+**Failure cases / missed opportunities:** High-turnover baseline losses after costs; +2% slow threshold lost money; validation rejected both slow variants; no news causal evaluation; hypothetical open-price fills omit queue/depth and intra-bar execution. The selected HOLD policy missed the diagnostic +A$3.07 later gain, but did not incur the other candidates' losses; that opportunity is hindsight-only and cannot justify deployment.
+
+**Verified commands:** `python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v` (6/6 passed), `python3 -m research.forward_gap_experiment --output audit/v26-forward-gap-experiment.json` (official Kraken), `python3 -m news_intelligence.cli --news-db audit/v26-news-observed.sqlite sync` (114 articles in first observed snapshot). Verified outputs in Actions artifact; no Android APK or real orders.
+
+**NEXT:** Begin immutable multi-run first-seen news collection and join only events available before candle decisions after a sufficient observation horizon; run later prospective paper performance monitoring with frozen 50/200 parameters and an actual Android execution parity test before any promotion. Independently source additional fresh market data and cost/spread evidence. Keep real trading OFF.
+
+---
+
 ## V25 — 2026-11-01, official Kraken multi-year sparse-archive BTC/AUD experiment
 
 **Status: DONE (data extraction, 6 tests, real-market experiment); PARTIAL (multi-year coverage and news study); NOT ATTEMPTED (Android strategy promotion, real orders).** PR #9 merged into main as squash commit 2361354a41067511f45b2272f86006c1b13b864c; latest pre-merge CI run 41294998715 passed all 6 tests and live archive research, and main-branch ledger read-back succeeded. First attempt used the most recent contiguous segment (1,999 bars, Nov 2025–Sep 2026) and returned train/validation all NET-negative, selected HOLD. A follow-up data-quality correction selected the longest contiguous segment by BAR COUNT ONLY, not by returns, to obtain a multi-year retrospective study; one transient CI failure occurred because code and test rename commits raced. The subsequent complete commit passed all six deterministic tests and official archive research in GitHub Actions run **41294883216**.
