@@ -42,6 +42,16 @@ class ResearchControls(unittest.TestCase):
         self.assertEqual(paid['trades'],paid['wins']+paid['losses']+
                          sum(t['net_aud']==0 for t in paid['trade_log']))
 
+    def test_three_nonoverlapping_folds_and_hold_benchmark_reconcile(self):
+        result=experiment(bars())
+        self.assertEqual(len(result['folds']),3)
+        self.assertEqual([(f['test_start_index'],f['test_end_exclusive']) for f in result['folds']],
+                         [(380,500),(500,620),(620,720)])
+        for fold in result['folds']:
+            b=fold['same_stake_buy_hold']
+            self.assertAlmostEqual(b['gross_aud']-b['fees_aud']-b['spread_aud']-
+                                   b['slippage_aud'],b['net_aud'],places=4)
+
     def test_train_selection_unaffected_by_future_test(self):
         x=bars()
         first=experiment(x)['folds'][0]['selected_FROM_TRAIN_ONLY']
