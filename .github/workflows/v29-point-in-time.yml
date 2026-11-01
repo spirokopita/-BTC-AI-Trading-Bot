@@ -1,0 +1,46 @@
+name: V29 point-in-time historical BTC/AUD news study
+on:
+  pull_request:
+    paths:
+      - 'research/v29_point_in_time.py'
+      - 'tests/test_v29_point_in_time.py'
+      - 'data/historical_news_reconstructed.json'
+      - '.github/workflows/v29-point-in-time.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: V29 deterministic point-in-time and cost controls
+        run: |
+          python3 -m unittest discover -s tests -p 'test_v29_point_in_time.py' -v
+          python3 -m unittest discover -s tests -p 'test_forward_gap_experiment.py' -v
+          python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Run fixed historical news and strategy ablations on official Kraken BTC/AUD archive
+        run: python3 -m research.v29_point_in_time --output audit/v29-point-in-time.json
+      - name: Print verified results and event coverage
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('audit/v29-point-in-time.json'))
+          print('Market:',d['market'])
+          print('News events:',d['news_count'],'event study rows:',len(d['event_study']))
+          for f in d['chronological_expanding_folds']:
+              print('Fold:',f['start_utc'],f['end_utc'],'hold:',f['same_AUD100_buyhold_net_aud'])
+              for k,v in f['results'].items():
+                  print(k,'trades',v['trades'],'gross',v['gross_aud'],'fees',v['fees_aud'],'spread',v['spread_aud'],'slippage',v['slippage_aud'],'NET',v['net_aud'],'DD',v['max_drawdown_pct'])
+          assert d['promotion']=='REJECTED_NO_UNTOUCHED_PROSPECTIVE_NET_EDGE'
+          PY
+      - name: Preserve reproducible market and news evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V29-Point-In-Time-Research
+          path: |
+            audit/v29-point-in-time.json
+            data/historical_news_reconstructed.json
+          if-no-files-found: warn
