@@ -51,14 +51,15 @@ class PaperDecisionEngineTest {
     }
 
     @Test fun paperSizingNeverExceedsAud100EvenAfterRefills() {
-        val price = 15_000_000L
-        for (cash in listOf(1_000L, 10_000L, 100_000L, 200_000L, 10_000_000L)) {
-            val qty = PaperDecisionEngine.buyQuantitySats(cash, price)
-            if (qty == 0L) continue
-            val fill = PaperDecisionEngine.fill(PaperFill.Side.BUY, qty, price)
-            val debit = fill.grossCents + fill.costsCents
-            assertTrue("A$100 hard cap", debit <= 10_000L)
-            assertTrue("10% available cash", debit <= cash / 10L)
+        for (price in listOf(1_000_000L, 15_000_000L, 110_000_000L, 123_456_789L)) {
+            for (cash in listOf(1_000L, 10_000L, 100_000L, 200_000L, 10_000_000L)) {
+                val qty = PaperDecisionEngine.buyQuantitySats(cash, price)
+                if (qty == 0L) continue
+                val fill = PaperDecisionEngine.fill(PaperFill.Side.BUY, qty, price)
+                val debit = fill.grossCents + fill.costsCents
+                assertTrue("A$100 hard cap", debit <= 10_000L)
+                assertTrue("10% available cash", debit <= cash / 10L)
+            }
         }
         assertEquals(0L, PaperDecisionEngine.buyQuantitySats(0L, price))
         assertEquals(0L, PaperDecisionEngine.buyQuantitySats(100_000L, 0L))
