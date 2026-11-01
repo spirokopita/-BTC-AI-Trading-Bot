@@ -1,0 +1,27 @@
+name: BTC AUD official archive paper research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/kraken_archive.py'
+      - 'tests/test_kraken_archive.py'
+      - '.github/workflows/kraken-archive-research.yml'
+permissions:
+  contents: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify archive integrity controls and chronological protocol
+        run: python3 -m unittest discover -s tests -p 'test_kraken_archive.py' -v
+      - name: Read official Kraken multi-year BTC/AUD 4h data using sparse byte ranges
+        run: python3 -m research.kraken_archive --output audit/kraken-archive-experiment.json
+      - name: Preserve genuine source-provenance and NET results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BTC-AUD-Multi-Year-Paper-Research
+          path: audit/kraken-archive-experiment.json
+          if-no-files-found: warn

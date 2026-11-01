@@ -1,3 +1,31 @@
+# V25 algorithm research — 2026-11-01 (PR #9, paper-only)
+
+**UNRESOLVED NEWS DATA QUESTION:** Where can we obtain an independently verifiable, point-in-time BTC/crypto news archive with immutable `first_observed_at` timestamps (not merely backfilled `published_at`) for a leakage-safe event study? Until available, news predictive value remains NOT TESTED. No payment or new permissions authorised.
+
+### Current state — exactly five lines
+1. Android V23 remains unchanged and PAPER-ONLY, strategy OFF by default; no exchange order route.
+2. V25 extracted the actual `XBTAUD_240.csv` member of Kraken's official multipart OHLCVT ZIP using HTTP byte ranges and ZIP member CRC.
+3. Archive holds 13,763 four-hour candles with 20 gaps; predeclared longest gap-free research segment has 6,863 candles (2020-12-02 to 2024-01-20 UTC).
+4. GitHub Actions run 41294883216 passed 6 deterministic tests and executed multi-year real-market train/validation/test research; final source-provenance correction also passed in CI run 41294958852.
+5. Predeclared train/validation policy selected HOLD: 0 test trades, A$0 NET; diagnostic SMA two reset test folds returned −A$3.186626 and +A$14.621458 NET, below equal-stake buy/hold.
+
+### DONE — one highest-value task: actual official multi-year BTC/AUD research
+- Added `research/kraken_archive.py`, six deterministic tests and a CI workflow. Sparse 206 byte-range access to five Kraken archive parts reads only the 240-minute BTC/AUD member rather than downloading the entire ~9.5GB ZIP.
+- Validated ZIP member CRC32 `61c06c60`, SHA-256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, strict ascending timestamps, OHLC envelopes, volume, and explicit gaps. **The full archive SHA256 was not verified**; no gaps were filled.
+- Selected longest contiguous segment by BAR COUNT, not market returns. Fixed 50/25/25 chronological train/validation/test and 20-bar embargoes; five V24 candidate strategies, hypothetical next-open fills, A$1,000 reset per test fold, A$50 max position and per-side 16bps fee + 5bps half-spread + 5bps slippage.
+- All five candidates were NET negative on training, so predeclared selection was **HOLD** despite SMA being positive in validation. HOLD test policy: **gross A$0, costs A$0, NET A$0**.
+- For diagnostics only, SMA first test fold: 30 trades, gross +A$4.601008, fees A$4.792387, spread A$1.497623, slippage A$1.497623, **NET −A$3.186626**; second: 26 trades, gross +A$21.415450, fees A$4.180905, spread A$1.306544, slippage A$1.306544, **NET +A$14.621458**. Total diagnostic SMA +A$11.434832 NET across reset test wallets vs equal-A$50 buy/hold +A$25.271518 NET. No hindsight promotion.
+- The initial most-recent-segment experiment (1,999 bars, Nov 2025–Sep 2026) also selected HOLD because training and validation were all NET-negative; it was preserved separately. A temporary CI failure occurred during a two-commit rename race; subsequent run passed.
+- News: reviewed Reuters 2026-11-01 05:49 UTC reporting on Binance withdrawal restoration and ASIC digital-asset licensing consultation. Neither was used as a historical predictive signal because verified first-observed timestamps were unavailable.
+
+### VERIFIED / PARTIAL / NEXT
+- VERIFIED: CI run `41294883216` ran 6/6 deterministic tests and real archive experiment; artifact `13078523908` holds the complete 6,863-bar segment report and fee sensitivity. Independent read-back confirmed the report's numeric results. No Android APK or physical-device test in this run.
+- PARTIAL: Official archive source is real and multi-year, but its 20 no-trade/missing candles split history. The analysis deliberately uses only the longest gap-free segment. Official documentation describes the archive cutoff as June 2026, while the observed member extends to September 2026; coverage is reported from the extracted file, not assumed from docs.
+- BLOCKED: NEWS PREDICTIVE BACKTEST pending point-in-time historical news corpus. Real exchange fills, order book impact, Android strategy parity and live profitability remain unverified.
+- NEXT: evaluate a fixed pre-2025 model on a separately held 2025–2026 contiguous segment after post-gap warmup, then test lower-turnover filters and news features once timestamped data exists. No strategy promoted. All real orders remain disabled.
+
+---
+
 # V24 algorithm research — 2026-11-01 (PR #8, paper-only)
 
 **NEXT DATA ACCESS QUESTION:** Can the official multi-year Kraken BTC/AUD OHLCVT archive (large multi-part download) be ingested into a persistent research cache, and can point-in-time FIRST-OBSERVED news history be sourced, so the next experiment has a genuinely untouched multi-year test set? Current short Kraken OHLC endpoint cannot establish robust profitability.
