@@ -1,3 +1,34 @@
+# V31 hysteresis walk-forward and ordinary historical news — 2026-11-03 (PR #15)
+
+**BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can a strategy selected ONLY on earlier training/validation demonstrate positive NET on genuinely untouched BTC/AUD observations, with realistic taker fees, and can news be shown to improve that result with source-version/availability provenance? V31 exploratory positive diagnostic totals do NOT qualify. **HOLD remains selected.**
+
+### Current state — exactly five lines
+1. Android V27 PAPER-ONLY unchanged: A$100 inclusive entry debit, 10% cash cap, 80bps taker + execution costs, real execution disabled.
+2. Official Kraken 13,763 BTC/AUD 4h candles, 20 gaps; 6,863 contiguous 2020-12–2024-01 bars used, member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e.
+3. V31 three predeclared low-turnover hysteresis strategies in three chronological train/validation/test folds: all train-only selections HOLD.
+4. V31 news: 11 source-linked ordinary historical articles, 9 topic clusters, 9 matched prior controls, no demonstrated news predictive advantage.
+5. GitHub Actions 41533351786 PASSED 34 deterministic tests and two official-market studies; no strategy promotion or APK build.
+
+### DONE
+- Implemented `research/v31_hysteresis.py` and `research/v31_news_coverage.py`, tests, GitHub Actions workflow and provenance-labeled 11-article convenience sample. Test folds use previous completed bars only, 20-bar embargo, 500-bar validation and predeclared candidate menu.
+- Official archive 3-reset-fold NET: H50/200 +A$0.025449 (8 trades), H30/120 +A$9.872917 (9), H80/300 +A$17.943373 (6), SMA -A$99.020869 (100), trend/ATR -A$31.242566 (23), same-stake buy-and-hold +A$81.225523 (3). H80/300 was NEGATIVE in first two test folds and ALL training folds; train-only selected HOLD three times.
+- Realistic fee model 80bps taker per side + 5bps half-spread and 5bps slippage; gross/fees/spread/slippage/NET, DD and half/double cost sensitivities in verified CI artifact 13182014247.
+- New 11 article news sample deduplicated to 9 clusters; 24h mean hypothetical long NET -2.880058% vs strictly prior matched controls -1.853917%. Convenience sample and +24h publication-delay assumption are NOT first-observed news. News veto and shifted placebo did not change a trade.
+
+### PARTIAL / BLOCKED / NOT ATTEMPTED
+- PARTIAL: news source coverage is small, convenience-selected, with unverified historical article versions. Historical prices previously inspected; no untouched OOS. Full archive SHA not verified, only member SHA/CRC.
+- BLOCKED: no eligible positive-NET candidate from train+validation; no credible news edge. No Android promotion.
+- NOT ATTEMPTED: Android APK, real orders, maker fill-queue modelling, new post-Nov 1 candles.
+
+### NEXT
+1. Evaluate all gap-free historical segments and different market regimes, retaining strict chronological train/validation/test boundaries.
+2. Collect broader prespecified historical news sampling including mundane non-events, original publication/revision provenance and missing coverage intervals.
+3. Compare frozen low-turnover strategies and news ablations against HOLD and equal-stake buy/hold, with realistic fees and drawdowns. Never promote from inspected historical periods.
+
+**Commands:** `python3 -m unittest discover -s tests -p 'test_v31_hysteresis.py' -v`; `python3 -m unittest discover -s tests -p 'test_v31_news_coverage.py' -v`; `python3 -m research.v31_hysteresis --output audit/v31-hysteresis.json`; `python3 -m research.v31_news_coverage --output audit/v31-news-coverage.json`. Verified [CI 41533351786](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41533351786). No live trading.
+
+---
+
 # V30 matched historical-news controls — 2026-11-02 (PR #14)
 
 **BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can we obtain an unbiased, sufficiently large point-in-time historical news archive with original revision/availability provenance and a genuinely untouched positive NET evaluation? Ten selected historical articles and matched controls do not establish predictive advantage. **HOLD remains selected.**
