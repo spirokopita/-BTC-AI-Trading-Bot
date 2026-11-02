@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "dataset_type": "RETROSPECTIVE_CONVENIENCE_SAMPLE_NOT_FIRST_OBSERVED_NOT_REPRESENTATIVE",
+  "sampling_note": "Convenience sample of 11 publicly discoverable 2022-2023 Euronews/Reuters articles found 2026-11-03 via fixed month/topic queries; includes ordinary regulatory reporting and market-following stories. NOT a random sample, complete news feed, or reconstructed historical first-observed corpus. No source-version archive available. Avoid treating article text or sentiment as known at publication time. Conservative +24h availability is a sensitivity assumption, not proof of contemporaneous availability.",
+  "articles": [
+    {
+      "id": "ecb_risk_20220524",
+      "published_at_utc": "2022-05-24T08:30:00Z",
+      "category": "regulatory_commentary",
+      "polarity": -1,
+      "cluster": "ecb_stability_may",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/2022/05/24/crypto-currency-ecb",
+      "displayed_time": "10:30 GMT+2",
+      "market_following": false
+    },
+    {
+      "id": "uk_dlt_20220607",
+      "published_at_utc": "2022-06-07T14:55:00Z",
+      "category": "infrastructure_policy",
+      "polarity": 0,
+      "cluster": "uk_dlt_june",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/2022/06/07/britain-crypto-currency-markets",
+      "displayed_time": "16:55 GMT+2",
+      "market_following": false
+    },
+    {
+      "id": "miners_sell_20220627",
+      "published_at_utc": "2022-06-27T17:00:00Z",
+      "category": "miner_supply",
+      "polarity": -1,
+      "cluster": "miner_sales_june",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/2022/06/27/fintech-crypto-mining",
+      "displayed_time": "19:00 GMT+2",
+      "market_following": true
+    },
+    {
+      "id": "mica_20220630",
+      "published_at_utc": "2022-06-30T08:10:00Z",
+      "category": "regulatory_framework",
+      "polarity": 0,
+      "cluster": "mica_agreement",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/06/30/fintech-crypto-eu",
+      "displayed_time": "10:10 GMT+2",
+      "market_following": false
+    },
+    {
+      "id": "mica_20220701",
+      "published_at_utc": "2022-07-01T06:26:00Z",
+      "updated_at_utc": "2022-07-01T10:03:00Z",
+      "category": "regulatory_framework",
+      "polarity": 0,
+      "cluster": "mica_agreement",
+      "source": "Euronews with AP & Reuters",
+      "url": "https://www.euronews.com/next/2022/07/01/eu-agrees-on-landmark-mica-crypto-regulation-in-wake-of-terra-meltdown-and-bitcoin-plunge",
+      "displayed_time": "08:26 GMT+2, updated 12:03 GMT+2",
+      "market_following": false
+    },
+    {
+      "id": "ecb_banks_20220817",
+      "published_at_utc": "2022-08-17T16:50:00Z",
+      "category": "banking_regulation",
+      "polarity": 0,
+      "cluster": "ecb_banks_august",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/08/17/ecb-crypto-currency",
+      "displayed_time": "18:50 GMT+2",
+      "market_following": false
+    },
+    {
+      "id": "ftx_reg_20221130",
+      "published_at_utc": "2022-11-30T11:50:00Z",
+      "category": "post_crisis_regulation",
+      "polarity": 0,
+      "cluster": "ftx_regulation",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/11/30/eu-crypto-currency-ftx",
+      "displayed_time": "12:50 GMT+1",
+      "market_following": false
+    },
+    {
+      "id": "ecb_bitcoin_20221130",
+      "published_at_utc": "2022-11-30T13:40:00Z",
+      "category": "central_bank_commentary",
+      "polarity": -1,
+      "cluster": "ecb_bitcoin_november",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/11/30/crypto-currency-ecb",
+      "displayed_time": "14:40 GMT+1",
+      "market_following": false
+    },
+    {
+      "id": "ftx_reuters_20221202",
+      "published_at_utc": "2022-12-02T12:00:00Z",
+      "category": "post_crisis_regulation",
+      "polarity": 0,
+      "cluster": "ftx_regulation",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/12/02/reuters-next-cryptocurrency",
+      "displayed_time": "13:00 GMT+1",
+      "market_following": false
+    },
+    {
+      "id": "ecb_reg_20221207",
+      "published_at_utc": "2022-12-07T16:05:00Z",
+      "category": "central_bank_commentary",
+      "polarity": -1,
+      "cluster": "ecb_crypto_december",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2022/12/07/crypto-currency-ecb",
+      "displayed_time": "17:05 GMT+1",
+      "market_following": false
+    },
+    {
+      "id": "bitcoin_20230114",
+      "published_at_utc": "2023-01-14T11:11:00Z",
+      "category": "price_recap",
+      "polarity": 0,
+      "cluster": "bitcoin_price_january",
+      "source": "Reuters via Euronews",
+      "url": "https://www.euronews.com/next/2023/01/14/fintech-cryptocurrency-bitcoin",
+      "displayed_time": "12:11 GMT+1",
+      "market_following": true
+    }
+  ]
+}
