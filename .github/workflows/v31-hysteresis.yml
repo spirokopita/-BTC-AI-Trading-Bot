@@ -1,0 +1,54 @@
+name: V31 historical regime hysteresis walk-forward
+on:
+  pull_request:
+    paths:
+      - 'research/v31_hysteresis.py'
+      - 'tests/test_v31_hysteresis.py'
+      - '.github/workflows/v31-hysteresis.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify deterministic no-leakage and paper accounting tests
+        run: |
+          python3 -m unittest discover -s tests -p 'test_v31_hysteresis.py' -v
+          python3 -m unittest discover -s tests -p 'test_v30_matched_news.py' -v
+          python3 -m unittest discover -s tests -p 'test_v29_point_in_time.py' -v
+          python3 -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Evaluate official Kraken BTC/AUD archive with predeclared walk-forward selection
+        run: python3 -m research.v31_hysteresis --output audit/v31-hysteresis.json
+      - name: Verify provenance and report aggregate real-market NET
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open('audit/v31-hysteresis.json'))
+          assert r['market']['source']=='OFFICIAL_KRAKEN_FULL_OHLCVT_ARCHIVE'
+          assert r['market']['selected_contiguous_bars']>=2500
+          assert len(r['folds'])==3
+          assert r['selected_policy']=='HOLD'
+          assert r['promotion']=='REJECTED_NO_UNTOUCHED_POSITIVE_NET'
+          print('MARKET',r['market'])
+          for f in r['folds']:
+              print('FOLD',f['test_start_utc'],f['test_end_utc'],
+                  'train-only selection',f['selected_using_past_only'],
+                  'selected NET',f['selected_test_net_aud'],
+                  'buyhold NET',f['buyhold_aud100_net_aud'])
+              for k,v in f['tests'].items():
+                  print(k,'trades',v['trades'],'gross',v['gross_aud'],
+                      'fees',v['fees_aud'],'spread',v['spread_aud'],
+                      'slippage',v['slippage_aud'],'NET',v['net_aud'],
+                      'max DD %',v['max_drawdown_pct'])
+          print('AGGREGATE INDEPENDENT RESET ACCOUNTS',r['aggregate_independent_reset_folds'])
+          PY
+      - name: Upload V31 reproducible evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V31-Official-Kraken-Hysteresis-Walkforward
+          path: audit/v31-hysteresis.json
+          if-no-files-found: warn
