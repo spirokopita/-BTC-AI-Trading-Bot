@@ -1,13 +1,13 @@
-# V30 prior-time matched historical news research — 2026-11-02 AEDT
+# V31 low-turnover hysteresis + ordinary historical news — 2026-11-03 AEDT
 
-1. Android V27 remains PAPER-ONLY, max A$100 inclusive debit / 10% cash and 80bps taker; no new APK or promotion.
-2. Official Kraken 13,763 BTC/AUD four-hour candles, 20 gaps, 6,863 contiguous 2020-12-02–2024-01-20 bars; archive member SHA256 verified, whole ZIP not verified.
-3. Ten historical news events (retrospective publication times, NOT first-observed) compared with strictly earlier non-event matched controls at 4h/24h/48h, realistic 80bps taker plus execution costs.
-4. 24h event mean NET -1.629283% vs prior matched-control -0.073195%, excess -1.556088%; sentiment-aligned mean +0.245267%, descriptive sign-flip p=0.884766; NO predictive edge.
-5. V30 CI 41355350343 PASSED 22 deterministic tests, official Kraken matched study and 12-strategy baseline rerun; HOLD remains selected, no live trading.
+1. Android V27 PAPER-ONLY unchanged: A$100 inclusive entry debit, 10% cash cap, 80bps taker, no live orders or new APK.
+2. Official Kraken archive 13,763 BTC/AUD 4h candles with 20 gaps; selected 6,863 continuous 2020-12–2024-01 bars, prior-inspected history (NOT untouched OOS).
+3. Three low-turnover hysteresis strategies tested on three train/validation/test folds; train-only selected HOLD in all folds, despite H80/300 exploratory aggregate NET +A$17.943373 over 6 trades.
+4. Eleven historical news articles reduced to nine topic clusters; 24h hypothetical event NET -2.880058% vs matched controls -1.853917%; no news predictive edge.
+5. V31 GitHub Actions 41533351786 PASSED 34 deterministic tests and official Kraken strategy/news studies; HOLD retained and no Android promotion.
 
-**DONE:** Added `research/v30_matched_news.py`, `tests/test_v30_matched_news.py`, V30 Actions workflow. 10/10 events matched, no future control selection, 7-day exclusion around known headlines, cost-inclusive long roundtrips. CI artifact 13102518396 includes full per-event control dates and returns and V29 twelve-strategy re-evaluation with gross, fees, spread, slippage, NET, drawdown, benchmark and cost sensitivity.
+**DONE:** New causal replay, three predeclared hysteresis regimes, fee sensitivity, no-future checks, source-linked ordinary news convenience sample with 24h latency and prior matched controls, verified official-market CI. H80/300 test folds -A$8.630469, -A$15.992917, +A$42.566759; all training folds negative. Full cost breakdown and drawdown in CI artifact 13182014247.
 
-**PARTIAL:** News is still 10 famous retrospectively chosen events; no new article collection. Controls and p-values are observational/descriptive, not causal, and historical prices were previously inspected. 80bps is a current Kraken fee scenario, not a historical executed fee.
+**PARTIAL:** Historical article coverage not representative; 11 articles not first-observed, source-version history unavailable. Market history inspected. Full archive hash not checked. **BLOCKED:** Positive untouched OOS evidence for promotion. **NOT ATTEMPTED:** APK, live trades, maker queue fills.
 
-**BLOCKED FOR PROMOTION:** No independently verified positive NET strategy; no representative point-in-time historical news corpus. No Android changes or APK. NEXT: systematically sample historical news including ordinary non-events, assess coverage and regime dependence, test low-turnover hysteresis strategies with train-only selection. HOLD and PAPER-ONLY remain in force.
+**NEXT:** Evaluate all >=1000-bar contiguous Kraken archive segments, then prespecified historical news sampling and event-conditioned risk filters without lookahead. Keep paper-only HOLD.
