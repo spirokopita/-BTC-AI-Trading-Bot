@@ -2,7 +2,14 @@
 import json, tempfile, unittest
 from pathlib import Path
 from research.v31_news_coverage import KIND, DAY, parse_news, run
-from tests.test_v30_matched_news import candles
+import math
+
+def candles(n=1200):
+    out=[]
+    for i in range(n):
+        p=30000+i*9+300*math.sin(i/16)
+        out.append((1609459200+i*14400,p,p*1.01,p*.99,p*1.001,1.))
+    return out
 
 def item(id,pub,cluster,polarity=0):
     return dict(id=id,published_at_utc=pub,category="fixture",polarity=polarity,
