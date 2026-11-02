@@ -1,3 +1,33 @@
+## V31 — 2026-11-03, hysteresis walk-forward + ordinary historical-news controls (PR #15)
+
+**STATUS:** DONE: three predeclared low-turnover regime/hysteresis strategies, 3 chronological train/validation/test folds, 20-bar embargo, no-future tests, 80bps fee-aware gross/cost/NET accounting, 11 sourced ordinary historical articles with duplicate clustering, prior matched controls and official-market CI. PARTIAL: representative news history, genuinely untouched OOS, real fill/market microstructure. BLOCKED: promotion. NOT ATTEMPTED: Android strategy changes/APK, live trading, maker queue fills.
+
+**Market:** Kraken official `XBTAUD_240.csv`, 13,763 BTC/AUD four-hour bars, 20 gaps, selected longest gap-free 6,863 bars (2020-12-02–2024-01-20), member SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, ZIP CRC checked but full archive SHA not verified. Previously inspected history => all folds EXPLORATORY, NOT untouched OOS. Three independent A$1,000 reset accounts, max A$100 entry debit INCLUDING 80bps taker + 5bps half-spread + 5bps slippage per side, <=10% cash, next-open simulated fills and forced final-open liquidation. Candidate menu predeclared: 50/200, 30/120 and 80/300 SMA hysteresis with 7-day volatility entry filter, six-bar minimum hold and twelve-bar reentry cooldown; no hindsight in decisions. Three expanding train periods, each followed by 500-bar validation and disjoint test with 20-bar embargoes. Train-only selector requires >=2 trades and positive NET in BOTH training and validation; selected HOLD in all three folds.
+
+**Official Kraken exploratory test diagnostics (SUMS of 3 separately reset A$1,000 accounts, NOT compounded):**
+
+| Strategy | Trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+|---|---:|---:|---:|---:|---:|---:|
+| SMA baseline | 100 | +76.372991 | 155.905584 | 9.744137 | 9.744137 | **-99.020869** |
+| Trend+ATR baseline | 23 | +9.685320 | 36.380336 | 2.273775 | 2.273775 | **-31.242566** |
+| Hysteresis 50/200 | 8 | +14.309450 | 12.696878 | 0.793562 | 0.793562 | **+0.025449** |
+| Hysteresis 30/120 | 9 | +26.016662 | 14.349973 | 0.896886 | 0.896886 | **+9.872917** |
+| Hysteresis 80/300 | 6 | +28.861058 | 9.704583 | 0.606551 | 0.606551 | **+17.943373** |
+| Negative-news veto (50/200) | 8 | +14.309450 | 12.696878 | 0.793562 | 0.793562 | **+0.025449** |
+| Shifted-news placebo (50/200) | 8 | +14.309450 | 12.696878 | 0.793562 | 0.793562 | **+0.025449** |
+| Same-stake buy-and-hold | 3 positions | — | — | — | — | **+81.225523** |
+| ACTUALLY SELECTED HOLD | 0 | 0 | 0 | 0 | 0 | **0** |
+
+**Crucial selection discipline:** H80/300 test NET by fold **-A$8.630469, -A$15.992917, +A$42.566759**, but its corresponding training NET was **-A$63.288524, -A$84.542176, -A$93.240574** and validation had fewer than two trades each fold. It was never eligible for deployment, regardless of post-hoc positive aggregate. H30/120 test NET +A$2.811253, -A$26.877831, +A$33.939495; H50/200 -A$16.895227, -A$17.451088, +A$34.371764. Worst full-account test-fold DD: H50/200 -2.473%, H30/120 -2.758351%, H80/300 -3.139095%. H80/300 half/standard/double execution-cost NET by fold: (-6.907444,-8.630469,-12.026299), (-13.451274,-15.992917,-20.995771), (+43.855694,+42.566759,+40.023180). Trade costs are included in all NET figures. Selected HOLD missed hypothetical buy-and-hold gains, but avoids selecting candidates that failed earlier data.
+
+**News expansion:** 11 independently linked Reuters/Euronews items from 2022–Jan 2023, selected as a CONVENIENCE SAMPLE (NOT systematic/random/representative) with explicit source-displayed local publication times converted to UTC; one known revision, +24h conservative assumed availability, topic clusters and two flagged price-following stories. Deduplicated to 9 clusters, including 5 neutral labels. Dataset SHA256 `3cdddd32f8057e8ac285813f0314c3aea85ba3c57fb41c33a9fd388f34f3e4ba`. Source-version histories NOT verified and publication time is NOT actual first-observed bot time. Strictly prior matched controls: 9/9 clusters matched, no omissions. 24h hypothetical long NET -2.880058% vs prior control -1.853917% (excess -1.026142 percentage points); 4h excess -0.101280 pp; 48h excess -2.711054 pp. These are descriptive, not causal or predictive, and mixed/neutral sentiment makes signflip tests unsuitable for signal claims. The existing 10-event news veto and +7d shifted placebo produced identical 50/200 trades: NO demonstrated news edge.
+
+**Verified CI:** GitHub Actions run [41533351786](https://github.com/spirokopita/-BTC-AI-Trading-Bot/actions/runs/41533351786) PASSED 34 deterministic tests (8 V31 strategy + 4 V31 news + 8 V30 + 9 V29 + 5 V27), official Kraken walk-forward, ordinary-news matched study and provenance assertions. Artifact **13182014247** contains `audit/v31-hysteresis.json`, `audit/v31-news-coverage.json` and source news JSON. Reproduce: `python3 -m unittest discover -s tests -p 'test_v31_hysteresis.py' -v`, `python3 -m unittest discover -s tests -p 'test_v31_news_coverage.py' -v`, `python3 -m research.v31_hysteresis --output audit/v31-hysteresis.json`, `python3 -m research.v31_news_coverage --output audit/v31-news-coverage.json`.
+
+**NEXT executable hypothesis:** Use all >=1000-bar contiguous Kraken archive segments (not just longest), with per-segment gap isolation, and compare H80/300 regime/hysteresis against same-stake buy-and-hold and price-only trend baseline across distinct regimes. Expand ordinary historical news using prespecified date/source sampling and source-version/availability provenance; do not select headlines by subsequent returns. Only promote after independently verified positive NET OOS and Android parity. PAPER ONLY; HOLD remains selected.
+
+---
+
 # BTC/AUD Research Experiment Ledger
 
 ## V30 — 2026-11-02, strictly prior matched historical news controls (PR #14)
