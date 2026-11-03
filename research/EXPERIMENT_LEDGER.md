@@ -1,3 +1,15 @@
+## V32 — 2026-11-04, all-segment research implementation (verification pending)
+
+**DONE:** Added `research/v32_segments.py`, `tests/test_v32_segments.py`, and `.github/workflows/v32-segments.yml` on main. New experiment enumerates every gap-free >=1000-candle segment from the official Kraken BTC/AUD 4h archive, using timestamp gaps only (never returns) for segment inclusion. Each segment uses a fixed chronological 70/30 partition, 305-bar warmup, three V31 hysteresis strategies, trend/ATR control and equal-A$100 buy/hold. Existing 80bps taker + 5bps spread + 5bps slippage model and A$100 inclusive cap are inherited from V31. No segment is bridged across missing bars. Per-segment A$1000 accounts reset; results are exploratory and not untouched OOS.
+
+**PARTIAL / UNVERIFIED:** GitHub files were written, but CI completion, tests, official archive download, segment counts, and performance outputs have NOT yet been verified. No numerical backtest results are claimed. Official archive member CRC and SHA are captured; full multi-part archive checksum remains unverified. No historical news expansion occurred in this iteration.
+
+**BLOCKED:** Strategy promotion pending independently verified positive NET and representative news timestamps. Android remains PAPER-ONLY, selected HOLD, no new APK, no live orders.
+
+**NEXT:** Read GitHub Actions run for V32, correct failures, obtain actual per-segment trade counts/gross/fees/spread/slippage/NET/drawdown and regime comparisons; expand representative historical news only after verifying the segment study. Reproduce: `python -m unittest discover -s tests -p 'test_v32_segments.py' -v`; `python -m research.v32_segments --output audit/v32-segment-coverage.json`.
+
+---
+
 ## V31 — 2026-11-03, hysteresis walk-forward + ordinary historical-news controls (PR #15)
 
 **STATUS:** DONE: three predeclared low-turnover regime/hysteresis strategies, 3 chronological train/validation/test folds, 20-bar embargo, no-future tests, 80bps fee-aware gross/cost/NET accounting, 11 sourced ordinary historical articles with duplicate clustering, prior matched controls and official-market CI. PARTIAL: representative news history, genuinely untouched OOS, real fill/market microstructure. BLOCKED: promotion. NOT ATTEMPTED: Android strategy changes/APK, live trading, maker queue fills.
