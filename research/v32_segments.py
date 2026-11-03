@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from research.kraken_archive import load, STEP
+from research.kraken_archive import STEP
 from research.v31_hysteresis import replay, PARAMS, WARMUP
 from research.v29_point_in_time import buyhold, simulate
 
@@ -47,15 +47,25 @@ def main():
     p.add_argument("--csv")
     p.add_argument("--output",default="audit/v32-segment-coverage.json")
     args=p.parse_args()
-    # load() intentionally returns longest segment; CSV fixture path is needed for all segments.
-    # For official archive, use the full-member extraction API in a subsequent verified run.
-    if not args.csv:
-        raise SystemExit("Full archive segment access not yet exposed by kraken_archive.load; no partial run disguised as full coverage")
-    from research.kraken_archive import parse_csv
-    raw=Path(args.csv).read_bytes()
-    import hashlib
+    from research.kraken_archive import parse_csv, HttpParts, MultipartReader, member_name
+    import hashlib, zipfile
+    if args.csv:
+        raw=Path(args.csv).read_bytes()
+        provenance=dict(source="LOCAL_CSV_UNVERIFIED")
+    else:
+        store=HttpParts()
+        with zipfile.ZipFile(MultipartReader(store.lengths,store.read)) as z:
+            name=member_name(z.namelist())
+            info=z.getinfo(name)
+            if info.file_size>30000000: raise ValueError("Unexpected archive member size")
+            with z.open(info) as f: raw=f.read(30000001)
+            if len(raw)!=info.file_size: raise IOError("Truncated archive member")
+        provenance=dict(source="OFFICIAL_KRAKEN_FULL_OHLCVT_ARCHIVE",
+            member=name,member_crc32=f"{info.CRC:08x}",
+            whole_archive_sha256_verified=False)
+    provenance["member_sha256"]=hashlib.sha256(raw).hexdigest()
     bars=parse_csv(raw)
-    result=evaluate(bars,dict(source="LOCAL_CSV_UNVERIFIED",sha256=hashlib.sha256(raw).hexdigest()))
+    result=evaluate(bars,provenance)
     out=Path(args.output);out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps(dict(segments=result["segments_evaluated"],output=str(out))))
