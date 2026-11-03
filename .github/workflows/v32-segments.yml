@@ -1,0 +1,26 @@
+name: V32 gap-isolated BTC AUD research
+on:
+  push:
+    paths:
+      - 'research/v32_segments.py'
+      - 'tests/test_v32_segments.py'
+      - '.github/workflows/v32-segments.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run deterministic tests
+        run: python -m unittest discover -s tests -p 'test_v32_segments.py' -v
+      - name: Official Kraken all-segment study
+        run: python -m research.v32_segments --output audit/v32-segment-coverage.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v32-segment-coverage
+          path: audit/v32-segment-coverage.json
