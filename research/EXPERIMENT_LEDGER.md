@@ -1,3 +1,5 @@
+V33 FINAL MERGE/REPRODUCIBILITY VERIFIED (2026-11-05): PR #16 MERGED as f24f4f5d4ddcb4578925da57b0c6f2ac61030e64. Final PR-head CI run 41924275473 PASSED 6 deterministic tests and official Kraken study, artifact 13369500422. The final artifact JSON SHA256 is c80b2462a55123cf3cd6d5007668f5f61c4da4179986d8b1399bee2262a97fff, byte-for-byte identical to earlier verified V33 run. Source and docs were read back from main. HOLD remains selected, no Android promotion.
+
 ## V33 — 2026-11-05: verified cross-regime selection and historical news ablations (PR #16)
 
 DONE: V32 CI 41732325042 PASSED 4 tests and official Kraken 3-segment study, artifact 13277406975. V33 CI 41923977818 PASSED 6 tests and official-market study, artifact 13367538351. Three gap-free segments 6863/3398/1999 bars, 13,763 original 4h candles and 20 gaps. Official Kraken XBTAUD_240.csv SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e; ZIP member CRC 61c06c60, full archive SHA unverified. Prices previously inspected; EXPLORATORY NOT untouched OOS.
