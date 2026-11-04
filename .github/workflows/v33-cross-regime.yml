@@ -1,0 +1,31 @@
+name: V33 cross-regime causal research
+on:
+  push:
+    paths:
+      - 'research/v33_cross_regime.py'
+      - 'tests/test_v33_cross_regime.py'
+      - '.github/workflows/v33-cross-regime.yml'
+  pull_request:
+    paths:
+      - 'research/v33_cross_regime.py'
+      - 'tests/test_v33_cross_regime.py'
+      - '.github/workflows/v33-cross-regime.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run V33 deterministic safety tests
+        run: python -m unittest discover -s tests -p 'test_v33_cross_regime.py' -v
+      - name: Run official Kraken all-segment walk-forward
+        run: python -m research.v33_cross_regime --output audit/v33-cross-regime.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v33-cross-regime
+          path: audit/v33-cross-regime.json
