@@ -1,3 +1,10 @@
+## 2026-11-05 — V33 verified historical cross-regime replay (PR #16)
+- V32 official Kraken CI 41732325042 confirmed 3 gap-free segments and 4 deterministic tests; V33 CI 41923977818 passed 6 tests and all-segment official-market research.
+- New train+validation-only selection with 20-bar embargo, 6 price baselines, 3 hysteresis candidates, 2 news/placebo variants, cost sensitivity and completed-trade audits.
+- H80/300 exploratory 7 trades gross +A$51.333281, fees 11.448071, spread 0.715531, slippage 0.715531, NET +38.454151 versus A$100 buy/hold +129.286037; actual selector chose HOLD/h30_120/HOLD and selected test NET -9.722842. No deployable edge.
+- 19 retrospectively sourced news events, only 2 during test; news veto/placebo identical to price-only. No predictive benefit. Prices previously inspected, not untouched OOS.
+- Android PAPER ONLY HOLD unchanged; A$100 inclusive/10% cash, 80bps taker plus 5bps spread and slippage per side. No APK or real orders.
+
 # V31 hysteresis walk-forward and ordinary historical news — 2026-11-03 (PR #15)
 
 **BLOCKER QUESTION FOR STRATEGY PROMOTION:** Can a strategy selected ONLY on earlier training/validation demonstrate positive NET on genuinely untouched BTC/AUD observations, with realistic taker fees, and can news be shown to improve that result with source-version/availability provenance? V31 exploratory positive diagnostic totals do NOT qualify. **HOLD remains selected.**
