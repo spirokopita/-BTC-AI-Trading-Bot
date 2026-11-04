@@ -1,3 +1,33 @@
+## V33 — 2026-11-05: verified cross-regime selection and historical news ablations (PR #16)
+
+DONE: V32 CI 41732325042 PASSED 4 tests and official Kraken 3-segment study, artifact 13277406975. V33 CI 41923977818 PASSED 6 tests and official-market study, artifact 13367538351. Three gap-free segments 6863/3398/1999 bars, 13,763 original 4h candles and 20 gaps. Official Kraken XBTAUD_240.csv SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e; ZIP member CRC 61c06c60, full archive SHA unverified. Prices previously inspected; EXPLORATORY NOT untouched OOS.
+
+Method: chronological 50% train, 20% validation, 30% test with 20-bar embargo; selector sees only train+validation. Three independently reset A$1,000 accounts; A$100 inclusive max paper debit / 10% cash. Standard published 80bps taker +5bps half-spread +5bps slippage per side. Hypothetical next-open fills; every completed hysteresis trade audit records gross, fees, spread, slippage, NET. Six price-only baselines also tested.
+
+| Strategy | Trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+|---|---:|---:|---:|---:|---:|---:|
+| SMA | 118 | see artifact | see artifact | see artifact | see artifact | -119.682481 |
+| Momentum | 242 | see artifact | see artifact | see artifact | see artifact | -374.775403 |
+| RSI | 158 | see artifact | see artifact | see artifact | see artifact | -225.519567 |
+| Breakout | 133 | see artifact | see artifact | see artifact | see artifact | -197.561916 |
+| Regime | 267 | see artifact | see artifact | see artifact | see artifact | -407.787388 |
+| Trend ATR | 20 | see artifact | see artifact | see artifact | see artifact | -27.686213 |
+| H50/200 | 10 | +25.705656 | 15.941756 | 0.996373 | 0.996373 | +7.771157 |
+| H30/120 | 12 | +5.913666 | 18.871598 | 1.179478 | 1.179478 | -15.316887 |
+| H80/300 | 7 | +51.333281 | 11.448071 | 0.715531 | 0.715531 | +38.454151 |
+| H50/200 news veto | 10 | +25.705656 | 15.941756 | 0.996373 | 0.996373 | +7.771157 |
+| H50/200 shifted placebo | 10 | +25.705656 | 15.941756 | 0.996373 | 0.996373 | +7.771157 |
+| Same-A$100 buy/hold | 3 | see artifact | see artifact | see artifact | see artifact | +129.286037 |
+| ACTUAL SELECTED HOLD | 0 | 0 | 0 | 0 | 0 | 0 |
+
+H80/300 segment test NET: +18.208983, -7.361149, +27.606317. H80/300 half/standard/double cost NET +45.178506/+38.454151/+25.215557. Train+validation selector chose HOLD, h30_120, HOLD; selected test strategy lost -A$9.722842 in middle segment. Thus the attractive hindsight H80 aggregate did not survive causal selection. Worst drawdown, all baseline cost splits, per-trade audits and segment-specific results are in artifact.
+
+News: 10 famous retrospective publication/revision timestamp events (+1h assumed latency) plus 9 ordinary clustered retrospective articles (+24h), total 19; only 2 during test windows, both veto and shifted placebo changed ZERO trades. Not actual first-observed. No demonstrated news predictiveness. The 135 November 2026 first-observed URLs are separate.
+
+DONE: Official archive segment evaluation, causal selection, cost sensitivity, news negative controls, CI and trade audits. PARTIAL: systematic news coverage, real fills, untouched OOS. BLOCKED: strategy promotion without independent positive NET. NOT ATTEMPTED: Android APK or live orders. NEXT: systematically prespecify historical news sources/dates, quantify coverage and news availability, retest event-conditioned low-turnover filters with adequate samples; prospectively validate frozen candidates. Reproduce: python -m unittest discover -s tests -p 'test_v33_cross_regime.py' -v; python -m research.v33_cross_regime --output audit/v33-cross-regime.json. Android PAPER ONLY HOLD.
+
+---
+
 ## V32 — 2026-11-04, all-segment research implementation (verification pending)
 
 **DONE:** Added `research/v32_segments.py`, `tests/test_v32_segments.py`, and `.github/workflows/v32-segments.yml` on main. New experiment enumerates every gap-free >=1000-candle segment from the official Kraken BTC/AUD 4h archive, using timestamp gaps only (never returns) for segment inclusion. Each segment uses a fixed chronological 70/30 partition, 305-bar warmup, three V31 hysteresis strategies, trend/ATR control and equal-A$100 buy/hold. Existing 80bps taker + 5bps spread + 5bps slippage model and A$100 inclusive cap are inherited from V31. No segment is bridged across missing bars. Per-segment A$1000 accounts reset; results are exploratory and not untouched OOS.
