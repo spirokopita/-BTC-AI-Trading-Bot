@@ -5,11 +5,17 @@ on:
       - 'research/v33_cross_regime.py'
       - 'tests/test_v33_cross_regime.py'
       - '.github/workflows/v33-cross-regime.yml'
+      - 'CHANGELOG.md'
+      - 'RUN_SUMMARY.md'
+      - 'research/EXPERIMENT_LEDGER.md'
   pull_request:
     paths:
       - 'research/v33_cross_regime.py'
       - 'tests/test_v33_cross_regime.py'
       - '.github/workflows/v33-cross-regime.yml'
+      - 'CHANGELOG.md'
+      - 'RUN_SUMMARY.md'
+      - 'research/EXPERIMENT_LEDGER.md'
   workflow_dispatch:
 jobs:
   research:
