@@ -65,6 +65,22 @@ class V34Tests(unittest.TestCase):
             self.assertEqual(item["trades"],len(item["trade_audit"]))
         self.assertEqual(result["embargo_bars"],20)
 
+    def test_aud50_vs_aud100_inclusive_entry_audit(self):
+        bars=synthetic()
+        for cap in (50,100):
+            out=replay(bars,305,len(bars),"h50_200",
+                max_entry_debit=cap,audit=True)
+            self.assertGreater(out["trades"],0)
+            for trade in out["trade_audit"]:
+                self.assertLessEqual(trade["entry_debit_aud"],cap+1e-8)
+                self.assertLessEqual(trade["entry_debit_aud"],
+                    trade["cash_before_entry_aud"]*.1+1e-8)
+                self.assertAlmostEqual(trade["net"],
+                    trade["gross"]-trade["fees"]-trade["spread"]-
+                    trade["slippage"],places=6)
+        with self.assertRaises(ValueError):
+            replay(bars,305,len(bars),"h50_200",max_entry_debit=100.01)
+
     def test_gap_isolation_and_no_promotion(self):
         events,provenance=load_calendar()
         bars=synthetic()+synthetic(offset=1302)
@@ -73,5 +89,6 @@ class V34Tests(unittest.TestCase):
         self.assertEqual(report["segment_bar_counts"],[1300,1300])
         self.assertEqual(report["selected_android_policy"],"HOLD")
         self.assertEqual(report["max_inclusive_entry_debit_aud"],100)
+        self.assertEqual(set(report["aggregate_position_sensitivity_aud50_vs_aud100"]),{"50","100"})
 
 if __name__=="__main__":unittest.main()
