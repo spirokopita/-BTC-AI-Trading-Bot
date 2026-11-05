@@ -1,0 +1,39 @@
+name: V34 systematic RBA calendar and macro ablations
+on:
+  push:
+    paths:
+      - 'data/rba_policy_calendar_2020_2025.json'
+      - 'research/v31_hysteresis.py'
+      - 'research/v34_rba_systematic.py'
+      - 'tests/test_v34_rba_systematic.py'
+      - '.github/workflows/v34-rba-systematic.yml'
+  pull_request:
+    paths:
+      - 'data/rba_policy_calendar_2020_2025.json'
+      - 'research/v31_hysteresis.py'
+      - 'research/v34_rba_systematic.py'
+      - 'tests/test_v34_rba_systematic.py'
+      - '.github/workflows/v34-rba-systematic.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run deterministic V27 V31 V33 V34 safety and cost tests
+        run: |
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+          python -m unittest discover -s tests -p 'test_v31_hysteresis.py' -v
+          python -m unittest discover -s tests -p 'test_v33_cross_regime.py' -v
+          python -m unittest discover -s tests -p 'test_v34_rba_systematic.py' -v
+      - name: Evaluate official Kraken archive across all gap-free segments
+        run: python -m research.v34_rba_systematic --output audit/v34-rba-systematic.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v34-rba-systematic
+          path: audit/v34-rba-systematic.json
