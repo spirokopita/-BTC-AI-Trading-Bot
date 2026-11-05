@@ -95,10 +95,12 @@ def fold(bars, events):
     study["rows"]=[{k:v for k,v in row.items() if k!="direction_aligned_excess_pct"}
         for row in study["rows"]]
     sizing={str(cap):{
-        name:replay(bars,te,n,name,max_entry_debit=cap,
+        label:replay(bars,te,n,base,max_entry_debit=cap,
             entry_veto=(veto_factory(events,48) if gated else None))
-        for name,gated in (("h50_200",False),("h50_200_rba_48h",True),
-                           ("h80_300",False),("h80_300_rba_48h",True))}
+        for label,base,gated in (("h50_200","h50_200",False),
+            ("h50_200_rba_48h","h50_200",True),
+            ("h80_300","h80_300",False),
+            ("h80_300_rba_48h","h80_300",True))}
         for cap in (50,100)}
     eligible=[e for e in events if bars[te][0]<=e["available_ts"]<=bars[-1][0]]
     return dict(bars=n, test_start_utc=datetime.fromtimestamp(
