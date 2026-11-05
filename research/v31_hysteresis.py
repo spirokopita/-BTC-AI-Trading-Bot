@@ -54,13 +54,14 @@ def decision(bars, i, name, holding=False, held=0, events=()):
         return "BUY"
     return "HOLD"
 
-def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_veto=None):
+def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_veto=None, max_entry_debit=CAP):
     if name not in VARIANTS or start < WARMUP or end > len(bars) or end-start < 3:
         raise ValueError("Invalid replay segment")
     if not .5 <= cost_mult <= 2: raise ValueError("Invalid cost multiplier")
+    if not 0 < max_entry_debit <= CAP: raise ValueError("Invalid paper entry cap")
     if any(bars[k][0]-bars[k-1][0] != STEP for k in range(start-WARMUP+1,end)):
         raise ValueError("Candle gap: fail closed")
-    cash=CASH; qty=0.; entry=None; entry_mid=0.; entry_i=None
+    cash=CASH; qty=0.; entry=None; entry_mid=0.; entry_i=None; entry_cash_before=None
     last_exit=-COOLDOWN; rows=[]; equity=[cash]; actions=[]
     for i in range(start,end):
         mid=bars[i][1]
@@ -72,23 +73,26 @@ def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_v
             action="HOLD"
         if audit: actions.append((bars[i][0], bars[i-1][0], action))
         if action=="BUY" and not qty:
-            budget=min(CAP,.1*cash)
+            budget=min(max_entry_debit,.1*cash)
             qty=budget/(mid*(1+(SPREAD+SLIPPAGE)*cost_mult)*(1+FEE*cost_mult))
             entry=execution(mid,qty,"buy",cost_mult)
             debit=entry["notional"]+entry["fee"]
-            if debit>budget+1e-8 or debit>CAP+1e-8: raise AssertionError("Entry debit exceeds cap")
+            if debit>budget+1e-8 or debit>max_entry_debit+1e-8: raise AssertionError("Entry debit exceeds cap")
+            entry_cash_before=cash
             cash-=debit; entry_mid=mid; entry_i=i
         elif action=="SELL" and qty:
             out=execution(mid,qty,"sell",cost_mult)
             cash+=out["notional"]-out["fee"]
             row=dict(entry_ts=bars[entry_i][0],exit_ts=bars[i][0],
+                entry_debit_aud=entry["notional"]+entry["fee"],
+                cash_before_entry_aud=entry_cash_before,
                 gross=qty*(mid-entry_mid),fees=entry["fee"]+out["fee"],
                 spread=entry["spread"]+out["spread"],
                 slippage=entry["slippage"]+out["slippage"])
             row["net"]=row["gross"]-row["fees"]-row["spread"]-row["slippage"]
             if not math.isclose(row["net"],out["notional"]-out["fee"]-entry["notional"]-entry["fee"],abs_tol=1e-8):
                 raise AssertionError("NET accounting mismatch")
-            rows.append(row);qty=0.;entry=None;entry_i=None;last_exit=i
+            rows.append(row);qty=0.;entry=None;entry_i=None;entry_cash_before=None;last_exit=i
         marked=cash
         if qty:
             out=execution(mid,qty,"sell",cost_mult)
