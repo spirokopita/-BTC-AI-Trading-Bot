@@ -54,7 +54,7 @@ def decision(bars, i, name, holding=False, held=0, events=()):
         return "BUY"
     return "HOLD"
 
-def replay(bars, start, end, name, events=(), cost_mult=1., audit=False):
+def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_veto=None):
     if name not in VARIANTS or start < WARMUP or end > len(bars) or end-start < 3:
         raise ValueError("Invalid replay segment")
     if not .5 <= cost_mult <= 2: raise ValueError("Invalid cost multiplier")
@@ -67,6 +67,9 @@ def replay(bars, start, end, name, events=(), cost_mult=1., audit=False):
         action=("SELL" if qty else "HOLD") if i==end-1 else decision(
             bars,i,name,bool(qty),i-entry_i if qty else 0,events)
         if not qty and i < last_exit+COOLDOWN: action="HOLD"
+        # Optional strictly-as-of event-risk gate: suppress BUY only; never block protective SELL.
+        if action=="BUY" and entry_veto is not None and entry_veto(bars[i][0]):
+            action="HOLD"
         if audit: actions.append((bars[i][0], bars[i-1][0], action))
         if action=="BUY" and not qty:
             budget=min(CAP,.1*cash)
