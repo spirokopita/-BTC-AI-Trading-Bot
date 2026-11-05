@@ -81,6 +81,8 @@ def fold(bars, events):
                 entry_veto=veto_factory(events,hours))
         outcomes[f"{name}_rba_48h_delayed_placebo"]=replay(bars,te,n,name,
             audit=True,entry_veto=veto_factory(events,48,PLACEBO_SHIFT_HOURS))
+    if selected not in outcomes and selected!="HOLD":
+        outcomes[selected]=replay(bars,te,n,selected,audit=True)
     for value in outcomes.values():
         value.pop("decision_audit",None)
     study=matched_study(bars,events)
