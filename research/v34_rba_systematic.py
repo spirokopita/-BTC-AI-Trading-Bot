@@ -83,6 +83,8 @@ def fold(bars, events):
             audit=True,entry_veto=veto_factory(events,48,PLACEBO_SHIFT_HOURS))
     if selected not in outcomes and selected!="HOLD":
         outcomes[selected]=replay(bars,te,n,selected,audit=True)
+    if "h30_120" not in outcomes:
+        outcomes["h30_120"]=replay(bars,te,n,"h30_120",audit=True)
     for value in outcomes.values():
         value.pop("decision_audit",None)
     study=matched_study(bars,events)
