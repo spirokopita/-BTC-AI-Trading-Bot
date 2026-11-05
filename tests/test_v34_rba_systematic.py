@@ -64,6 +64,10 @@ class V34Tests(unittest.TestCase):
                 item["spread_aud"]-item["slippage_aud"],places=4)
             self.assertEqual(item["trades"],len(item["trade_audit"]))
         self.assertEqual(result["embargo_bars"],20)
+        for row in result["event_study"]["absolute_move_comparison"]:
+            self.assertAlmostEqual(row["mean_abs_move_excess_pct"],
+                row["mean_event_abs_move_pct"]-
+                row["mean_prior_control_abs_move_pct"],places=4)
 
     def test_aud50_vs_aud100_inclusive_entry_audit(self):
         bars=synthetic()
