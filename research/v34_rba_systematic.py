@@ -94,6 +94,12 @@ def fold(bars, events):
     # Neutral scheduled events have no sentiment-aligned trading direction.
     study["rows"]=[{k:v for k,v in row.items() if k!="direction_aligned_excess_pct"}
         for row in study["rows"]]
+    sizing={str(cap):{
+        name:replay(bars,te,n,name,max_entry_debit=cap,
+            entry_veto=(veto_factory(events,48) if gated else None))
+        for name,gated in (("h50_200",False),("h50_200_rba_48h",True),
+                           ("h80_300",False),("h80_300_rba_48h",True))}
+        for cap in (50,100)}
     eligible=[e for e in events if bars[te][0]<=e["available_ts"]<=bars[-1][0]]
     return dict(bars=n, test_start_utc=datetime.fromtimestamp(
         bars[te][0],timezone.utc).isoformat(),test_end_utc=datetime.fromtimestamp(
@@ -101,6 +107,7 @@ def fold(bars, events):
         train_validation_selected=selected, selected_test_net_aud=(
             outcomes[selected]["net_aud"] if selected in outcomes else 0),
         rba_events_in_test=len(eligible),event_study=study,
+        position_sensitivity=sizing,
         strategies=outcomes,sma=simulate(bars,te,n,"sma"),
         momentum=simulate(bars,te,n,"momentum"),
         rsi=simulate(bars,te,n,"rsi"),
@@ -126,10 +133,14 @@ def evaluate(bars, market, events, provenance):
         f["strategies"][name]["trade_audit"]!=
         f["strategies"][name.split("_rba_")[0]]["trade_audit"]
         for f in folds) for name in ablations}
+    size_totals={cap:{name:summary([f["position_sensitivity"][cap][name]
+        for f in folds]) for name in folds[0]["position_sensitivity"][cap]}
+        for cap in ("50","100")} if folds else {}
     return dict(mode="V34_PAPER_ONLY_PREVIOUSLY_INSPECTED_EXPLORATORY",
         market=market,calendar=provenance,eligible_segments=len(slices),
         segment_bar_counts=[b-a for a,b in slices],folds=folds,
         aggregate_independent_reset_accounts=totals,
+        aggregate_position_sensitivity_aud50_vs_aud100=size_totals,
         aggregate_ablation_delta_aud=ablations,
         folds_with_changed_trade_audit=changed,
         aggregate_same_stake_buyhold_net_aud=round(
