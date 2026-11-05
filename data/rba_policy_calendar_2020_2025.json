@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "dataset_type": "RETROSPECTIVE_COMPLETE_RBA_POLICY_DECISION_DATE_INDEX_2020_2025_NOT_FIRST_OBSERVED",
+  "coverage": "ALL RBA policy decision dates listed on each official annual index for 2020-2025, INCLUDING unchanged-rate meetings; excludes other macro news and unscheduled RBA speeches.",
+  "source_timezone": "Australia/Sydney",
+  "release_clock_local": "14:30",
+  "availability_policy": "Conservative assumed first usability 24 hours after official scheduled 14:30 local announcement; no actual historic ingestion or revision timestamp available; NEVER use before this.",
+  "limitations": [
+    "Official index dates and stated 14:30 release schedule verified; original article revisions, exact historical first-observation and historical future meeting schedule not verified.",
+    "Event occurrence is not a signed bullish/bearish surprise; all labels NEUTRAL and post-release only.",
+    "Preselected calendar independent of BTC returns, but BTC price periods already inspected; all analysis EXPLORATORY."
+  ],
+  "source_index_urls": [
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+    "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/"
+  ],
+  "events": [
+    {
+      "id": "rba_2020-02-04",
+      "local_date": "2020-02-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-03-03",
+      "local_date": "2020-03-03",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-03-19",
+      "local_date": "2020-03-19",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-04-07",
+      "local_date": "2020-04-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-05-05",
+      "local_date": "2020-05-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-06-02",
+      "local_date": "2020-06-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-07-07",
+      "local_date": "2020-07-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-08-04",
+      "local_date": "2020-08-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-09-01",
+      "local_date": "2020-09-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-10-06",
+      "local_date": "2020-10-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-11-03",
+      "local_date": "2020-11-03",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2020-12-01",
+      "local_date": "2020-12-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2020/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-02-02",
+      "local_date": "2021-02-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-03-02",
+      "local_date": "2021-03-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-04-06",
+      "local_date": "2021-04-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-05-04",
+      "local_date": "2021-05-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-06-01",
+      "local_date": "2021-06-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-07-06",
+      "local_date": "2021-07-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-08-03",
+      "local_date": "2021-08-03",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-09-07",
+      "local_date": "2021-09-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-10-05",
+      "local_date": "2021-10-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-11-02",
+      "local_date": "2021-11-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2021-12-07",
+      "local_date": "2021-12-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2021/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-02-01",
+      "local_date": "2022-02-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-03-01",
+      "local_date": "2022-03-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-04-05",
+      "local_date": "2022-04-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-05-03",
+      "local_date": "2022-05-03",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-06-07",
+      "local_date": "2022-06-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-07-05",
+      "local_date": "2022-07-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-08-02",
+      "local_date": "2022-08-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-09-06",
+      "local_date": "2022-09-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-10-04",
+      "local_date": "2022-10-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-11-01",
+      "local_date": "2022-11-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2022-12-06",
+      "local_date": "2022-12-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2022/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-02-07",
+      "local_date": "2023-02-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-03-07",
+      "local_date": "2023-03-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-04-04",
+      "local_date": "2023-04-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-05-02",
+      "local_date": "2023-05-02",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-06-06",
+      "local_date": "2023-06-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-07-04",
+      "local_date": "2023-07-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-08-01",
+      "local_date": "2023-08-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-09-05",
+      "local_date": "2023-09-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-10-03",
+      "local_date": "2023-10-03",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-11-07",
+      "local_date": "2023-11-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2023-12-05",
+      "local_date": "2023-12-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2023/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-02-06",
+      "local_date": "2024-02-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-03-19",
+      "local_date": "2024-03-19",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-05-07",
+      "local_date": "2024-05-07",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-06-18",
+      "local_date": "2024-06-18",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-08-06",
+      "local_date": "2024-08-06",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-09-24",
+      "local_date": "2024-09-24",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-11-05",
+      "local_date": "2024-11-05",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2024-12-10",
+      "local_date": "2024-12-10",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2024/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-02-18",
+      "local_date": "2025-02-18",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-04-01",
+      "local_date": "2025-04-01",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-05-20",
+      "local_date": "2025-05-20",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-07-08",
+      "local_date": "2025-07-08",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-08-12",
+      "local_date": "2025-08-12",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-09-30",
+      "local_date": "2025-09-30",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-11-04",
+      "local_date": "2025-11-04",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    },
+    {
+      "id": "rba_2025-12-09",
+      "local_date": "2025-12-09",
+      "source_index_url": "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2025/",
+      "category": "australia_monetary_policy_decision",
+      "sentiment": 0
+    }
+  ]
+}
