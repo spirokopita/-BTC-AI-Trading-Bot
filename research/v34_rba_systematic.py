@@ -88,6 +88,28 @@ def fold(bars, events):
     for value in outcomes.values():
         value.pop("decision_audit",None)
     study=matched_study(bars,events)
+    # Volatility question is distinct from direction: absolute open-to-open move,
+    # with NO trading fees because it is a market-movement diagnostic.
+    index={bar[0]:i for i,bar in enumerate(bars)}
+    for row in study["rows"]:
+        i=index[row["event_open_ts"]];h=row["horizon_bars"]
+        actual=abs(100*(bars[i+h][1]/bars[i][1]-1))
+        control=statistics.mean(abs(100*(
+            bars[index[t]+h][1]/bars[index[t]][1]-1))
+            for t in row["control_open_ts"])
+        row["event_abs_move_pct"]=round(actual,6)
+        row["prior_control_abs_move_pct"]=round(control,6)
+        row["abs_move_excess_pct"]=round(actual-control,6)
+    study["absolute_move_comparison"]=[dict(horizon_bars=h,
+        n_events=len(rows),mean_event_abs_move_pct=round(statistics.mean(
+            r["event_abs_move_pct"] for r in rows),6),
+        mean_prior_control_abs_move_pct=round(statistics.mean(
+            r["prior_control_abs_move_pct"] for r in rows),6),
+        mean_abs_move_excess_pct=round(statistics.mean(
+            r["abs_move_excess_pct"] for r in rows),6),
+        events_higher_abs_move=sum(r["abs_move_excess_pct"]>0 for r in rows))
+        for h in (1,6,12)
+        if (rows:=[r for r in study["rows"] if r["horizon_bars"]==h])]
     study["summary"]=[{k:v for k,v in row.items() if k not in (
         "mean_direction_aligned_excess_pct","direction_aligned_positive",
         "descriptive_signflip_p")} for row in study["summary"]]
