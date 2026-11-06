@@ -2,7 +2,7 @@
   "schema_version": 1,
   "dataset_type": "RETROSPECTIVE_SEARCH_DISCOVERED_NONREPRESENTATIVE_NEWS_V35_NOT_FIRST_OBSERVED",
   "collection_date_utc": "2026-11-06",
-  "sampling_protocol": "Fixed query themes crypto/Bitcoin regulation and Reuters/Euronews for years 2021-2025; search ranking and availability are nonrandom. All found verified timestamped items retained including opinion and market-following recaps. Not complete monthly sampling, representative feed, or proof of contemporaneous version.",
+  "sampling_protocol": "Search-discovered Euronews/Reuters cryptocurrency/regulatory reporting across 2021-2026 using year/topic queries; search ranking and availability are nonrandom. Includes opinion, market-following recaps, ordinary policy reporting, and the 2026 market period. NOT representative, not complete monthly sampling, no return-based article selection.",
   "availability_policy": "Use max(displayed published, displayed latest known update) +24h; missing update timestamp means unknown, not confirmed unchanged. This is a conservative assumed delay, NOT genuine historical first observed.",
   "articles": [
     {
@@ -155,6 +155,88 @@
       "market_following": false,
       "url": "https://www.euronews.com/business/2025/10/07/kazakhstans-quiet-revolution-crypto-ai-and-a-tech-transformation",
       "displayed_time": "16:20 GMT+2, updated 9 Dec 07:45 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "eu_tax_20260529",
+      "published_at_utc": "2026-05-29T15:31:00Z",
+      "category": "tax_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/my-europe/2026/05/29/eu-taxes-on-digital-services-gambling-crypto-could-yield-up-to-11-billion-per-year-commiss",
+      "displayed_time": "17:31 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "digital_euro_20260623",
+      "published_at_utc": "2026-06-23T13:05:00Z",
+      "updated_at_utc": "2026-06-23T13:24:00Z",
+      "category": "digital_currency_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/2026/06/23/european-parliament-backs-long-awaited-digital-euro-to-reduce-us-dominance-in-payments",
+      "displayed_time": "15:05 GMT+2, updated 15:24",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "eu_mica_20260624",
+      "published_at_utc": "2026-06-24T09:57:00Z",
+      "updated_at_utc": "2026-06-24T15:45:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/2026/06/24/europes-crypto-reset-mica-creates-a-single-market-as-hundreds-of-firms-face-exit",
+      "displayed_time": "11:57 GMT+2, updated 17:45",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "binance_eu_20260625",
+      "published_at_utc": "2026-06-25T18:43:00Z",
+      "category": "exchange_regulation",
+      "market_following": false,
+      "url": "https://www.euronews.com/2026/06/25/binance-to-halt-crypto-services-across-eu-countries-after-failing-to-secure-mica-approval",
+      "displayed_time": "20:43 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "eu_mica_20260708",
+      "published_at_utc": "2026-07-08T14:04:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/my-europe/2026/07/08/exclusive-eu-to-revise-crypto-rules-in-2027-amid-trumps-push-for-digital-assets",
+      "displayed_time": "16:04 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "us_sec_20260819",
+      "published_at_utc": "2026-08-19T14:11:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/business/2026/08/19/sec-unveils-new-crypto-rules-hailed-as-a-win-for-the-digital-asset-industry",
+      "displayed_time": "16:11 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "btc_rally_20260821",
+      "published_at_utc": "2026-08-21T10:42:00Z",
+      "category": "price_recap",
+      "market_following": true,
+      "url": "https://www.euronews.com/2026/08/21/bitcoin-surges-over-25-as-shorts-get-squeezed-and-washington-leans-into-crypto",
+      "displayed_time": "12:42 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "ecb_stable_20260922",
+      "published_at_utc": "2026-09-22T13:18:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/2026/09/22/ecb-calls-for-tougher-eu-crypto-rules-and-wider-ban-on-stablecoin-interest",
+      "displayed_time": "15:18 GMT+2",
       "source": "Euronews / Reuters",
       "revision_history_complete": false
     }
