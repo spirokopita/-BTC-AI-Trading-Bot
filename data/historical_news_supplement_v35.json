@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "dataset_type": "RETROSPECTIVE_SEARCH_DISCOVERED_NONREPRESENTATIVE_NEWS_V35_NOT_FIRST_OBSERVED",
+  "collection_date_utc": "2026-11-06",
+  "sampling_protocol": "Fixed query themes crypto/Bitcoin regulation and Reuters/Euronews for years 2021-2025; search ranking and availability are nonrandom. All found verified timestamped items retained including opinion and market-following recaps. Not complete monthly sampling, representative feed, or proof of contemporaneous version.",
+  "availability_policy": "Use max(displayed published, displayed latest known update) +24h; missing update timestamp means unknown, not confirmed unchanged. This is a conservative assumed delay, NOT genuine historical first observed.",
+  "articles": [
+    {
+      "id": "eu_aml_20210721",
+      "published_at_utc": "2021-07-21T10:57:00Z",
+      "updated_at_utc": "2021-08-26T14:07:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2021/07/21/eu-will-make-bitcoin-traceable-and-ban-anonymous-crypto-wallets-in-anti-money-laundering-d",
+      "displayed_time": "12:57 GMT+2, updated 26 Aug 16:07 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "china_20210924",
+      "published_at_utc": "2021-09-24T11:35:00Z",
+      "category": "regulatory_crackdown",
+      "market_following": true,
+      "url": "https://www.euronews.com/next/2021/09/24/crypto-currency-china",
+      "displayed_time": "13:35 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "dim_on_20211011",
+      "published_at_utc": "2021-10-11T20:05:00Z",
+      "category": "market_commentary",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2021/10/11/imf-world-bank-iif-jpmorgan",
+      "displayed_time": "22:05 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "eu_risk_20220317",
+      "published_at_utc": "2022-03-17T11:05:00Z",
+      "category": "consumer_warning",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2022/03/17/eu-crypto-regulator",
+      "displayed_time": "12:05 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "iosco_defi_20220324",
+      "published_at_utc": "2022-03-24T11:45:00Z",
+      "category": "regulatory_commentary",
+      "market_following": false,
+      "url": "https://www.euronews.com/2022/03/24/fintech-crypto-defi",
+      "displayed_time": "12:45 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "sa_crypto_20221019",
+      "published_at_utc": "2022-10-19T21:05:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2022/10/19/safrica-crypto-currency",
+      "displayed_time": "23:05 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "uk_crypto_20221027",
+      "published_at_utc": "2022-10-27T18:50:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2022/10/27/crypto-currency-britain",
+      "displayed_time": "20:50 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "us_banks_20230103",
+      "published_at_utc": "2023-01-03T19:10:00Z",
+      "category": "banking_regulation",
+      "market_following": false,
+      "url": "https://www.euronews.com/2023/01/03/fintech-crypto-bank-regulation",
+      "displayed_time": "20:10 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "btc_recap_20230121",
+      "published_at_utc": "2023-01-21T11:35:00Z",
+      "category": "price_recap",
+      "market_following": true,
+      "url": "https://www.euronews.com/next/2023/01/21/fintech-cryptocurrency-bitcoin",
+      "displayed_time": "12:35 GMT+1, refiled",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "cryptoverse_20230131",
+      "published_at_utc": "2023-01-31T06:20:00Z",
+      "category": "price_recap",
+      "market_following": true,
+      "url": "https://www.euronews.com/2023/01/31/fintech-crypto-weekly",
+      "displayed_time": "07:20 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "uk_opinion_20240202",
+      "published_at_utc": "2024-02-02T13:27:00Z",
+      "category": "opinion",
+      "market_following": false,
+      "url": "https://www.euronews.com/2024/02/02/the-patchwork-of-uk-crypto-regulation-is-still-too-complex-to-bring-real-benefit",
+      "displayed_time": "14:27 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "mica_20240624",
+      "published_at_utc": "2024-06-24T06:01:00Z",
+      "updated_at_utc": "2024-07-12T19:32:00Z",
+      "category": "regulatory_policy",
+      "market_following": false,
+      "url": "https://www.euronews.com/2024/06/24/cryptocurrency-law-coming-in-prepare-for-a-bumpy-ride",
+      "displayed_time": "08:01 GMT+2, updated 12 Jul 21:32 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "eu_crypto_20241122",
+      "published_at_utc": "2024-11-22T07:00:00Z",
+      "category": "regulatory_commentary",
+      "market_following": false,
+      "url": "https://www.euronews.com/2024/11/22/will-trump-steal-the-eus-crypto-crown",
+      "displayed_time": "08:00 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "poland_20250822",
+      "published_at_utc": "2025-08-22T13:17:00Z",
+      "category": "regulatory_commentary",
+      "market_following": false,
+      "url": "https://www.euronews.com/next/2025/08/22/will-overregulation-mean-poland-and-europe-miss-out-on-crypto",
+      "displayed_time": "15:17 GMT+2",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    },
+    {
+      "id": "kazakh_20251007",
+      "published_at_utc": "2025-10-07T14:20:00Z",
+      "updated_at_utc": "2025-12-09T06:45:00Z",
+      "category": "policy_analysis",
+      "market_following": false,
+      "url": "https://www.euronews.com/business/2025/10/07/kazakhstans-quiet-revolution-crypto-ai-and-a-tech-transformation",
+      "displayed_time": "16:20 GMT+2, updated 9 Dec 07:45 GMT+1",
+      "source": "Euronews / Reuters",
+      "revision_history_complete": false
+    }
+  ]
+}
