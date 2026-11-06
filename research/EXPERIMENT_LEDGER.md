@@ -1,3 +1,21 @@
+## V35 — 2026-11-07: retrospective news-reaction study, no Android promotion (PR #18)
+
+**BLOCKER:** Need genuinely untouched positive-NET OOS with representative point-in-time article versions and realistic fills; unavailable. PAPER ONLY HOLD.
+
+**DATA:** Official Kraken XBTAUD_240.csv SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e, 13,763 4h bars/20 gaps, three eligible segments 6863/3398/1999. News: 23 new source-linked retrospective articles 2021–2026, 4 market-following excluded, 19 retained; plus 19 earlier curated and 61 RBA events = 99 event timestamps. Availability: new V35 articles +24h after latest displayed revision, V29 curated +1h, V31 curated +24h, scheduled RBA +24h after indexed release; all ASSUMED, historical first-observed and complete revision histories unverified. Search ranking means news coverage is NOT representative. 23 anchors eligible across test folds; 16 of those did not clear 0.5% reaction threshold, not necessarily missed profitable trades.
+
+**ALGORITHM:** Fixed 0.5%/1% post-availability 4h reaction thresholds, next-open hypothetical BUY, 24h fixed hold then next-open SELL; independent reset A$1000 accounts, <=A$100 inclusive and <=10% cash, taker 80bps plus 5bps half-spread +5bps slippage per side. 50/20/30 train/validation/test, 20-bar embargo; train+validation-only selector required >=3 trades and positive NET in both; selected HOLD/HOLD/HOLD. Delayed placebo 7d and 28d, ordinary-only/prior-only/scheduled-only ablations. No future information in decision; historical dataset was previously inspected.
+
+**TEST NET:** 0.5% combined 7 trades gross +11.486189 fees 11.182399 spread .698905 slippage .698905 NET **-1.094021**; 1% 2 trades NET **+1.352762** insufficient. Ordinary-only 4 trades NET -1.384531; prior curated 1 trade +1.438152; scheduled RBA 2 trades -1.147642. 7d delayed placebo 10 trades -2.106931; 28d delayed 2 trades -2.682510. Same-stake buy/hold +129.286037; H80/300 hindsight +38.454151. Selector NET 0 because HOLD all folds. Worst 0.5% fold DD -0.472732%. Half/standard/double costs +5.227226/-1.094021/-13.532048; A$50 -0.543419 vs A$100 -1.094021.
+
+**BASELINE REGRESSION:** SMA 118 trades -119.682481; momentum 242 -374.775403; RSI 158 -225.519567; breakout 133 -197.561916; volatility regime 267 -407.787388; trend ATR 20 -27.686213. All A$ NET across three independent test accounts.
+
+**TESTS/ARTIFACT:** GitHub Actions 42306385487 PASSED 8 V35 +7 V34 +5 V27 =20 deterministic tests and official archive study. Artifact 13546711827, JSON SHA256 c5dd96b5a34794b4f3b7331f3fd2e612023dd5fdb9ac3e1b039fede4dd2c62ca. `python -m unittest discover -s tests -p 'test_v35_news_reaction.py' -v`; `python -m research.v35_news_reaction --output audit/v35-news-reaction.json`.
+
+**DONE** research source, dataset, safety tests, workflow, real archive evaluation. **PARTIAL** representative article coverage, revision archives, order-book fills, untouched OOS. **BLOCKED** promotion. **NOT ATTEMPTED** APK/live. **NEXT** independent archival news feed with historical first-seen snapshots, preregistered news feature selection and genuine future validation. Preserve Android V27 PAPER HOLD and A$100/10% cap.
+
+---
+
 ## V34 — 2026-11-06: outcome-independent RBA policy-event coverage, cost-aware risk veto (PR #17)
 
 **BLOCKER QUESTION:** Can a strategy selected only on earlier data achieve independently untouched OOS positive NET, with verified point-in-time news and real fill assumptions? Not demonstrated. PAPER ONLY HOLD; no Android promotion.

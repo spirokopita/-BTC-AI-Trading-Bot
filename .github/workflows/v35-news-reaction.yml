@@ -1,0 +1,36 @@
+name: V35 retrospective news reaction and causal ablations
+on:
+  push:
+    paths:
+      - 'data/historical_news_supplement_v35.json'
+      - 'research/v35_news_reaction.py'
+      - 'tests/test_v35_news_reaction.py'
+      - '.github/workflows/v35-news-reaction.yml'
+  pull_request:
+    paths:
+      - 'data/historical_news_supplement_v35.json'
+      - 'research/v35_news_reaction.py'
+      - 'tests/test_v35_news_reaction.py'
+      - '.github/workflows/v35-news-reaction.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run V35 and previous risk safety regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_v35_news_reaction.py' -v
+          python -m unittest discover -s tests -p 'test_v34_rba_systematic.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Official Kraken historical cross-regime event reaction research
+        run: python -m research.v35_news_reaction --output audit/v35-news-reaction.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v35-news-reaction
+          path: audit/v35-news-reaction.json
