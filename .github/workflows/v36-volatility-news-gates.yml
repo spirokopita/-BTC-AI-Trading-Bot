@@ -1,0 +1,56 @@
+name: V36 cost-aware volatility and news regime research
+on:
+  push:
+    paths:
+      - 'research/v36_volatility_news_gates.py'
+      - 'tests/test_v36_volatility_news_gates.py'
+      - '.github/workflows/v36-volatility-news-gates.yml'
+  pull_request:
+    paths:
+      - 'research/v36_volatility_news_gates.py'
+      - 'tests/test_v36_volatility_news_gates.py'
+      - '.github/workflows/v36-volatility-news-gates.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V36 causal leakage and risk tests, plus V35 and V27 regression
+        run: |
+          python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v
+          python -m unittest discover -s tests -p 'test_v35_news_reaction.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Official Kraken historical cost-aware regime study
+        run: python -m research.v36_volatility_news_gates --output audit/v36-volatility-news-gates.json
+      - name: Verify audit reconciliation and print concise full-cost report
+        run: |
+          python - <<'PY'
+          import json, hashlib, pathlib
+          p=pathlib.Path('audit/v36-volatility-news-gates.json')
+          raw=p.read_bytes()
+          x=json.loads(raw)
+          print('V36_JSON_SHA256',hashlib.sha256(raw).hexdigest())
+          print('NEWS_COVERAGE',json.dumps(x['news_coverage'],sort_keys=True))
+          for name,r in x['aggregate_independent_reset_accounts'].items():
+              assert abs(r['gross_aud']-r['fees_aud']-r['spread_aud']-r['slippage_aud']-r['net_aud'])<.000004
+              print('STRATEGY',name,'TRADES',r['trades'],'GROSS',r['gross_aud'],
+                    'FEES',r['fees_aud'],'SPREAD',r['spread_aud'],
+                    'SLIPPAGE',r['slippage_aud'],'NET',r['net_aud'],
+                    'WORST_FOLD_DD_PCT',x['worst_fold_drawdown_pct'][name])
+          print('SELECTED_NET',x['selected_test_net_aud'],'BUYHOLD_NET',x['buyhold_aud'])
+          print('COST_SENSITIVITY',json.dumps([f['cost_sensitivity'] for f in x['folds']]))
+          print('SIZE_SENSITIVITY',json.dumps([f['size_sensitivity'] for f in x['folds']]))
+          print('BASELINE_NET',json.dumps({k:round(sum(f['baseline_regression'][k]['net_aud'] for f in x['folds']),6)
+                for k in x['folds'][0]['baseline_regression']}))
+          print('FOLD_SELECTORS',json.dumps([f['train_validation_selected'] for f in x['folds']]))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v36-volatility-news-gates
+          path: audit/v36-volatility-news-gates.json
