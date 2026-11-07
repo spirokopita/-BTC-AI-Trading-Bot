@@ -1,3 +1,19 @@
+## V36 — 2026-11-08: cost-hurdle/volatility gates and as-of article veto (PR #19)
+
+**BLOCKER:** Earlier-data selector HOLD in all 3 segments. Historical prices previously inspected; article availability reconstructed, not genuine first observed; real fills absent. No Android promotion, PAPER ONLY HOLD.
+
+**DATA:** Official Kraken XBTAUD_240.csv member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e; 13,763 4h candles/20 gaps, segments 6863/3398/1999. 38 retrospective article events, 61 scheduled RBA events; article events by 2020–2026 year 0/6/16/3/4/2/7, 57/84 months empty; 0 historical article versions independently first observed. News +1h/+24h assumed after displayed publication/revision; not evidence of actual historical availability. No fresh OHLC/new articles this run.
+
+**ALGORITHM:** H80/300 or H50/200 hysteresis; predeclared 2.5% fast/slow MA hurdle, 42/126-bar completed-candle volatility ratio >1.5 veto, retrospective article-only 7d as-of entry veto, +7d shifted placebo. BUY veto only; SELL not blocked. Three chronological 50/20/30 train/validation/test partitions with 20-bar embargo, earlier-data-only selection; 3 independently reset A$1000 wallets, A$100 inclusive debit/10% cash; 80bps taker +5bps half-spread +5bps slippage per side. Test history exploratory NOT untouched.
+
+**TEST NET A$:** H80 base 7 trades gross 51.333281 fees 11.448071 spread .715531 slippage .715531 NET +38.454151; H80 hurdle 7 trades gross 31.523430 fees 11.288391 spread .705540 slippage .705540 NET +18.823957; volatility-only and news-only H80 both identical to H80 base; hurdle+vol+article veto 7 trades gross 28.784422 fees 11.266501 spread .704171 slippage .704171 NET +16.109578; +7d placebo NET +18.823957; H50 hurdle+vol 9 trades NET +8.473316. News addition delta -2.714379, no predictive benefit. Selected HOLD/HOLD/HOLD test NET 0. A$100 buy/hold +129.286037. Worst H80 hurdle+vol fold DD -4.344621%, folds +16.274874/-6.076577/+8.625660. Half/standard/double costs aggregate +25.365534/+18.823957/+5.945753. A$50 same strategy +9.825531 vs A$100 +18.823957. SMA/momentum/RSI/breakout/regime/trend-ATR baselines -119.682481/-374.775403/-225.519567/-197.561916/-407.787388/-27.686213.
+
+**TESTS/REPRODUCE:** CI run 42420540363 PASSED 10 V36 +8 V35 +5 V27 =23 deterministic tests and official Kraken archive study. Artifact 13592359512; report SHA256 a507fac67eb8434638abd42cb8523f8e57bf33ce9cdf3bbf88204a74aadfedf6. `python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v`; `python -m research.v36_volatility_news_gates --output audit/v36-volatility-news-gates.json`.
+
+**DONE** new cost-aware regime features, chronological ablations, negative control, news coverage audit, fees/caps and loss tests, CI. **PARTIAL** broad article provenance and representative sampling, untouched OOS, actual fills. **BLOCKED** Android promotion. **NOT ATTEMPTED** APK/live. **NEXT** consistent news archive with historical first-seen versions, broader non-headline sampling, independent forward data and robust maker adverse-selection simulation.
+
+---
+
 ## V35 — 2026-11-07: retrospective news-reaction study, no Android promotion (PR #18)
 
 **BLOCKER:** Need genuinely untouched positive-NET OOS with representative point-in-time article versions and realistic fills; unavailable. PAPER ONLY HOLD.
