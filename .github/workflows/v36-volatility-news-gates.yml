@@ -1,0 +1,34 @@
+name: V36 cost-aware volatility and news regime research
+on:
+  push:
+    paths:
+      - 'research/v36_volatility_news_gates.py'
+      - 'tests/test_v36_volatility_news_gates.py'
+      - '.github/workflows/v36-volatility-news-gates.yml'
+  pull_request:
+    paths:
+      - 'research/v36_volatility_news_gates.py'
+      - 'tests/test_v36_volatility_news_gates.py'
+      - '.github/workflows/v36-volatility-news-gates.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V36 causal leakage and risk tests, plus V35 and V27 regression
+        run: |
+          python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v
+          python -m unittest discover -s tests -p 'test_v35_news_reaction.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Official Kraken historical cost-aware regime study
+        run: python -m research.v36_volatility_news_gates --output audit/v36-volatility-news-gates.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v36-volatility-news-gates
+          path: audit/v36-volatility-news-gates.json
