@@ -388,16 +388,28 @@ def source_fetch(source, retrieved):
                 for x in extract_rows(obj)) if r], "RECENT_ONLY_NOT_2020_2026_ARCHIVE"
     if source == "common_crawl":
         coll = get_json("https://index.commoncrawl.org/collinfo.json")
-        selected = next((x for x in coll if x.get("id", "").startswith("CC-MAIN-2024-")), None)
-        if not selected:
-            raise ValueError("No 2024 index")
-        target = "www.federalreserve.gov/monetarypolicy/fomcstatement20240131.htm"
-        u = selected["cdx-api"] + "?" + urllib.parse.urlencode(
-            {"url": target, "output": "json", "filter": "status:200"})
-        raw = request(u, max_bytes=250_000).decode("utf-8")
-        rows = [json.loads(line) for line in raw.splitlines() if line.strip()]
-        return [r for r in (normalize(source, x, retrieved,
-                    index_version=selected["id"]) for x in rows) if r], "URL_SPECIFIC_CAPTURE_SAMPLE"
+        indexes = [x for x in coll if x.get("id") in
+                   ("CC-MAIN-2024-05", "CC-MAIN-2024-10")]
+        if not indexes:
+            raise ValueError("No selected Jan/Mar 2024 index")
+        target = "www.federalreserve.gov/newsevents/pressreleases/monetary20240131a.htm"
+        rows, failures = [], []
+        for selected in indexes:
+            u = selected["cdx-api"] + "?" + urllib.parse.urlencode(
+                {"url": target, "output": "json", "filter": "status:200"})
+            try:
+                raw = request(u, max_bytes=250_000).decode("utf-8")
+                rows.extend(r for r in (normalize(source, json.loads(line), retrieved,
+                    index_version=selected["id"]) for line in raw.splitlines()
+                    if line.strip()) if r)
+            except urllib.error.HTTPError as exc:
+                if exc.code == 404:
+                    failures.append(selected["id"] + ": no capture")
+                else:
+                    failures.append(selected["id"] + ": HTTP " + str(exc.code))
+        return merge(rows), ("URL_SPECIFIC_INDEX_CAPTURE" if rows else
+            "NO_CAPTURE_IN_SELECTED_INDEXES") + ("; " + "; ".join(failures)
+                                                   if failures else "")
     if source == "fomc_calendar":
         rows = fed_links(request(
             "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"),
