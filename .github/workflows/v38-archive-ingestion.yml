@@ -1,0 +1,60 @@
+name: V38 historical news provenance ingestion and PAPER research
+on:
+  pull_request:
+    paths:
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
+      - 'research/v37_source_topic_registry.json'
+      - '.github/workflows/v38-archive-ingestion.yml'
+  push:
+    paths:
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
+      - 'research/v37_source_topic_registry.json'
+      - '.github/workflows/v38-archive-ingestion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V38 provenance and safety tests plus V36/V27 regression
+        run: |
+          python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
+          python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Live public archive sample, source failures, Kraken bar linkage
+        run: python -m research.v38_archive_ingest --with-kraken --output audit/v38-archive-ingestion.json
+      - name: Audit integrity, no false first-seen, and public data counts
+        run: |
+          python - <<'PY'
+          import json, pathlib, hashlib
+          p=pathlib.Path('audit/v38-archive-ingestion.json')
+          raw=p.read_bytes()
+          x=json.loads(raw)
+          assert x['deduplicated_rows'] <= x['raw_normalized_rows']
+          assert x['target_met'] == (x['deduplicated_rows'] >= 10000)
+          assert x['max_paper_entry_aud'] == 100 and x['android_strategy'] == 'HOLD'
+          for r in x['records']:
+              assert r['first_verified_capture_at_utc'] or r['availability_confidence'] == 'retrospective_only'
+              if not r['first_verified_capture_at_utc']:
+                  assert r['capture_reference'] is None
+          print('V38_SHA256',hashlib.sha256(raw).hexdigest())
+          print('V38_ROWS',x['raw_normalized_rows'],'UNIQUE',x['deduplicated_rows'],
+                'VERIFIED_CAPTURE',x['historically_verified_capture_rows'])
+          print('V38_MONTHS',json.dumps(x['months'],sort_keys=True))
+          print('V38_SOURCES',json.dumps(x['source_status'],sort_keys=True))
+          print('V38_MARKET',json.dumps(x['market_join'],sort_keys=True))
+          print('V38_MARKET_FETCH',str(x.get('market_fetch'))[:700])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v38-provenance-sample
+          path: audit/v38-archive-ingestion.json
