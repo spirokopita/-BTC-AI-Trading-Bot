@@ -282,17 +282,35 @@ def source_fetch(source, retrieved):
     if source == "cryptocurrency_cv":
         allrows = []
         for month in MONTHS:
+            # 2026 API route accepts start_date/end_date, NOT the date= shorthand
+            # shown in older docs. Require echoed filters and post-filter UTC month.
+            year, mo = map(int, month.split("-"))
+            from calendar import monthrange
+            first = month + "-01"
+            last = month + "-" + str(monthrange(year, mo)[1]).zfill(2)
             u = "https://cryptocurrency.cv/api/archive?" + urllib.parse.urlencode(
-                {"date": month, "limit": SAMPLE_LIMIT})
+                {"start_date": first, "end_date": last, "limit": SAMPLE_LIMIT})
             try:
-                allrows.extend(extract_rows(get_json(u)))
+                obj = get_json(u)
+                if not isinstance(obj, dict) or obj.get("success") is False:
+                    raise ValueError("archive API unsuccessful response")
+                filters = obj.get("filters") or {}
+                if filters.get("start_date") != first or filters.get("end_date") != last:
+                    raise ValueError("archive API did not echo requested date filters")
+                rawrows = extract_rows(obj)
+                filtered = []
+                for item in rawrows:
+                    r = normalize(source, item, retrieved)
+                    if r and r["published_at_utc"] and r["published_at_utc"][:7] == month:
+                        filtered.append(r)
+                if rawrows and not filtered:
+                    raise ValueError("no returned article has verified publication month")
+                allrows.extend(filtered)
             except Exception as exc:
-                # Keep partial months, expose each failure in the manifest.
                 allrows.append({"_fetch_error": month + ": " + str(exc)[:170]})
         errors = [r["_fetch_error"] for r in allrows if "_fetch_error" in r]
-        rows = [r for r in (normalize(source, x, retrieved) for x in allrows
-                            if "_fetch_error" not in x) if r]
-        return rows, "; ".join(errors) if errors else "OK"
+        rows = [r for r in allrows if "_fetch_error" not in r]
+        return rows, "; ".join(errors) if errors else "OK_DATE_FILTERS_VERIFIED"
     if source == "infini_news":
         obj = get_json("https://infini-news.uni-graz.at/api/v2/search",
                        body={"index": "ccnews", "query": "Bitcoin",
@@ -347,12 +365,15 @@ def run(source_ids=None, market_bars=None, now=None, fetcher=source_fetch):
     unique = merge(rows)
     monthly = collections.Counter((r["published_at_utc"] or "")[:7] or "unknown"
                                   for r in unique)
+    date_only = collections.Counter((r.get("official_event_date_only") or "")[:7]
+                                    for r in unique if r.get("official_event_date_only"))
     return {"schema": "v38_metadata_provenance_1", "retrieved_at_utc": now,
         "source_status": status, "raw_normalized_rows": len(rows),
         "deduplicated_rows": len(unique),
         "historically_verified_capture_rows": sum(bool(r["first_verified_capture_at_utc"])
                                                    for r in unique),
         "months": dict(sorted(monthly.items())),
+        "official_event_date_only_months": dict(sorted(date_only.items())),
         "target_2020_2026": 10000, "target_met": len(unique) >= 10000,
         "market_join": join_market(unique, market_bars) if market_bars else
                        {"status": "NOT_ATTEMPTED_NO_VERIFIED_BARS"},
