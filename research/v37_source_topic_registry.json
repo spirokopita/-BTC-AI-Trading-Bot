@@ -8,96 +8,127 @@
       "url": "https://huggingface.co/datasets/ruggsea/infini-news-corpus",
       "role": "bulk_article_archives",
       "access": "public_dataset_verify_license",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "Publisher article text copyright; API sample not population representative"
     },
     {
       "id": "gdelt",
       "url": "https://www.gdeltproject.org/",
       "role": "indexed_news_events",
       "access": "public",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "DOC API primarily recent 3 months; historical DOC not guaranteed"
     },
     {
       "id": "media_cloud",
       "url": "https://www.mediacloud.org/media-cloud-search",
       "role": "publisher_coverage",
       "access": "access_check",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "disabled_no_authorized_credentials",
+      "verified_rows": 0,
+      "access_class": "KEY_REQUIRED",
+      "connector": "research.v38_archive_ingest.DISABLED"
     },
     {
       "id": "common_crawl",
       "url": "https://index.commoncrawl.org/",
       "role": "capture_provenance",
       "access": "public",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "CDXJ index metadata only; URL-specific capture, not representative"
     },
     {
       "id": "newsdata_io",
       "url": "https://newsdata.io/documentation/news-archive-api",
       "role": "historical_news_api",
       "access": "key_or_paid",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "disabled_no_authorized_credentials",
+      "verified_rows": 0,
+      "access_class": "KEY_OR_PAID",
+      "connector": "research.v38_archive_ingest.DISABLED"
     },
     {
       "id": "cryptocurrency_cv",
       "url": "https://cryptocurrency.cv/api/archive",
       "role": "crypto_news_archive",
       "access": "availability_unverified",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "Source-claimed 662047 not independently verified; historical first_seen unverified"
     },
     {
       "id": "cryptopanic",
       "url": "https://cryptopanic.com/developers/api/",
       "role": "crypto_aggregation",
       "access": "key_or_paid",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "disabled_no_authorized_credentials",
+      "verified_rows": 0,
+      "access_class": "KEY_REQUIRED",
+      "connector": "research.v38_archive_ingest.DISABLED"
     },
     {
       "id": "crypto_news_api",
       "url": "https://cryptonews-api.com/documentation",
       "role": "crypto_news",
       "access": "key_or_paid",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "disabled_no_authorized_credentials",
+      "verified_rows": 0,
+      "access_class": "KEY_OR_PAID",
+      "connector": "research.v38_archive_ingest.DISABLED"
     },
     {
       "id": "fomc_calendar",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "role": "official_scheduled_events",
       "access": "public",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "Date in official filename is not verified intraday release timestamp"
     },
     {
       "id": "fed_press",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
       "role": "official_releases",
       "access": "public",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "Date in official filename is not verified intraday release timestamp"
     },
     {
       "id": "fomc_statements_mirror",
       "url": "https://github.com/fomc/statements",
       "role": "secondary_text_archive",
       "access": "validate_original",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_METADATA",
+      "connector": "research.v38_archive_ingest.source_fetch",
+      "limitations": "Secondary mirror cannot prove original publication time"
     },
     {
       "id": "sandl",
       "url": "https://sandlproject.org/docs",
       "role": "financial_news_attention",
       "access": "availability_unverified",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "ingestion_status": "disabled_no_authorized_credentials",
+      "verified_rows": 0,
+      "access_class": "KEY_OR_ACCESS_RESTRICTED",
+      "connector": "research.v38_archive_ingest.DISABLED"
     },
     {
       "id": "fred_alfred",
@@ -105,7 +136,8 @@
       "role": "economic_series_vintages",
       "access": "public_api_constraints",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "UNVERIFIED"
     },
     {
       "id": "rba",
@@ -113,7 +145,8 @@
       "role": "australian_rates_fx",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "abs",
@@ -121,7 +154,8 @@
       "role": "australian_macro",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "bls",
@@ -129,7 +163,8 @@
       "role": "us_inflation_employment",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "bea",
@@ -137,7 +172,8 @@
       "role": "us_pce_gdp",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "eia",
@@ -145,7 +181,8 @@
       "role": "energy_supply_prices",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "cftc",
@@ -153,7 +190,8 @@
       "role": "futures_positioning",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "sec",
@@ -161,7 +199,8 @@
       "role": "regulatory_events",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "asic",
@@ -169,7 +208,8 @@
       "role": "australian_regulatory_events",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "ecb",
@@ -177,7 +217,8 @@
       "role": "eu_monetary_events",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     },
     {
       "id": "boj",
@@ -185,7 +226,8 @@
       "role": "japan_monetary_events",
       "access": "public",
       "ingestion_status": "not_implemented",
-      "verified_rows": 0
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
     }
   ],
   "topics": [
@@ -247,7 +289,7 @@
     "degree",
     "availability_confidence"
   ],
-  "asof_rule": "Only use content from a verified captured version no later than decision time; assumed latency must be labeled retrospective",
+  "asof_rule": "Strict historical simulation requires original WARC index-attested capture timestamp and version no later than decision; publication and API source-claimed first_seen never substitute; date-only Fed releases are not intraday tradable",
   "research_controls": [
     "train_only_feature_selection",
     "purged_chronological_walk_forward",
@@ -260,5 +302,184 @@
     "A100_inclusive_debit_cap",
     "10pct_cash_cap"
   ],
-  "next": "Verify access/licensing and ingest reproducible initial sample with per-source counts; do not infer success from registry alone"
+  "next": "Verify access/licensing and ingest reproducible initial sample with per-source counts; do not infer success from registry alone",
+  "graph_hypotheses": [
+    {
+      "from": "BTC spot ETF inflows",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "hours-days",
+      "channel": "spot demand",
+      "confounders": [
+        "risk-on",
+        "ETF basis"
+      ]
+    },
+    {
+      "from": "exchange liquidations",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "minutes-hours",
+      "channel": "forced flows and liquidity"
+    },
+    {
+      "from": "AUD/USD",
+      "to": "BTC/AUD",
+      "degree": 1,
+      "sign_hypothesis": "-",
+      "lag_hypothesis": "near-immediate",
+      "channel": "BTC/AUD = BTC/USD / AUD/USD + venue basis"
+    },
+    {
+      "from": "BTC/USD",
+      "to": "BTC/AUD",
+      "degree": 1,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "near-immediate",
+      "channel": "USD price numerator"
+    },
+    {
+      "from": "Fed tightening surprise",
+      "to": "US real yields",
+      "degree": 2,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "minutes-days",
+      "channel": "policy discount rate"
+    },
+    {
+      "from": "US real yields",
+      "to": "BTC/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-weeks",
+      "channel": "opportunity cost and risk appetite"
+    },
+    {
+      "from": "Fed tightening surprise",
+      "to": "AUD/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "minutes-days",
+      "channel": "US-AU rate differential"
+    },
+    {
+      "from": "RBA tightening surprise",
+      "to": "AUD/USD",
+      "degree": 2,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "minutes-days",
+      "channel": "rate differential"
+    },
+    {
+      "from": "VIX spike",
+      "to": "BTC/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "deleveraging"
+    },
+    {
+      "from": "oil supply shock",
+      "to": "inflation expectations",
+      "degree": 3,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "days-months",
+      "channel": "energy prices"
+    },
+    {
+      "from": "inflation expectations",
+      "to": "US real yields",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "days-weeks",
+      "channel": "central bank response"
+    },
+    {
+      "from": "iron ore export price rise",
+      "to": "AUD/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "Australian terms of trade"
+    },
+    {
+      "from": "China property credit stress",
+      "to": "iron ore export price",
+      "degree": 3,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "construction and steel demand"
+    },
+    {
+      "from": "JPY carry unwind",
+      "to": "global equity risk appetite",
+      "degree": 3,
+      "sign_hypothesis": "-",
+      "lag_hypothesis": "hours-days",
+      "channel": "cross-asset leverage"
+    },
+    {
+      "from": "global equity risk appetite",
+      "to": "BTC/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "risk asset demand"
+    },
+    {
+      "from": "Treasury issuance surge",
+      "to": "USD funding conditions",
+      "degree": 3,
+      "sign_hypothesis": "tighten uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "collateral and reserves"
+    },
+    {
+      "from": "USD funding conditions",
+      "to": "BTC/USD",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "days-weeks",
+      "channel": "liquidity"
+    },
+    {
+      "from": "grid power price rise",
+      "to": "mining operating cost",
+      "degree": 3,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "weeks-months",
+      "channel": "electricity input cost"
+    },
+    {
+      "from": "mining operating cost",
+      "to": "BTC/USD",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "weeks-months",
+      "channel": "miner sales and hash rate"
+    }
+  ],
+  "sampling_plan": {
+    "target_deduplicated_articles": 10000,
+    "window": "2020-01 to 2026-11",
+    "unit": "article version",
+    "outcome_independent_months": [
+      "2020-01",
+      "2021-01",
+      "2022-01",
+      "2023-01",
+      "2024-01",
+      "2025-01"
+    ],
+    "stratify_future": [
+      "month",
+      "source",
+      "ordinary_vs_event",
+      "topic_degree"
+    ],
+    "no_claim_of_completed_coverage": true
+  },
+  "last_updated_utc": "2026-11-09"
 }
