@@ -1,9 +1,9 @@
-# V36 cost-aware volatility and historical news coverage — 2026-11-08 AEDT
+# V38 historical provenance and downside-shock experiment — 2026-11-09 AEDT
 
-1. Android V27 remains PAPER ONLY HOLD; A$100 inclusive debit and <=10% cash, 80bps taker plus separately modeled spread/slippage, real execution disabled.
-2. Official Kraken BTC/AUD archive 13,763 four-hour bars/20 gaps, 3 gap-free segments 6863/3398/1999; historical periods previously inspected, NOT untouched OOS.
-3. Historical article coverage audit: 38 retrospective article events, 61 neutral RBA dates, 57/84 months without archived articles in 2020–2026; ZERO verified historical first-observed article versions.
-4. H80 base 7 trades NET +A$38.454151; new 2.5% cost-hurdle+volatility gate 7 trades gross +31.523430 fees 11.288391 spread .705540 slippage .705540 NET +A$18.823957; adding 7d article veto NET +A$16.109578, placebo +A$18.823957. A$100 buy/hold +A$129.286037; earlier-data selector HOLD all folds.
-5. V36 PR CI 42420540363 and merged-main CI 42420645371 PASSED 23 tests and official Kraken study; report SHA256 a507fac67eb8434638abd42cb8523f8e57bf33ce9cdf3bbf88204a74aadfedf6; no strategy promotion/APK/live orders.
+1. Android V27 remains PAPER ONLY HOLD, A$1,000 simulated starting cash, A$100 inclusive/10%-cash entry cap, Kraken 80bps taker plus 5bps half-spread and 5bps slippage each side; real execution disabled.
+2. Official Kraken archive 13,763 BTC/AUD 4h bars, 20 gaps, eligible segments 6863/3398/1999; prior-inspected exploratory history, no untouched OOS.
+3. New archive adapters fetched 789 deduplicated metadata/version rows (137 crypto, 603 Fed press, 48 FOMC, 1 Common Crawl WARC); 3 original Fed release clocks, 65 retrospective price alignments, 0 historical as-of tradable news; GDELT 429 and INFINI 503.
+4. New negative-shock entry veto/7d placebo changed no H80 trades: 7 trades gross +A$51.333281, fees A$11.448071, spread A$0.715531, slippage A$0.715531, NET +A$38.454151; earlier-data selector NET -A$14.351385 vs buyhold +A$129.286037, so no promotion.
+5. V38 PR CI 42530000018 PASSED 50 tests and official Kraken study, artifact 13636761965; cumulative GitHub sample write/read-back pending merged-main run; Android unchanged, no APK or live orders.
 
-DONE: new regime gates, as-of article and shifted placebo controls, news-coverage audit, A$50/A$100 and cost sensitivity, tests and reproducible audit. PARTIAL: representative news and verified revisions/first-observed history, actual order-book fills, new OHLC. BLOCKED: untouched positive NET OOS. NOT ATTEMPTED: Android APK/live. NEXT: systematic archival news provenance and independent forward validation, not another unchanged H80 rerun. Artifact 13593257881 (merged main); PR artifact 13592359512.
+DONE source adapters, initial sample, WARC provenance, Fed release clock, new shock experiment and tests. PARTIAL 10k target, representative news and historical versions. BLOCKED news predictive proof and untouched OOS. NOT ATTEMPTED APK/live. NEXT verify main persistence then expand months and test archived FX/macroeconomic vintage features with strict as-of negative controls.
