@@ -157,12 +157,14 @@ def normalize(source, row, retrieved, capture=None, index_version=None):
                 capture_ref = str(filename)
                 version_hash = str(digest)
     title = str(pick(row, "title", "headline", "name") or "")[:300]
-    if not published and not capture_at:
+    official_date = pick(row, "date") if source in ("fomc_calendar", "fed_press") else None
+    if not published and not capture_at and not official_date:
         # Discovery-only metadata cannot be time-aligned to market bars.
         return None
     return {
         "source_ids": [source], "canonical_url": url,
-        "title": title, "published_at_utc": published,
+        "title": title, "official_event_date_only": official_date,
+        "published_at_utc": published,
         "updated_at_utc": updated,
         "source_claimed_first_seen_at_utc": claimed_seen,
         "first_verified_capture_at_utc": capture_at,
