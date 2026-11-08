@@ -16,7 +16,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -164,6 +164,8 @@ def normalize(source, row, retrieved, capture=None, index_version=None):
     return {
         "source_ids": [source], "canonical_url": url,
         "title": title, "official_event_date_only": official_date,
+        "official_release_at_utc": None,
+        "official_release_time_provenance": None,
         "published_at_utc": published,
         "updated_at_utc": updated,
         "source_claimed_first_seen_at_utc": claimed_seen,
@@ -222,8 +224,12 @@ def join_market(rows, bars):
         raise ValueError("market gap; segment first")
     linked = 0
     strict = 0
+    official_release_linked = 0
     examples = []
     for r in rows:
+        official = epoch(r.get("official_release_at_utc"))
+        if official is not None and bisect.bisect_left(times, official) < len(times):
+            official_release_linked += 1
         pub = epoch(r["published_at_utc"])
         if pub is None:
             continue
@@ -238,7 +244,9 @@ def join_market(rows, bars):
             examples.append({"url": r["canonical_url"], "bar_open_utc":
                 datetime.fromtimestamp(times[i], timezone.utc).isoformat(),
                 "strict_asof_eligible": eligible})
-    return {"retrospective_time_aligned": linked, "strict_asof_eligible": strict,
+    return {"retrospective_time_aligned": linked,
+            "official_release_time_aligned_not_first_observed": official_release_linked,
+            "strict_asof_eligible": strict,
             "examples": examples, "market_bars": len(bars)}
 
 class Links(html.parser.HTMLParser):
@@ -275,6 +283,57 @@ def fed_links(page, source, retrieved):
                      date.group(0), "date": date.group(0)[:4] + "-" +
                      date.group(0)[4:6] + "-" + date.group(0)[6:8]})
     return [r for r in (normalize(source, x, retrieved) for x in rows) if r]
+
+class VisibleText(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+    def handle_data(self, value):
+        self.parts.append(value)
+
+def official_release_time(page, date):
+    """Read explicit Fed release clock/timezone, not infer it from meeting date."""
+    visible = VisibleText()
+    visible.feed(page.decode("utf-8", errors="replace"))
+    body = " ".join(visible.parts)
+    match = re.search(r"For release at\s+(\d{1,2}):(\d\d)\s+"
+                      r"(a\.m\.|p\.m\.)\s+(EST|EDT)", body, re.I)
+    if not match:
+        return None
+    hour = int(match.group(1)) % 12 + (12 if match.group(3).lower().startswith("p") else 0)
+    minute = int(match.group(2))
+    if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+        raise ValueError("Invalid Fed release clock")
+    offset = -5 if match.group(4).upper() == "EST" else -4
+    dt = datetime.fromisoformat(date).replace(hour=hour, minute=minute,
+                 tzinfo=timezone(timedelta(hours=offset)))
+    return dt.astimezone(timezone.utc).isoformat()
+
+def enrich_fomc_release_samples(rows):
+    """Outcome-independent one official statement per 2021, 2023, 2025."""
+    sampled = []
+    errors = []
+    for year in (2021, 2023, 2025):
+        candidates = [r for r in rows if (r.get("official_event_date_only") or
+                       "").startswith(str(year))]
+        if not candidates:
+            errors.append(str(year) + ": no official statement link")
+            continue
+        chosen = min(candidates, key=lambda x: x["canonical_url"])
+        try:
+            page = request(chosen["canonical_url"].replace(
+                "https://federalreserve.gov/", "https://www.federalreserve.gov/"))
+            release = official_release_time(page, chosen["official_event_date_only"])
+            if release:
+                chosen["official_release_at_utc"] = release
+                chosen["official_release_time_provenance"] = (
+                    "Fed official page clock currently displayed; NOT first-observed history")
+                sampled.append(chosen["canonical_url"])
+            else:
+                errors.append(str(year) + ": explicit release clock absent")
+        except Exception as exc:
+            errors.append(str(year) + ": " + type(exc).__name__ + ": " + str(exc)[:90])
+    return sampled, errors
 
 def source_fetch(source, retrieved):
     if source in DISABLED:
@@ -341,7 +400,13 @@ def source_fetch(source, retrieved):
         url = ("https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
                if source == "fomc_calendar" else
                "https://www.federalreserve.gov/newsevents/pressreleases.htm")
-        return fed_links(request(url), source, retrieved), "DATE_ONLY_NO_VERIFIED_RELEASE_HOUR"
+        rows = fed_links(request(url), source, retrieved)
+        if source == "fomc_calendar":
+            sampled, failures = enrich_fomc_release_samples(rows)
+            return rows, ("DATE_ONLY_PLUS_" + str(len(sampled)) +
+                "_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE" +
+                ("; " + "; ".join(failures) if failures else ""))
+        return rows, "DATE_ONLY_NO_VERIFIED_RELEASE_HOUR"
     if source == "fomc_statements_mirror":
         # Reachability only: source mirror cannot authenticate original Fed timing.
         request("https://raw.githubusercontent.com/fomc/statements/master/README.md")
@@ -374,6 +439,7 @@ def run(source_ids=None, market_bars=None, now=None, fetcher=source_fetch):
                                                    for r in unique),
         "months": dict(sorted(monthly.items())),
         "official_event_date_only_months": dict(sorted(date_only.items())),
+        "official_release_clock_rows": sum(bool(r.get("official_release_at_utc")) for r in unique),
         "target_2020_2026": 10000, "target_met": len(unique) >= 10000,
         "market_join": join_market(unique, market_bars) if market_bars else
                        {"status": "NOT_ATTEMPTED_NO_VERIFIED_BARS"},
