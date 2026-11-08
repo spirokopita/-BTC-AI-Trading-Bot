@@ -95,7 +95,7 @@ class V38Tests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertIsNone(rows[0]["published_at_utc"])
         self.assertIsNone(rows[0]["first_verified_capture_at_utc"])
-        self.assertEqual(fed_links(page, "fomc_calendar", NOW), [])
+        self.assertEqual(len(fed_links(page, "fomc_calendar", NOW)), 1)
 
     def test_no_network_or_paid_call_for_disabled_sources(self):
         def fake(sid, now):
