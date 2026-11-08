@@ -163,7 +163,14 @@ def normalize(source, row, retrieved, capture=None, index_version=None):
         return None
     return {
         "source_ids": [source], "canonical_url": url,
-        "title": title, "official_event_date_only": official_date,
+        "title": title,
+        "original_publisher": str(pick(row, "source", "publisher", "domain", "hostname") or "")[:120] or None,
+        "sampling_class": ("outcome_independent_monthly_archive" if source == "cryptocurrency_cv"
+            else "official_all_press_releases" if source == "fed_press"
+            else "scheduled_policy_statements" if source == "fomc_calendar"
+            else "single_url_capture_probe" if source == "common_crawl"
+            else "topic_search_not_representative"),
+        "official_event_date_only": official_date,
         "official_release_at_utc": None,
         "official_release_time_provenance": None,
         "published_at_utc": published,
@@ -178,7 +185,10 @@ def normalize(source, row, retrieved, capture=None, index_version=None):
         "retrieved_at_utc": retrieved,
         "index_version": index_version,
         "availability_confidence": "verified_crawl" if capture_at else "retrospective_only",
-        "topic_degree": None, "category": "unclassified",
+        "topic_degree": None, "category": ("official_macro_calendar" if source == "fomc_calendar"
+            else "official_press_all_categories" if source == "fed_press"
+            else "crypto_news_unscreened" if source == "cryptocurrency_cv"
+            else "unclassified"),
         "license": "publisher_rights_metadata_only",
     }
 
