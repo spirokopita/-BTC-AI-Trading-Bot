@@ -188,5 +188,19 @@ class V38Tests(unittest.TestCase):
         self.assertEqual(r["retrospective_time_aligned"], 0)
         self.assertEqual(r["strict_asof_eligible"], 0)
 
+
+    def test_official_annual_press_archives_are_outcome_independent(self):
+        def fake(url):
+            year = url.split("/")[-1][:4]
+            self.assertIn(year, ("2020", "2022", "2024", "2026"))
+            return ('<a href="/newsevents/pressreleases/bcreg' + year +
+                    '0123a.htm">Routine banking release</a>').encode()
+        with patch("research.v38_archive_ingest.request", side_effect=fake):
+            rows, status = source_fetch("fed_press", NOW)
+        self.assertEqual(len(rows), 4)
+        self.assertTrue(status.startswith("OFFICIAL_ANNUAL_DATE_ONLY"))
+        self.assertTrue(all(r["official_event_date_only"] for r in rows))
+        self.assertTrue(all(not asof_visible(r, NOW) for r in rows))
+
 if __name__ == "__main__":
     unittest.main()
