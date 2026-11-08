@@ -6,6 +6,8 @@ on:
       - 'tests/test_v38_archive_ingest.py'
       - 'research/v38_shock_walkforward.py'
       - 'tests/test_v38_shock_walkforward.py'
+      - 'research/v38_persist_sample.py'
+      - 'tests/test_v38_persist_sample.py'
       - 'research/v37_source_topic_registry.json'
       - '.github/workflows/v38-archive-ingestion.yml'
   push:
@@ -31,6 +33,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
           python -m unittest discover -s tests -p 'test_v38_shock_walkforward.py' -v
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
           python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v
           python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
       - name: New 4h downside-shock entry gate, placebo, train-only walk-forward and costs
@@ -76,3 +79,37 @@ jobs:
           path: |
             audit/v38-archive-ingestion.json
             audit/v38-shock-walkforward.json
+
+  persist:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: research
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: v38-provenance-sample
+          path: audit
+      - name: Merge metadata into cumulative sample, hash and read back
+        run: |
+          python -m research.v38_persist_sample
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
+      - name: Commit verified metadata-only sample to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json
+          if git diff --cached --quiet; then
+            echo "No new metadata rows"
+          else
+            git commit -m "V38: append verified-retrieval historical metadata sample (not historical first-observed)"
+            git push origin HEAD:main
+          fi
