@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-08",
+  "purpose": "Source and hypothesis registry; NOT evidence of ingested datasets or validated predictive effects",
+  "sources": [
+    {
+      "id": "infini_news",
+      "url": "https://huggingface.co/datasets/ruggsea/infini-news-corpus",
+      "role": "bulk_article_archives",
+      "access": "public_dataset_verify_license",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "gdelt",
+      "url": "https://www.gdeltproject.org/",
+      "role": "indexed_news_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "media_cloud",
+      "url": "https://www.mediacloud.org/media-cloud-search",
+      "role": "publisher_coverage",
+      "access": "access_check",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "common_crawl",
+      "url": "https://index.commoncrawl.org/",
+      "role": "capture_provenance",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "newsdata_io",
+      "url": "https://newsdata.io/documentation/news-archive-api",
+      "role": "historical_news_api",
+      "access": "key_or_paid",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "cryptocurrency_cv",
+      "url": "https://cryptocurrency.cv/api/archive",
+      "role": "crypto_news_archive",
+      "access": "availability_unverified",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "cryptopanic",
+      "url": "https://cryptopanic.com/developers/api/",
+      "role": "crypto_aggregation",
+      "access": "key_or_paid",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "crypto_news_api",
+      "url": "https://cryptonews-api.com/documentation",
+      "role": "crypto_news",
+      "access": "key_or_paid",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "fomc_calendar",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "role": "official_scheduled_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "fed_press",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+      "role": "official_releases",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "fomc_statements_mirror",
+      "url": "https://github.com/fomc/statements",
+      "role": "secondary_text_archive",
+      "access": "validate_original",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "sandl",
+      "url": "https://sandlproject.org/docs",
+      "role": "financial_news_attention",
+      "access": "availability_unverified",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "fred_alfred",
+      "url": "https://fred.stlouisfed.org/",
+      "role": "economic_series_vintages",
+      "access": "public_api_constraints",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "rba",
+      "url": "https://www.rba.gov.au/statistics/",
+      "role": "australian_rates_fx",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "abs",
+      "url": "https://www.abs.gov.au/",
+      "role": "australian_macro",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "bls",
+      "url": "https://www.bls.gov/",
+      "role": "us_inflation_employment",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "bea",
+      "url": "https://www.bea.gov/",
+      "role": "us_pce_gdp",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "eia",
+      "url": "https://www.eia.gov/",
+      "role": "energy_supply_prices",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "cftc",
+      "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
+      "role": "futures_positioning",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "sec",
+      "url": "https://www.sec.gov/newsroom",
+      "role": "regulatory_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "asic",
+      "url": "https://asic.gov.au/",
+      "role": "australian_regulatory_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "ecb",
+      "url": "https://www.ecb.europa.eu/press/html/index.en.html",
+      "role": "eu_monetary_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    },
+    {
+      "id": "boj",
+      "url": "https://www.boj.or.jp/en/mopo/index.htm",
+      "role": "japan_monetary_events",
+      "access": "public",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0
+    }
+  ],
+  "topics": [
+    {
+      "tier": "direct",
+      "degree": 1,
+      "features": [
+        "btc_etf_flows",
+        "exchange_liquidations",
+        "stablecoin_depegs",
+        "hashrate_difficulty",
+        "btc_usd",
+        "aud_usd",
+        "kraken_liquidity"
+      ]
+    },
+    {
+      "tier": "intermediate",
+      "degree": 2,
+      "features": [
+        "fomc_rba",
+        "cpi_pce_jobs",
+        "real_yields",
+        "dxy_vix",
+        "credit_spreads",
+        "energy_mining_costs",
+        "institutional_positioning"
+      ]
+    },
+    {
+      "tier": "upstream",
+      "degree": 3,
+      "features": [
+        "opec_energy_shocks",
+        "shipping_freight",
+        "wars_sanctions",
+        "climate_food_inflation",
+        "china_credit_iron_ore",
+        "jpy_carry_unwind",
+        "treasury_issuance",
+        "central_bank_liquidity",
+        "ai_power_demand",
+        "cyber_outages",
+        "australian_export_prices"
+      ]
+    }
+  ],
+  "market_identity": "BTC/AUD approximately BTC/USD divided by AUD/USD, adjusted for exchange basis",
+  "record_schema": [
+    "source_id",
+    "url",
+    "original_published_at_utc",
+    "updated_at_utc",
+    "first_verified_capture_at_utc",
+    "retrieved_at_utc",
+    "content_sha256",
+    "license",
+    "event_category",
+    "degree",
+    "availability_confidence"
+  ],
+  "asof_rule": "Only use content from a verified captured version no later than decision time; assumed latency must be labeled retrospective",
+  "research_controls": [
+    "train_only_feature_selection",
+    "purged_chronological_walk_forward",
+    "shifted_event_placebo",
+    "randomized_non_event_controls",
+    "multiple_testing_adjustment",
+    "80bps_taker_each_side",
+    "5bps_half_spread_each_side",
+    "5bps_slippage_each_side",
+    "A100_inclusive_debit_cap",
+    "10pct_cash_cap"
+  ],
+  "next": "Verify access/licensing and ingest reproducible initial sample with per-source counts; do not infer success from registry alone"
+}
