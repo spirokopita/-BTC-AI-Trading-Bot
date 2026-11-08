@@ -370,13 +370,19 @@ def main():
     ap.add_argument("--with-kraken", action="store_true")
     args = ap.parse_args()
     bars = None
+    market_status = "NOT_REQUESTED"
     if args.with_kraken:
-        from research.v33_cross_regime import archive
-        from research.v32_segments import segments
-        allbars, provenance = archive()
-        a, b = max(segments(allbars, 1000), key=lambda pair: pair[1] - pair[0])
-        bars = allbars[a:b]
+        try:
+            from research.v33_cross_regime import archive
+            from research.v32_segments import segments
+            allbars, provenance = archive()
+            a, b = max(segments(allbars, 1000), key=lambda pair: pair[1] - pair[0])
+            bars = allbars[a:b]
+            market_status = {"status": "OK", "source": provenance, "segment": [a, b]}
+        except Exception as exc:
+            market_status = {"status": "BLOCKED", "error": type(exc).__name__ + ": " + str(exc)[:250]}
     result = run(market_bars=bars)
+    result["market_fetch"] = market_status
     p = Path(args.output)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(result, sort_keys=True, indent=2,
