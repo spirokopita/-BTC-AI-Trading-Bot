@@ -9,6 +9,7 @@ on:
       - 'research/v37_source_topic_registry.json'
       - '.github/workflows/v38-archive-ingestion.yml'
   push:
+    branches: [main]
     paths:
       - 'research/v38_archive_ingest.py'
       - 'tests/test_v38_archive_ingest.py'
