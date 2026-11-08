@@ -1,0 +1,144 @@
+{
+  "android_policy": "HOLD",
+  "historical_verified_crawl_rows": 1,
+  "latest_retrieval_utc": "2026-11-08T22:26:30.994659+00:00",
+  "market_join_latest": {
+    "examples": [
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163532"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163528"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163508"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163540"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163539"
+      }
+    ],
+    "market_bars": 6863,
+    "official_release_time_aligned_not_first_observed": 2,
+    "retrospective_time_aligned": 65,
+    "strict_asof_eligible": 0
+  },
+  "months_by_publication": {
+    "2020-01": 30,
+    "2021-01": 28,
+    "2022-01": 13,
+    "2023-01": 24,
+    "2024-01": 23,
+    "2025-01": 19,
+    "2026-09": 10,
+    "2026-10": 19,
+    "unknown": 652
+  },
+  "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
+  "official_release_clock_rows": 3,
+  "original_publisher_counts": {
+    "247wallst.com": 4,
+    "@cardanostiftung": 1,
+    "CoinTelegraph": 2,
+    "CryptoPotato": 1,
+    "NewsBTC": 1,
+    "Odaily 星球日报": 128,
+    "The Daily Hodl": 2,
+    "Thedefiant": 1,
+    "ZyCrypto": 1,
+    "aol.com": 9,
+    "cointelegraph.com": 1,
+    "edaily.co.kr": 2,
+    "etnews.com": 1,
+    "fnnews.com": 1,
+    "fool.com": 4,
+    "hindustantimes.com": 1,
+    "segye.com": 2,
+    "unspecified": 652,
+    "wikitree.co.kr": 3,
+    "zerohedge.com": 1
+  },
+  "paper_only": true,
+  "rows_cumulative_deduplicated": 818,
+  "rows_new_in_latest_sample": 818,
+  "rows_sha256": "58b5fb461ba00ae0631195e2d19ab4db3eab74d682421d811905a5bed6954cf7",
+  "sampling_class_counts": {
+    "official_all_press_releases": 603,
+    "outcome_independent_monthly_archive": 137,
+    "scheduled_policy_statements": 48,
+    "single_url_capture_probe": 1,
+    "topic_search_not_representative": 29
+  },
+  "schema": "v38_cumulative_metadata_1",
+  "source_counts_not_exclusive": {
+    "common_crawl": 1,
+    "cryptocurrency_cv": 137,
+    "fed_press": 603,
+    "fomc_calendar": 48,
+    "gdelt": 29
+  },
+  "source_status_latest": {
+    "common_crawl": {
+      "fetched_rows": 1,
+      "status": "URL_SPECIFIC_INDEX_CAPTURE"
+    },
+    "crypto_news_api": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
+    },
+    "cryptocurrency_cv": {
+      "fetched_rows": 137,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    "cryptopanic": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
+    },
+    "fed_press": {
+      "fetched_rows": 603,
+      "status": "OFFICIAL_ANNUAL_DATE_ONLY"
+    },
+    "fomc_calendar": {
+      "fetched_rows": 48,
+      "status": "DATE_ONLY_PLUS_3_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE"
+    },
+    "fomc_statements_mirror": {
+      "fetched_rows": 0,
+      "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
+    },
+    "gdelt": {
+      "fetched_rows": 30,
+      "status": "RECENT_ONLY_NOT_2020_2026_ARCHIVE"
+    },
+    "infini_news": {
+      "fetched_rows": 0,
+      "status": "HTTPError: HTTP Error 503: Service Unavailable"
+    },
+    "media_cloud": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API credentials/access required; no authorized key"
+    },
+    "newsdata_io": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: archive access key/paid tier; no authorized key or purchase"
+    },
+    "sandl": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API access unverified/key may be required; no authorized key"
+    }
+  },
+  "target": 10000,
+  "target_met": false
+}
