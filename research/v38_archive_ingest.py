@@ -228,14 +228,16 @@ def join_market(rows, bars):
     examples = []
     for r in rows:
         official = epoch(r.get("official_release_at_utc"))
-        if official is not None and bisect.bisect_left(times, official) < len(times):
-            official_release_linked += 1
+        if official is not None:
+            j = bisect.bisect_left(times, official)
+            if j < len(times) and 0 <= times[j] - official <= 14400:
+                official_release_linked += 1
         pub = epoch(r["published_at_utc"])
         if pub is None:
             continue
         i = bisect.bisect_left(times, pub)
-        if i == len(times):
-            continue
+        if i == len(times) or times[i] - pub > 14400:
+            continue  # Never align months-old news to the first available bar.
         # Bar i is a decision at its OPEN; no same-bar future data.
         linked += 1
         eligible = asof_visible(r, datetime.fromtimestamp(times[i], timezone.utc).isoformat())
