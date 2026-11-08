@@ -398,17 +398,28 @@ def source_fetch(source, retrieved):
         rows = [json.loads(line) for line in raw.splitlines() if line.strip()]
         return [r for r in (normalize(source, x, retrieved,
                     index_version=selected["id"]) for x in rows) if r], "URL_SPECIFIC_CAPTURE_SAMPLE"
-    if source in ("fomc_calendar", "fed_press"):
-        url = ("https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
-               if source == "fomc_calendar" else
-               "https://www.federalreserve.gov/newsevents/pressreleases.htm")
-        rows = fed_links(request(url), source, retrieved)
-        if source == "fomc_calendar":
-            sampled, failures = enrich_fomc_release_samples(rows)
-            return rows, ("DATE_ONLY_PLUS_" + str(len(sampled)) +
-                "_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE" +
-                ("; " + "; ".join(failures) if failures else ""))
-        return rows, "DATE_ONLY_NO_VERIFIED_RELEASE_HOUR"
+    if source == "fomc_calendar":
+        rows = fed_links(request(
+            "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"),
+            source, retrieved)
+        sampled, failures = enrich_fomc_release_samples(rows)
+        return rows, ("DATE_ONLY_PLUS_" + str(len(sampled)) +
+            "_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE" +
+            ("; " + "; ".join(failures) if failures else ""))
+    if source == "fed_press":
+        # Public official annual archives, outcome-independent, no press body.
+        # Includes routine non-FOMC releases; do not mislabel date as clock.
+        rows, failures = [], []
+        for year in (2020, 2022, 2024, 2026):
+            url = ("https://www.federalreserve.gov/newsevents/pressreleases/" +
+                   str(year) + "-press.htm")
+            try:
+                rows.extend(fed_links(request(url), source, retrieved))
+            except Exception as exc:
+                failures.append(str(year) + ": " + type(exc).__name__ +
+                                ": " + str(exc)[:110])
+        return merge(rows), ("OFFICIAL_ANNUAL_DATE_ONLY" +
+            ("; " + "; ".join(failures) if failures else ""))
     if source == "fomc_statements_mirror":
         # Reachability only: source mirror cannot authenticate original Fed timing.
         request("https://raw.githubusercontent.com/fomc/statements/master/README.md")
