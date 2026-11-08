@@ -63,6 +63,8 @@ jobs:
               assert abs(r['gross_aud']-r['fees_aud']-r['spread_aud']-r['slippage_aud']-r['net_aud']) < .000004
               print('SHOCK',name,r,'WORST_DD',s['worst_fold_drawdown_pct'][name])
           print('SHOCK_SELECTED',s['selected_test_net_aud'],'BUYHOLD',s['buyhold_net_aud'])
+          print('SHOCK_SELECTORS',[f['selected_from_past_only'] for f in s['folds']])
+          print('SHOCK_SHOCK_BARS',[f['shock_veto_candidate_bars'] for f in s['folds']])
           print('SHOCK_BASELINES',s['baseline_net_aud'])
           print('SHOCK_SIZE', [f['size_sensitivity'] for f in s['folds']])
           print('SHOCK_COST', [f['cost_sensitivity'] for f in s['folds']])
