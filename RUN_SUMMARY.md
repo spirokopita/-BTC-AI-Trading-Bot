@@ -4,6 +4,6 @@
 2. Official Kraken archive 13,763 BTC/AUD 4h bars, 20 gaps, eligible segments 6863/3398/1999; prior-inspected exploratory history, no untouched OOS.
 3. New archive adapters fetched 789 deduplicated metadata/version rows (137 crypto, 603 Fed press, 48 FOMC, 1 Common Crawl WARC); 3 original Fed release clocks, 65 retrospective price alignments, 0 historical as-of tradable news; GDELT 429 and INFINI 503.
 4. New negative-shock entry veto/7d placebo changed no H80 trades: 7 trades gross +A$51.333281, fees A$11.448071, spread A$0.715531, slippage A$0.715531, NET +A$38.454151; earlier-data selector NET -A$14.351385 vs buyhold +A$129.286037, so no promotion.
-5. V38 PR CI 42530000018 PASSED 50 tests and official Kraken study, artifact 13636761965; cumulative GitHub sample write/read-back pending merged-main run; Android unchanged, no APK or live orders.
+5. V38 PR CI 42530086459 PASSED 50 tests and official Kraken study, artifact 13637450628; cumulative GitHub sample write/read-back pending merged-main run; Android unchanged, no APK or live orders.
 
 DONE source adapters, initial sample, WARC provenance, Fed release clock, new shock experiment and tests. PARTIAL 10k target, representative news and historical versions. BLOCKED news predictive proof and untouched OOS. NOT ATTEMPTED APK/live. NEXT verify main persistence then expand months and test archived FX/macroeconomic vintage features with strict as-of negative controls.
