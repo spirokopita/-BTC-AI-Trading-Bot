@@ -1,0 +1,115 @@
+name: V38 historical news provenance ingestion and PAPER research
+on:
+  pull_request:
+    paths:
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
+      - 'research/v38_shock_walkforward.py'
+      - 'tests/test_v38_shock_walkforward.py'
+      - 'research/v38_persist_sample.py'
+      - 'tests/test_v38_persist_sample.py'
+      - 'research/v37_source_topic_registry.json'
+      - '.github/workflows/v38-archive-ingestion.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
+      - 'research/v37_source_topic_registry.json'
+      - '.github/workflows/v38-archive-ingestion.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V38 provenance and safety tests plus V36/V27 regression
+        run: |
+          python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
+          python -m unittest discover -s tests -p 'test_v38_shock_walkforward.py' -v
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
+          python -m unittest discover -s tests -p 'test_v36_volatility_news_gates.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: New 4h downside-shock entry gate, placebo, train-only walk-forward and costs
+        run: python -m research.v38_shock_walkforward --output audit/v38-shock-walkforward.json
+      - name: Live public archive sample, source failures, Kraken bar linkage
+        run: python -m research.v38_archive_ingest --with-kraken --output audit/v38-archive-ingestion.json
+      - name: Audit integrity, no false first-seen, and public data counts
+        run: |
+          python - <<'PY'
+          import json, pathlib, hashlib
+          p=pathlib.Path('audit/v38-archive-ingestion.json')
+          raw=p.read_bytes()
+          x=json.loads(raw)
+          assert x['deduplicated_rows'] <= x['raw_normalized_rows']
+          assert x['target_met'] == (x['deduplicated_rows'] >= 10000)
+          assert x['max_paper_entry_aud'] == 100 and x['android_strategy'] == 'HOLD'
+          for r in x['records']:
+              assert r['first_verified_capture_at_utc'] or r['availability_confidence'] == 'retrospective_only'
+              if not r['first_verified_capture_at_utc']:
+                  assert r['capture_reference'] is None
+          print('V38_SHA256',hashlib.sha256(raw).hexdigest())
+          print('V38_ROWS',x['raw_normalized_rows'],'UNIQUE',x['deduplicated_rows'],
+                'VERIFIED_CAPTURE',x['historically_verified_capture_rows'])
+          print('V38_MONTHS',json.dumps(x['months'],sort_keys=True))
+          print('V38_SOURCES',json.dumps(x['source_status'],sort_keys=True))
+          print('V38_MARKET',json.dumps(x['market_join'],sort_keys=True))
+          print('V38_MARKET_FETCH',str(x.get('market_fetch'))[:700])
+          s=json.loads(pathlib.Path('audit/v38-shock-walkforward.json').read_text())
+          for name,r in s['aggregate_independent_reset_accounts'].items():
+              assert abs(r['gross_aud']-r['fees_aud']-r['spread_aud']-r['slippage_aud']-r['net_aud']) < .000004
+              print('SHOCK',name,r,'WORST_DD',s['worst_fold_drawdown_pct'][name])
+          print('SHOCK_SELECTED',s['selected_test_net_aud'],'BUYHOLD',s['buyhold_net_aud'])
+          print('SHOCK_SELECTORS',[f['selected_from_past_only'] for f in s['folds']])
+          print('SHOCK_SHOCK_BARS',[f['shock_veto_candidate_bars'] for f in s['folds']])
+          print('SHOCK_BASELINES',s['baseline_net_aud'])
+          print('SHOCK_SIZE', [f['size_sensitivity'] for f in s['folds']])
+          print('SHOCK_COST', [f['cost_sensitivity'] for f in s['folds']])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v38-provenance-sample
+          path: |
+            audit/v38-archive-ingestion.json
+            audit/v38-shock-walkforward.json
+
+  persist:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: research
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: v38-provenance-sample
+          path: audit
+      - name: Merge metadata into cumulative sample, hash and read back
+        run: |
+          python -m research.v38_persist_sample
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
+      - name: Commit verified metadata-only sample to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json
+          if git diff --cached --quiet; then
+            echo "No new metadata rows"
+          else
+            git commit -m "V38: append verified-retrieval historical metadata sample (not historical first-observed)"
+            git push origin HEAD:main
+          fi
