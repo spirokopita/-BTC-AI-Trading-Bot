@@ -59,6 +59,10 @@ def build(audit, existing):
     months = collections.Counter((r.get("published_at_utc") or "")[:7] or "unknown"
                                  for r in rows)
     sources = collections.Counter(s for r in rows for s in r["source_ids"])
+    publishers = collections.Counter(r.get("original_publisher") or "unspecified"
+                                     for r in rows)
+    sampling = collections.Counter(r.get("sampling_class") or "unspecified"
+                                   for r in rows)
     manifest = {
         "schema": "v38_cumulative_metadata_1",
         "latest_retrieval_utc": audit["retrieved_at_utc"],
@@ -71,6 +75,8 @@ def build(audit, existing):
                                           for r in rows),
         "months_by_publication": dict(sorted(months.items())),
         "source_counts_not_exclusive": dict(sorted(sources.items())),
+        "original_publisher_counts": dict(sorted(publishers.items())),
+        "sampling_class_counts": dict(sorted(sampling.items())),
         "market_join_latest": audit["market_join"],
         "target": 10000, "target_met": len(rows) >= 10000,
         "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
