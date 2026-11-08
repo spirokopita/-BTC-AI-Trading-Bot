@@ -1,8 +1,9 @@
 """V38 deterministic provenance, as-of, normalization, gap and source-access tests."""
 import unittest
+from unittest.mock import patch
 from research.v38_archive_ingest import (
     iso, canonical, normalize, merge, asof_visible, join_market, fed_links,
-    run, extract_rows, request, DISABLED, MONTHS)
+    run, extract_rows, request, source_fetch, DISABLED, MONTHS)
 
 NOW = "2026-11-09T00:00:00+00:00"
 def record(source="cryptocurrency_cv", **kwargs):
@@ -132,6 +133,34 @@ class V38Tests(unittest.TestCase):
         self.assertEqual(len(MONTHS), 6)
         self.assertEqual(MONTHS[0], "2020-01")
         self.assertEqual(MONTHS[-1], "2025-01")
+
+
+    def test_archive_api_uses_supported_date_filters_not_ignored_date_parameter(self):
+        def api(url):
+            self.assertIn("start_date=2022-01-01", url)
+            self.assertIn("end_date=2022-01-31", url)
+            self.assertNotIn("?date=", url)
+            return {"success": True, "filters": {"start_date": "2022-01-01",
+                "end_date": "2022-01-31"}, "articles": [
+                {"url": "https://example.com/historical",
+                 "pub_date": "2022-01-10T12:00:00Z", "title": "Ordinary story"}]}
+        with patch("research.v38_archive_ingest.MONTHS", ("2022-01",)), \
+             patch("research.v38_archive_ingest.get_json", side_effect=api):
+            rows, status = source_fetch("cryptocurrency_cv", NOW)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(status, "OK_DATE_FILTERS_VERIFIED")
+
+    def test_archive_api_ignoring_date_range_fails_closed(self):
+        def ignored(url):
+            return {"success": True, "filters": {"start_date": None,
+                "end_date": None}, "articles": [
+                {"url": "https://example.com/current",
+                 "pub_date": "2026-11-08T12:00:00Z"}]}
+        with patch("research.v38_archive_ingest.MONTHS", ("2022-01",)), \
+             patch("research.v38_archive_ingest.get_json", side_effect=ignored):
+            rows, status = source_fetch("cryptocurrency_cv", NOW)
+        self.assertEqual(rows, [])
+        self.assertIn("did not echo", status)
 
 if __name__ == "__main__":
     unittest.main()
