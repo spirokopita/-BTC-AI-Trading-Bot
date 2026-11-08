@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 from research.v38_archive_ingest import (
     iso, canonical, normalize, merge, asof_visible, join_market, fed_links,
-    run, extract_rows, request, source_fetch, DISABLED, MONTHS)
+    run, extract_rows, request, source_fetch, official_release_time, DISABLED, MONTHS)
 
 NOW = "2026-11-09T00:00:00+00:00"
 def record(source="cryptocurrency_cv", **kwargs):
@@ -161,6 +161,23 @@ class V38Tests(unittest.TestCase):
             rows, status = source_fetch("cryptocurrency_cv", NOW)
         self.assertEqual(rows, [])
         self.assertIn("did not echo", status)
+
+
+    def test_original_fed_release_clock_est_and_edt(self):
+        est = b'<p>For release at 2:00 p.m. EST</p>'
+        edt = b'<p>For release at 2:00 p.m. EDT</p>'
+        self.assertEqual(official_release_time(est, "2024-01-31"),
+                         "2024-01-31T19:00:00+00:00")
+        self.assertEqual(official_release_time(edt, "2024-07-31"),
+                         "2024-07-31T18:00:00+00:00")
+        self.assertIsNone(official_release_time(b"No release time", "2024-01-31"))
+
+    def test_fed_clock_not_automatically_first_observed(self):
+        r = normalize("fomc_calendar", {"url":
+            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20240131a.htm",
+            "date": "2024-01-31"}, NOW)
+        r["official_release_at_utc"] = "2024-01-31T19:00:00+00:00"
+        self.assertFalse(asof_visible(r, "2024-02-01T00:00:00Z"))
 
 if __name__ == "__main__":
     unittest.main()
