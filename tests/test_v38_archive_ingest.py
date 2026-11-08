@@ -179,5 +179,14 @@ class V38Tests(unittest.TestCase):
         r["official_release_at_utc"] = "2024-01-31T19:00:00+00:00"
         self.assertFalse(asof_visible(r, "2024-02-01T00:00:00Z"))
 
+
+    def test_prearchive_old_news_is_not_mapped_to_first_market_bar(self):
+        old = record(pub_date="2020-01-10T12:00:00Z")
+        start = 1641772800
+        bars = [(start+i*14400, 1, 1, 1, 1, 1) for i in range(20)]
+        r = join_market([old], bars)
+        self.assertEqual(r["retrospective_time_aligned"], 0)
+        self.assertEqual(r["strict_asof_eligible"], 0)
+
 if __name__ == "__main__":
     unittest.main()
