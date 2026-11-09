@@ -144,9 +144,16 @@
       "url": "https://www.rba.gov.au/statistics/",
       "role": "australian_rates_fx",
       "access": "public",
-      "ingestion_status": "not_implemented",
-      "verified_rows": 0,
-      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
+      "ingestion_status": "implemented_verified_retrospective_fx_snapshot_NOT_historical_first_observed",
+      "verified_rows": 2224,
+      "access_class": "FREE_PUBLIC_UNIMPLEMENTED",
+      "connector": "research.v39_rba_fx_asof.fetch_fx",
+      "verified_as_of_utc": "2026-11-09T22:40:30Z",
+      "source_endpoints": [
+        "https://www.rba.gov.au/statistics/tables/csv/f11.1-data.csv",
+        "https://www.rba.gov.au/statistics/tables/xls-hist/2018-2022.xls"
+      ],
+      "limitations": "RBA official daily AUD/USD (WM/Reuters sourced), 2018-2026; raw series not redistributed; 17:00 Sydney +24h availability ASSUMED; no original historical snapshots/revision provenance; NOT promotion-eligible."
     },
     {
       "id": "abs",
@@ -302,7 +309,7 @@
     "A100_inclusive_debit_cap",
     "10pct_cash_cap"
   ],
-  "next": "Verify access/licensing and ingest reproducible initial sample with per-source counts; do not infer success from registry alone",
+  "next": "V39: verify quarterly 28-month crypto archive and all 7 Fed press years via merged-main persistence; maintain strict first-verified-crawl gate. RBA FX retrospective source is available for 2018-2026 but requires historical revision provenance before causal claims. Next test non-price historical vintage series and untouched OOS.",
   "graph_hypotheses": [
     {
       "from": "BTC spot ETF inflows",
@@ -467,11 +474,33 @@
     "unit": "article version",
     "outcome_independent_months": [
       "2020-01",
+      "2020-04",
+      "2020-07",
+      "2020-10",
       "2021-01",
+      "2021-04",
+      "2021-07",
+      "2021-10",
       "2022-01",
+      "2022-04",
+      "2022-07",
+      "2022-10",
       "2023-01",
+      "2023-04",
+      "2023-07",
+      "2023-10",
       "2024-01",
-      "2025-01"
+      "2024-04",
+      "2024-07",
+      "2024-10",
+      "2025-01",
+      "2025-04",
+      "2025-07",
+      "2025-10",
+      "2026-01",
+      "2026-04",
+      "2026-07",
+      "2026-10"
     ],
     "stratify_future": [
       "month",
@@ -479,7 +508,8 @@
       "ordinary_vs_event",
       "topic_degree"
     ],
-    "no_claim_of_completed_coverage": true
+    "no_claim_of_completed_coverage": true,
+    "predeclared_monthly_sampling": "28 quarterly months, Jan/Apr/Jul/Oct of each year 2020-2026; max 30 source rows/month, API date echo and publication month checked"
   },
-  "last_updated_utc": "2026-11-09"
+  "last_updated_utc": "2026-11-10"
 }
