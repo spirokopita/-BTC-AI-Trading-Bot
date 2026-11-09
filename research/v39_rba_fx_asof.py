@@ -149,6 +149,8 @@ def validate_rows(rows):
     for d, v in rows:
         if not 2018 <= int(d[:4]) <= 2027:
             raise ValueError("RBA date outside study range")
+        if not isinstance(v, (int, float)) or not math.isfinite(v) or not .30 < v < 1.5:
+            raise ValueError("Invalid USD per AUD rate")
         if d in dedup and abs(dedup[d] - v) > 1e-10:
             raise ValueError("Conflicting duplicate FX date")
         dedup[d] = v
