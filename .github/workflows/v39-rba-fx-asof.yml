@@ -4,6 +4,8 @@ on:
     paths:
       - 'research/v39_rba_fx_asof.py'
       - 'tests/test_v39_rba_fx_asof.py'
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
       - '.github/workflows/v39-rba-fx-asof.yml'
   push:
     branches: [main]
@@ -29,6 +31,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_v39_rba_fx_asof.py' -v
           python -m unittest discover -s tests -p 'test_v38_shock_walkforward.py' -v
+          python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
           python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
       - name: Official RBA FX source checks and Kraken archive walk-forward
         run: python -m research.v39_rba_fx_asof --output audit/v39-rba-fx-walkforward.json
