@@ -27,7 +27,7 @@ ALLOWED = frozenset({
     "api.gdeltproject.org", "index.commoncrawl.org",
     "www.federalreserve.gov", "raw.githubusercontent.com",
 })
-MONTHS = ("2020-01", "2021-01", "2022-01", "2023-01", "2024-01", "2025-01")
+MONTHS = tuple(f"{year}-{month:02d}" for year in range(2020, 2027) for month in (1, 4, 7, 10))
 SAMPLE_LIMIT = 30
 MAX_BYTES = 3_000_000
 COSTS_BPS = {"taker_each_side": 80, "half_spread_each_side": 5,
@@ -432,7 +432,7 @@ def source_fetch(source, retrieved):
         # Public official annual archives, outcome-independent, no press body.
         # Includes routine non-FOMC releases; do not mislabel date as clock.
         rows, failures = [], []
-        for year in (2020, 2022, 2024, 2026):
+        for year in range(2020, 2027):
             url = ("https://www.federalreserve.gov/newsevents/pressreleases/" +
                    str(year) + "-press.htm")
             try:
