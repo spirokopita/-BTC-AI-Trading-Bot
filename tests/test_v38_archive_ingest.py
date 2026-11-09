@@ -227,9 +227,9 @@ class V38Tests(unittest.TestCase):
                 "end_date": "2022-01-31"}, "articles": [
                 {"url": "https://example.com/2022/01/ordinary",
                  "pub_date": "2022-01-11T00:00:00Z"}]}
-        with patch("research.v38_archive_ingest.MONTHS", ("2022-01",)), \\
-             patch("research.v38_archive_ingest.get_json", side_effect=api), \\
-             patch("research.v38_archive_ingest.time.sleep") as sleeper:
+        with (patch("research.v38_archive_ingest.MONTHS", ("2022-01",)),
+              patch("research.v38_archive_ingest.get_json", side_effect=api),
+              patch("research.v38_archive_ingest.time.sleep") as sleeper):
             rows, status = source_fetch("cryptocurrency_cv", NOW)
         self.assertEqual(len(calls), 2)
         self.assertEqual(len(rows), 1)
