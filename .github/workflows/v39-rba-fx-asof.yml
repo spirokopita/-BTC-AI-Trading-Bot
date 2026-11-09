@@ -35,6 +35,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
       - name: Official RBA FX source checks and Kraken archive walk-forward
         run: python -m research.v39_rba_fx_asof --output audit/v39-rba-fx-walkforward.json
+      - name: Fresh completed Kraken 4h candles, frozen V28 diagnostics only
+        run: python -m research.v28_recent_bridge --output audit/v39-recent-bridge.json
       - name: Assert honest retrospective provenance, NET and cost reconciliation
         run: |
           python - <<'PY'
@@ -63,4 +65,6 @@ jobs:
         if: always()
         with:
           name: v39-rba-fx-paper-study
-          path: audit/v39-rba-fx-walkforward.json
+          path: |
+            audit/v39-rba-fx-walkforward.json
+            audit/v39-recent-bridge.json
