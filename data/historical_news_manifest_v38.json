@@ -1,7 +1,8 @@
 {
   "android_policy": "HOLD",
+  "historical_article_versions_cumulative": 604,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-08T22:26:30.994659+00:00",
+  "latest_retrieval_utc": "2026-11-09T22:51:12.086688+00:00",
   "market_join_latest": {
     "examples": [
       {
@@ -32,32 +33,69 @@
     ],
     "market_bars": 6863,
     "official_release_time_aligned_not_first_observed": 2,
-    "retrospective_time_aligned": 65,
+    "retrospective_time_aligned": 282,
     "strict_asof_eligible": 0
   },
   "months_by_publication": {
     "2020-01": 30,
+    "2020-04": 30,
+    "2020-07": 30,
+    "2020-10": 30,
     "2021-01": 28,
+    "2021-04": 23,
+    "2021-07": 26,
+    "2021-10": 25,
     "2022-01": 13,
+    "2022-04": 16,
+    "2022-07": 26,
+    "2022-10": 26,
     "2023-01": 24,
+    "2023-04": 20,
+    "2023-07": 27,
+    "2023-10": 28,
     "2024-01": 23,
+    "2024-04": 22,
+    "2024-07": 25,
+    "2024-10": 24,
     "2025-01": 19,
+    "2026-07": 30,
     "2026-09": 10,
-    "2026-10": 19,
-    "unknown": 652
+    "2026-10": 49,
+    "unknown": 1059
   },
   "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
   "official_release_clock_rows": 3,
   "original_publisher_counts": {
     "247wallst.com": 4,
     "@cardanostiftung": 1,
-    "CoinTelegraph": 2,
-    "CryptoPotato": 1,
-    "NewsBTC": 1,
-    "Odaily 星球日报": 128,
-    "The Daily Hodl": 2,
+    "AMBCrypto": 2,
+    "Altcoinbuzz": 1,
+    "BIS Speeches": 21,
+    "Bitcoinist": 5,
+    "CNBC Crypto": 1,
+    "Coin Edition": 2,
+    "CoinDesk": 1,
+    "CoinPedia": 1,
+    "CoinTelegraph": 4,
+    "CryptoDaily": 1,
+    "CryptoPotato": 2,
+    "Cryptoglobe": 1,
+    "DW News": 1,
+    "EigenLayer Blog": 1,
+    "En": 2,
+    "Ethereumworldnews": 1,
+    "Fortune Crypto": 1,
+    "NewsBTC": 3,
+    "Odaily 星球日报": 484,
+    "OpenZeppelin Blog": 5,
+    "Stacker News": 10,
+    "The Daily Hodl": 5,
+    "The Guardian Tech": 2,
+    "TheCryptoBasic": 1,
     "Thedefiant": 1,
-    "ZyCrypto": 1,
+    "Wolf Street": 2,
+    "ZeroHedge": 1,
+    "ZyCrypto": 2,
     "aol.com": 9,
     "cointelegraph.com": 1,
     "edaily.co.kr": 2,
@@ -65,18 +103,21 @@
     "fnnews.com": 1,
     "fool.com": 4,
     "hindustantimes.com": 1,
+    "r/CryptoCurrency": 1,
+    "r/defi": 4,
+    "r/ethereum": 5,
     "segye.com": 2,
-    "unspecified": 652,
+    "unspecified": 1059,
     "wikitree.co.kr": 3,
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 818,
-  "rows_new_in_latest_sample": 818,
-  "rows_sha256": "58b5fb461ba00ae0631195e2d19ab4db3eab74d682421d811905a5bed6954cf7",
+  "rows_cumulative_deduplicated": 1663,
+  "rows_new_in_latest_sample": 1633,
+  "rows_sha256": "d8365a6e2ffd7f7008014739340f3f651318517f49c0227a60985ef8063f1a1d",
   "sampling_class_counts": {
-    "official_all_press_releases": 603,
-    "outcome_independent_monthly_archive": 137,
+    "official_all_press_releases": 1010,
+    "outcome_independent_monthly_archive": 575,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -84,30 +125,30 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 137,
-    "fed_press": 603,
+    "cryptocurrency_cv": 575,
+    "fed_press": 1011,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
     "common_crawl": {
-      "fetched_rows": 1,
-      "status": "URL_SPECIFIC_INDEX_CAPTURE"
+      "fetched_rows": 0,
+      "status": "NO_CAPTURE_IN_SELECTED_INDEXES; CC-MAIN-2024-10: HTTP 504"
     },
     "crypto_news_api": {
       "fetched_rows": 0,
       "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
     },
     "cryptocurrency_cv": {
-      "fetched_rows": 137,
-      "status": "OK_DATE_FILTERS_VERIFIED"
+      "fetched_rows": 575,
+      "status": "2025-04: no returned article has verified publication month; 2025-07: no returned article has verified publication month; 2025-10: no returned article has verified publication month"
     },
     "cryptopanic": {
       "fetched_rows": 0,
       "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
     },
     "fed_press": {
-      "fetched_rows": 603,
+      "fetched_rows": 1011,
       "status": "OFFICIAL_ANNUAL_DATE_ONLY"
     },
     "fomc_calendar": {
@@ -119,12 +160,12 @@
       "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
     },
     "gdelt": {
-      "fetched_rows": 30,
-      "status": "RECENT_ONLY_NOT_2020_2026_ARCHIVE"
+      "fetched_rows": 0,
+      "status": "HTTPError: HTTP Error 429: Too Many Requests"
     },
     "infini_news": {
       "fetched_rows": 0,
-      "status": "HTTPError: HTTP Error 503: Service Unavailable"
+      "status": "OK_PREVIEW_INCOMPLETE"
     },
     "media_cloud": {
       "fetched_rows": 0,
