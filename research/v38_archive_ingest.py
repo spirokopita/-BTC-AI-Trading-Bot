@@ -13,6 +13,7 @@ import hashlib
 import html.parser
 import json
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -27,8 +28,10 @@ ALLOWED = frozenset({
     "api.gdeltproject.org", "index.commoncrawl.org",
     "www.federalreserve.gov", "raw.githubusercontent.com",
 })
-MONTHS = ("2020-01", "2021-01", "2022-01", "2023-01", "2024-01", "2025-01")
+MONTHS = tuple(f"{year}-{month:02d}" for year in range(2020, 2027) for month in (1, 4, 7, 10))
 SAMPLE_LIMIT = 30
+ARTICLE_SOURCES = frozenset(("cryptocurrency_cv", "infini_news", "gdelt",
+    "media_cloud", "newsdata_io", "cryptopanic", "crypto_news_api"))
 MAX_BYTES = 3_000_000
 COSTS_BPS = {"taker_each_side": 80, "half_spread_each_side": 5,
              "slippage_each_side": 5}
@@ -362,7 +365,19 @@ def source_fetch(source, retrieved):
             u = "https://cryptocurrency.cv/api/archive?" + urllib.parse.urlencode(
                 {"start_date": first, "end_date": last, "limit": SAMPLE_LIMIT})
             try:
-                obj = get_json(u)
+                # Bounded retries on explicit 429 only; never bypass source terms.
+                for attempt in range(3):
+                    try:
+                        obj = get_json(u)
+                        break
+                    except urllib.error.HTTPError as exc:
+                        if exc.code != 429 or attempt == 2:
+                            raise
+                        try:
+                            retry_after = float(exc.headers.get("Retry-After", "2"))
+                        except (ValueError, TypeError, AttributeError):
+                            retry_after = 2.
+                        time.sleep(min(12., max(1., retry_after, 2.**attempt)))
                 if not isinstance(obj, dict) or obj.get("success") is False:
                     raise ValueError("archive API unsuccessful response")
                 filters = obj.get("filters") or {}
@@ -432,7 +447,7 @@ def source_fetch(source, retrieved):
         # Public official annual archives, outcome-independent, no press body.
         # Includes routine non-FOMC releases; do not mislabel date as clock.
         rows, failures = [], []
-        for year in (2020, 2022, 2024, 2026):
+        for year in range(2020, 2027):
             url = ("https://www.federalreserve.gov/newsevents/pressreleases/" +
                    str(year) + "-press.htm")
             try:
@@ -465,17 +480,24 @@ def run(source_ids=None, market_bars=None, now=None, fetcher=source_fetch):
     unique = merge(rows)
     monthly = collections.Counter((r["published_at_utc"] or "")[:7] or "unknown"
                                   for r in unique)
+    articles = [r for r in unique if any(x in ARTICLE_SOURCES for x in r["source_ids"])]
+    crypto_months = collections.Counter(r["published_at_utc"][:7] for r in unique
+        if "cryptocurrency_cv" in r["source_ids"] and r["published_at_utc"])
     date_only = collections.Counter((r.get("official_event_date_only") or "")[:7]
                                     for r in unique if r.get("official_event_date_only"))
     return {"schema": "v38_metadata_provenance_1", "retrieved_at_utc": now,
         "source_status": status, "raw_normalized_rows": len(rows),
         "deduplicated_rows": len(unique),
+        "historical_article_version_rows": len(articles),
+        "archive_months_requested": list(MONTHS),
+        "archive_months_with_crypto_rows": dict(sorted(crypto_months.items())),
+        "archive_months_missing_crypto": [m for m in MONTHS if crypto_months[m] == 0],
         "historically_verified_capture_rows": sum(bool(r["first_verified_capture_at_utc"])
                                                    for r in unique),
         "months": dict(sorted(monthly.items())),
         "official_event_date_only_months": dict(sorted(date_only.items())),
         "official_release_clock_rows": sum(bool(r.get("official_release_at_utc")) for r in unique),
-        "target_2020_2026": 10000, "target_met": len(unique) >= 10000,
+        "target_2020_2026": 10000, "target_met": len(articles) >= 10000,
         "market_join": join_market(unique, market_bars) if market_bars else
                        {"status": "NOT_ATTEMPTED_NO_VERIFIED_BARS"},
         "costs_bps": COSTS_BPS, "max_paper_entry_aud": 100,

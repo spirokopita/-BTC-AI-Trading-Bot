@@ -130,9 +130,9 @@ class V38Tests(unittest.TestCase):
             request("https://evil.example/api")
 
     def test_sampling_is_predeclared_not_outcome_selected(self):
-        self.assertEqual(len(MONTHS), 6)
+        self.assertEqual(len(MONTHS), 28)
         self.assertEqual(MONTHS[0], "2020-01")
-        self.assertEqual(MONTHS[-1], "2025-01")
+        self.assertEqual(MONTHS[-1], "2026-10")
 
 
     def test_archive_api_uses_supported_date_filters_not_ignored_date_parameter(self):
@@ -192,15 +192,49 @@ class V38Tests(unittest.TestCase):
     def test_official_annual_press_archives_are_outcome_independent(self):
         def fake(url):
             year = url.split("/")[-1][:4]
-            self.assertIn(year, ("2020", "2022", "2024", "2026"))
+            self.assertIn(year, tuple(str(y) for y in range(2020, 2027)))
             return ('<a href="/newsevents/pressreleases/bcreg' + year +
                     '0123a.htm">Routine banking release</a>').encode()
         with patch("research.v38_archive_ingest.request", side_effect=fake):
             rows, status = source_fetch("fed_press", NOW)
-        self.assertEqual(len(rows), 4)
+        self.assertEqual(len(rows), 7)
         self.assertTrue(status.startswith("OFFICIAL_ANNUAL_DATE_ONLY"))
         self.assertTrue(all(r["official_event_date_only"] for r in rows))
         self.assertTrue(all(not asof_visible(r, NOW) for r in rows))
+
+    def test_article_target_excludes_date_only_fed_releases(self):
+        official = normalize("fed_press", {"url":
+            "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20220123a.htm",
+            "date": "2022-01-23"}, NOW)
+        def fake(sid, now):
+            return ([record()] if sid == "cryptocurrency_cv" else [official]), "OK"
+        x = run(source_ids=("cryptocurrency_cv", "fed_press"), now=NOW, fetcher=fake)
+        self.assertEqual(x["deduplicated_rows"], 2)
+        self.assertEqual(x["historical_article_version_rows"], 1)
+        self.assertEqual(len(x["archive_months_requested"]), 28)
+        self.assertEqual(len(x["archive_months_missing_crypto"]), 27)
+        self.assertFalse(x["target_met"])
+
+    def test_crypto_429_is_bounded_and_retried(self):
+        import urllib.error
+        calls = []
+        def api(url):
+            calls.append(url)
+            if len(calls) == 1:
+                raise urllib.error.HTTPError(url, 429, "rate limited",
+                                             {"Retry-After": "1"}, None)
+            return {"success": True, "filters": {"start_date": "2022-01-01",
+                "end_date": "2022-01-31"}, "articles": [
+                {"url": "https://example.com/2022/01/ordinary",
+                 "pub_date": "2022-01-11T00:00:00Z"}]}
+        with (patch("research.v38_archive_ingest.MONTHS", ("2022-01",)),
+              patch("research.v38_archive_ingest.get_json", side_effect=api),
+              patch("research.v38_archive_ingest.time.sleep") as sleeper):
+            rows, status = source_fetch("cryptocurrency_cv", NOW)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(status, "OK_DATE_FILTERS_VERIFIED")
+        sleeper.assert_called_once()
 
 if __name__ == "__main__":
     unittest.main()

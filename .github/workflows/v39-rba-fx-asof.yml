@@ -1,0 +1,70 @@
+name: V39 official RBA FX retrospective as-of PAPER research
+on:
+  pull_request:
+    paths:
+      - 'research/v39_rba_fx_asof.py'
+      - 'tests/test_v39_rba_fx_asof.py'
+      - 'research/v38_archive_ingest.py'
+      - 'tests/test_v38_archive_ingest.py'
+      - '.github/workflows/v39-rba-fx-asof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/v39_rba_fx_asof.py'
+      - 'tests/test_v39_rba_fx_asof.py'
+      - '.github/workflows/v39-rba-fx-asof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: XLS reader for original RBA 2018-22 file
+        run: python -m pip install --disable-pip-version-check xlrd==2.0.1
+      - name: V39 as-of FX and V38/V27 paper risk regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_v39_rba_fx_asof.py' -v
+          python -m unittest discover -s tests -p 'test_v38_shock_walkforward.py' -v
+          python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Official RBA FX source checks and Kraken archive walk-forward
+        run: python -m research.v39_rba_fx_asof --output audit/v39-rba-fx-walkforward.json
+      - name: Fresh completed Kraken 4h candles, frozen V28 diagnostics only
+        run: python -m research.v28_recent_bridge --output audit/v39-recent-bridge.json
+      - name: Assert honest retrospective provenance, NET and cost reconciliation
+        run: |
+          python - <<'PY'
+          import json, pathlib, hashlib
+          p = pathlib.Path('audit/v39-rba-fx-walkforward.json')
+          raw = p.read_bytes()
+          d = json.loads(raw)
+          assert d['fx_historical_first_observed_verified'] is False
+          assert d['fx_historical_revisions_verified'] is False
+          assert d['paper_policy'] == 'HOLD'
+          assert d['max_inclusive_entry_aud'] == 100
+          assert d['cost_bps_each_side']['taker_each_side'] == 80
+          assert len(d['folds']) == 3
+          for name, r in d['aggregate_independent_reset_accounts'].items():
+              assert abs(r['gross_aud']-r['fees_aud']-r['spread_aud']-r['slippage_aud']-r['net_aud']) < .000005, name
+              print('V39_STRATEGY', name, r, 'DD', d['worst_fold_drawdown_pct'][name])
+          print('V39_SHA256', hashlib.sha256(raw).hexdigest())
+          print('V39_FX', d['fx'])
+          print('V39_COVERAGE', [f['fx_coverage_fraction'] for f in d['folds']])
+          print('V39_SELECTORS', [f['selected_using_train_validation_only'] for f in d['folds']])
+          print('V39_SELECTED_NET', d['selected_test_net_aud'], 'BUYHOLD', d['buyhold_net_aud'])
+          print('V39_BASELINES', d['baseline_net_aud'])
+          print('V39_SENSITIVITY', [f['sensitivity'] for f in d['folds']])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v39-rba-fx-paper-study
+          path: |
+            audit/v39-rba-fx-walkforward.json
+            audit/v39-recent-bridge.json

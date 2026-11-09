@@ -10,6 +10,12 @@ import hashlib
 import json
 from pathlib import Path
 
+ARTICLE_SOURCES = frozenset(("cryptocurrency_cv", "infini_news", "gdelt",
+    "media_cloud", "newsdata_io", "cryptopanic", "crypto_news_api"))
+
+def article_version(row):
+    return any(s in ARTICLE_SOURCES for s in row["source_ids"])
+
 def key(r):
     return (r["canonical_url"], r.get("version_hash") or "UNVERIFIED_VERSION")
 
@@ -59,6 +65,7 @@ def build(audit, existing):
     months = collections.Counter((r.get("published_at_utc") or "")[:7] or "unknown"
                                  for r in rows)
     sources = collections.Counter(s for r in rows for s in r["source_ids"])
+    article_rows = sum(article_version(r) for r in rows)
     publishers = collections.Counter(r.get("original_publisher") or "unspecified"
                                      for r in rows)
     sampling = collections.Counter(r.get("sampling_class") or "unspecified"
@@ -68,6 +75,7 @@ def build(audit, existing):
         "latest_retrieval_utc": audit["retrieved_at_utc"],
         "source_status_latest": audit["source_status"],
         "rows_cumulative_deduplicated": len(rows),
+        "historical_article_versions_cumulative": article_rows,
         "rows_new_in_latest_sample": len(new),
         "historical_verified_crawl_rows": sum(bool(r.get("first_verified_capture_at_utc"))
                                               for r in rows),
@@ -78,7 +86,7 @@ def build(audit, existing):
         "original_publisher_counts": dict(sorted(publishers.items())),
         "sampling_class_counts": dict(sorted(sampling.items())),
         "market_join_latest": audit["market_join"],
-        "target": 10000, "target_met": len(rows) >= 10000,
+        "target": 10000, "target_met": article_rows >= 10000,
         "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
         "paper_only": True, "android_policy": "HOLD",
     }

@@ -1,3 +1,32 @@
+## V39 — 2026-11-10: RBA FX vintage-lag gate and 28-month historical news expansion (PR #21)
+
+**TOP BLOCKER:** Historical RBA FX source snapshot is retrospective and may contain later revisions. A 17:00 Sydney +24h availability assumption is NOT first-observed proof. Historical news has 0 newly verified as-of tradable versions. Previously inspected Kraken periods are NOT untouched OOS. Train+validation selectors chose HOLD/HOLD/HOLD, so Android PAPER engine remains default-off; no strategy promoted or live orders.
+
+**SOURCE/PROVENANCE:** Official RBA F11.1 daily 2023-01-03 to 2026-11-09: 968 rows, SHA256 `828216c3b1ee3f7306ec998ac973fe86e1954a8b26bcc6b5a4349c7a9a9fb785`; original RBA 2018-2022 XLS: 1256 rows, SHA256 `758a923f645f46a85b397b965787871d519a988210afa7556c2590aee7393220`. Combined 2224 distinct days, complete assumed-availability coverage in all folds; raw RBA/WM-Reuters source data NOT redistributed. 2026-11-09 UTC retrieval; no historical revision or original first-observed certification. Official Kraken full archive XBTAUD_240.csv SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`, 13,763 bars, 20 gaps, three segments 6863/3398/1999. Latest public 4h Kraken 720 completed gap-free bars through 2026-11-09 16:00 UTC, response SHA256 `07323804614dfd65cdcf40a5a9d5bc35c04676c68dac4f561cda57e68d7a8427`, 239 post-2026-09-30.
+
+**PREDECLARED EXPERIMENT:** 50/20/30 chronological train/validation/test, 20-bar embargo, independent A$1000 paper wallet resets, A$100 inclusive cap/10% available cash, taker 80bps plus 5bps half-spread and 5bps slippage EACH SIDE, next 4h open hypothetical fills. H80/300 price-only vs 5-day AUD/USD +0.5% headwind veto, -0.5% tailwind veto, 1-day abs 1.2% jump veto, 7d past-only delayed FX placebo, H50/200 headwind. Train+validation selection required >=2 trades and positive NET in both windows plus >=75% as-of FX coverage. All three chose HOLD, selected test NET **A$0**; same-stake buyhold **+A$129.286037**.
+
+| Test candidate (3 independent A$1000 wallets) | Trades | Wins / losses | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| H80/300 price-only | 7 | 3 / 4 | +51.333281 | 11.448071 | .715531 | .715531 | **+38.454151** |
+| H80/300 FX headwind | 7 | 3 / 4 | +52.590056 | 11.458115 | .716158 | .716158 | **+39.699624** |
+| H80/300 FX tailwind | 7 | 3 / 4 | +47.917121 | 11.410008 | .713150 | .713150 | **+35.080815** |
+| H80/300 FX jump | 7 | 3 / 4 | +51.128367 | 11.446433 | .715428 | .715428 | **+38.251079** |
+| H80/300 FX 7d placebo | 7 | 3 / 4 | +50.731770 | 11.442579 | .715187 | .715187 | **+37.858818** |
+| H50/200 FX headwind | 10 | 3 / 7 | +25.995142 | 15.944484 | .996543 | .996543 | **+8.057573** |
+
+**UNCERTAINTY/ABLATION:** FX-headwind delta vs base +A$1.245473, vs 7d placebo +A$1.840806; only two H80 entry timestamps changed, no extra trades, worst fold full-wallet drawdown -4.183441%. Fold NET headwind +18.348859/-6.255552/+27.606317; 2025 fold LOST money. A$50 inclusive NET +20.264562 vs A$100 +39.699624. Half/current/double friction NET +46.435595/+39.699624/+26.438127. Price-only baselines on same periods: SMA -119.682481, momentum -374.775403, RSI -225.519567, breakout -197.561916, regime -407.787388, trend ATR -27.686213. Hindsight small gain is fragile and trails buyhold; historical FX revisions unverified; REJECTED.
+
+**NEWS INCREMENT:** Quarterly predeclared 28 months Jan/Apr/Jul/Oct 2020–2026, verified cryptocurrency.cv start/end echo and publication-month filter, bounded 429 retries; official Fed press archives all seven years. Final PR run 1,634 normalized/1,633 unique records, but only **575 crypto article versions** (23/28 sampled months populated; missing 2025-04/07/10, 2026-01/04). Fed 1,011 date-only press-release metadata, FOMC 48 links; GDELT 0 HTTP 429, INFINI 0 incomplete preview, Common Crawl 0 HTTP 504. 282 retrospective article timestamp/market joins, **0 historical as-of eligible**. Cumulative main before merge 818 records and one verified WARC; new main union not yet verified. Fixed target denominator to 10,000 ARTICLES, excluding official date-only Fed records. No historical news predictive value claimed.
+
+**FRESH PRICE DIAGNOSTIC:** Kraken public OHLC 720 completed 4h bars, 0 gaps, Oct1-Nov9 239 bars, previously inspected October. Frozen V28 strategies NET: SMA -29.897604 (11 trades), momentum -40.611689 (16), RSI -18.887899 (12), breakout -11.968582 (6), regime -14.495934 (5), slow SMA .5% -4.359602 (1), slow SMA 2% -4.142430 (1); A$100 buyhold -10.792653. Selected HOLD A$0. Not untouched.
+
+**VERIFICATION:** V39 GitHub Actions **42714558157 PASSED 46 tests**, real RBA CSV/XLS, official Kraken archive and recent public OHLC; artifact 13716074920; FX report SHA256 `1981b7c64a07a21b486414976ff09d6a82c74f31a20bf6232c3b0d4c7a15c476`. V38 expanded source CI **42714558070 PASSED 52 tests** and real source fetch, artifact 13716114406, JSON SHA256 `965d3790a80bc83bbc980fd8955adae6a26d8a9bbfd9dac67be825914cb41707`. Commands: `python -m unittest discover -s tests -p 'test_v39_rba_fx_asof.py' -v`; `python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v`; `python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v`; `python -m research.v39_rba_fx_asof`; `python -m research.v28_recent_bridge`; `python -m research.v38_archive_ingest --with-kraken`.
+
+**STATUS:** DONE source connectors, historical news expansion, paper-only FX experiment, negative controls, costs/caps, new candles and CI. PARTIAL 10k articles, 5 missing quarterly months, original historical version/crawl provenance, order-book fills, untouched OOS. BLOCKED promotion. NOT ATTEMPTED APK/live orders. **NEXT:** Merge PR #21; verify main cumulative metadata persistence/read-back; expand article archive with independent WARC captures, original revisions, scheduled/unscheduled controls, FX/BTC decomposition, and frozen prospective NET test. HOLD.
+
+---
+
 ## V38 — 2026-11-09: historical archive provenance + downside-shock ablation (PR #20)
 
 **TOP BLOCKER:** 818 initial metadata/version rows do not establish a tradable historical first-observed corpus; only 1 WARC-index-attested crawl, dated 2024-02-23 after the 2024-01-31 FOMC release. No untouched positive NET OOS candidate; PAPER ONLY HOLD.
