@@ -8,22 +8,26 @@
       "url": "https://huggingface.co/datasets/ruggsea/infini-news-corpus",
       "role": "bulk_article_archives",
       "access": "public_dataset_verify_license",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "ingestion_status": "preview_incomplete_zero_normalized_rows",
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "Publisher article text copyright; API sample not population representative"
+      "limitations": "Publisher article text copyright; API sample not population representative",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "gdelt",
       "url": "https://www.gdeltproject.org/",
       "role": "indexed_news_events",
       "access": "public",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "ingestion_status": "HTTP_429_latest_run_previous_29_unique",
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "DOC API primarily recent 3 months; historical DOC not guaranteed"
+      "limitations": "DOC API primarily recent 3 months; historical DOC not guaranteed",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "media_cloud",
@@ -40,11 +44,13 @@
       "url": "https://index.commoncrawl.org/",
       "role": "capture_provenance",
       "access": "public",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
+      "ingestion_status": "HTTP_504_latest_run_previous_one_verified_capture",
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "CDXJ index metadata only; URL-specific capture, not representative"
+      "limitations": "CDXJ index metadata only; URL-specific capture, not representative",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "newsdata_io",
@@ -61,11 +67,13 @@
       "url": "https://cryptocurrency.cv/api/archive",
       "role": "crypto_news_archive",
       "access": "availability_unverified",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
-      "verified_rows": 0,
+      "ingestion_status": "verified_live_2026_11_09_28_months_partial",
+      "verified_rows": 575,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "Source-claimed 662047 not independently verified; historical first_seen unverified"
+      "limitations": "Source-claimed 662047 not independently verified; historical first_seen unverified",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "cryptopanic",
@@ -92,22 +100,26 @@
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "role": "official_scheduled_events",
       "access": "public",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
-      "verified_rows": 0,
+      "ingestion_status": "verified_live_date_only_three_original_release_clocks",
+      "verified_rows": 48,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "Date in official filename is not verified intraday release timestamp"
+      "limitations": "Date in official filename is not verified intraday release timestamp",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "fed_press",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
       "role": "official_releases",
       "access": "public",
-      "ingestion_status": "implemented_live_adapter_pending_access_verification",
-      "verified_rows": 0,
+      "ingestion_status": "verified_live_all_2020_2026_date_only",
+      "verified_rows": 1011,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "Date in official filename is not verified intraday release timestamp"
+      "limitations": "Date in official filename is not verified intraday release timestamp",
+      "last_sample_utc": "2026-11-09T22:46:12Z",
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
     },
     {
       "id": "fomc_statements_mirror",
@@ -509,7 +521,18 @@
       "topic_degree"
     ],
     "no_claim_of_completed_coverage": true,
-    "predeclared_monthly_sampling": "28 quarterly months, Jan/Apr/Jul/Oct of each year 2020-2026; max 30 source rows/month, API date echo and publication month checked"
+    "predeclared_monthly_sampling": "28 quarterly months, Jan/Apr/Jul/Oct of each year 2020-2026; max 30 source rows/month, API date echo and publication month checked",
+    "last_sampled_months_with_crypto_rows": 23,
+    "last_missing_months": [
+      "2025-04",
+      "2025-07",
+      "2025-10",
+      "2026-01",
+      "2026-04"
+    ],
+    "last_verified_article_versions": 575,
+    "last_total_records_including_official": 1633,
+    "article_target_excludes_date_only_fed_releases": true
   },
   "last_updated_utc": "2026-11-10"
 }
