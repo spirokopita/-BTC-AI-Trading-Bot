@@ -146,7 +146,7 @@
       "access": "public",
       "ingestion_status": "implemented_verified_retrospective_fx_snapshot_NOT_historical_first_observed",
       "verified_rows": 2224,
-      "access_class": "FREE_PUBLIC_UNIMPLEMENTED",
+      "access_class": "FREE_PUBLIC_RESTRICTED_REDISTRIBUTION",
       "connector": "research.v39_rba_fx_asof.fetch_fx",
       "verified_as_of_utc": "2026-11-09T22:40:30Z",
       "source_endpoints": [
