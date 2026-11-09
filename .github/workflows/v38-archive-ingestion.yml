@@ -48,7 +48,7 @@ jobs:
           raw=p.read_bytes()
           x=json.loads(raw)
           assert x['deduplicated_rows'] <= x['raw_normalized_rows']
-          assert x['target_met'] == (x['deduplicated_rows'] >= 10000)
+          assert x['target_met'] == (x['historical_article_version_rows'] >= 10000)
           assert x['max_paper_entry_aud'] == 100 and x['android_strategy'] == 'HOLD'
           for r in x['records']:
               assert r['first_verified_capture_at_utc'] or r['availability_confidence'] == 'retrospective_only'
@@ -56,6 +56,8 @@ jobs:
                   assert r['capture_reference'] is None
           print('V38_SHA256',hashlib.sha256(raw).hexdigest())
           print('V38_ROWS',x['raw_normalized_rows'],'UNIQUE',x['deduplicated_rows'],
+                'ARTICLES',x['historical_article_version_rows'],
+                'MISSING_ARCHIVE_MONTHS',x['archive_months_missing_crypto'],
                 'VERIFIED_CAPTURE',x['historically_verified_capture_rows'])
           print('V38_MONTHS',json.dumps(x['months'],sort_keys=True))
           print('V38_SOURCES',json.dumps(x['source_status'],sort_keys=True))
