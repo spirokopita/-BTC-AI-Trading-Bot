@@ -58,7 +58,7 @@ class V39RbaTests(unittest.TestCase):
         self.assertEqual(before, extended.state(t))
 
     def test_placebo_uses_past_not_future(self):
-        fx = sample_fx(daily_growth=.002)
+        fx = sample_fx(start=date(2023,3,1), n=100, daily_growth=.002)
         t = available_at("2023-04-10") + 1
         self.assertTrue(fx_gate(fx, t, "h80_fx_headwind"))
         self.assertTrue(fx_gate(fx, t, "h80_fx_placebo7d"))
