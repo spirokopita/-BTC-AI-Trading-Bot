@@ -36,6 +36,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
       - name: Official Kraken BTC/AUD and RBA FX chronological study
         run: python -m research.v40_fx_decomposition --output audit/v40-fx-decomposition.json
+      - name: Latest completed Kraken BTC/AUD 4h bars with frozen V28 baselines
+        run: python -m research.v28_recent_bridge --output audit/v40-recent-bridge.json
       - name: Reconcile all gross fees spread slippage NET and reject promotion
         run: |
           python - <<'PY'
@@ -60,7 +62,9 @@ jobs:
         if: always()
         with:
           name: v40-fx-decomposition-paper
-          path: audit/v40-fx-decomposition.json
+          path: |
+            audit/v40-fx-decomposition.json
+            audit/v40-recent-bridge.json
   news:
     runs-on: ubuntu-latest
     timeout-minutes: 40
