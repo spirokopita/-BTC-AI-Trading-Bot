@@ -116,8 +116,7 @@ def main():
         audit["market_fetch"]="BLOCKED: "+market_error
     p=Path(a.output)
     p.parent.mkdir(parents=True,exist_ok=True)
-    raw=(json.dumps(audit,sort_keys=True,indent=2,ensure_ascii=False)+"
-").encode()
+    raw=(json.dumps(audit,sort_keys=True,indent=2,ensure_ascii=False)+"\n").encode()
     p.write_bytes(raw)
     print(json.dumps({"sha256":hashlib.sha256(raw).hexdigest(),
         "rows":len(audit["records"]),
