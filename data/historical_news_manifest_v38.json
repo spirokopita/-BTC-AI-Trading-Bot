@@ -1,63 +1,74 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 604,
+  "historical_article_versions_cumulative": 841,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-09T22:51:12.086688+00:00",
+  "latest_retrieval_utc": "2026-11-10T22:34:59.712841+00:00",
   "market_join_latest": {
     "examples": [
       {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "bar_open_utc": "2021-02-28T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163532"
+        "url": "https://odaily.news/newsflash/233964"
       },
       {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "bar_open_utc": "2021-02-28T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163528"
+        "url": "https://odaily.news/newsflash/233965"
       },
       {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "bar_open_utc": "2021-02-28T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163508"
+        "url": "https://odaily.news/post/5164716"
       },
       {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "bar_open_utc": "2021-02-28T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163540"
+        "url": "https://dailyhodl.com/2021/02/28/after-xrp-and-litecoin-flare-plans-to-bring-smart-contract-functionality-to-stellar"
       },
       {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "bar_open_utc": "2021-02-28T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163539"
+        "url": "https://odaily.news/newsflash/233966"
       }
     ],
     "market_bars": 6863,
-    "official_release_time_aligned_not_first_observed": 2,
-    "retrospective_time_aligned": 282,
+    "official_release_time_aligned_not_first_observed": 0,
+    "retrospective_time_aligned": 122,
     "strict_asof_eligible": 0
   },
   "months_by_publication": {
     "2020-01": 30,
+    "2020-02": 30,
     "2020-04": 30,
+    "2020-05": 30,
     "2020-07": 30,
     "2020-10": 30,
     "2021-01": 28,
+    "2021-02": 28,
     "2021-04": 23,
+    "2021-05": 25,
     "2021-07": 26,
     "2021-10": 25,
     "2022-01": 13,
+    "2022-02": 19,
     "2022-04": 16,
+    "2022-05": 13,
     "2022-07": 26,
     "2022-10": 26,
     "2023-01": 24,
+    "2023-02": 24,
     "2023-04": 20,
+    "2023-05": 13,
     "2023-07": 27,
     "2023-10": 28,
     "2024-01": 23,
+    "2024-02": 25,
     "2024-04": 22,
+    "2024-05": 26,
     "2024-07": 25,
     "2024-10": 24,
     "2025-01": 19,
+    "2025-02": 4,
     "2026-07": 30,
     "2026-09": 10,
     "2026-10": 49,
@@ -68,31 +79,38 @@
   "original_publisher_counts": {
     "247wallst.com": 4,
     "@cardanostiftung": 1,
-    "AMBCrypto": 2,
+    "AMBCrypto": 4,
     "Altcoinbuzz": 1,
     "BIS Speeches": 21,
-    "Bitcoinist": 5,
+    "Bitcoinist": 7,
+    "Blockworks": 1,
     "CNBC Crypto": 1,
     "Coin Edition": 2,
     "CoinDesk": 1,
     "CoinPedia": 1,
-    "CoinTelegraph": 4,
+    "CoinTelegraph": 7,
+    "Crypto Briefing": 1,
     "CryptoDaily": 1,
-    "CryptoPotato": 2,
-    "Cryptoglobe": 1,
+    "CryptoPotato": 3,
+    "CryptoSlate": 1,
+    "Cryptoglobe": 3,
     "DW News": 1,
+    "Decrypt": 1,
     "EigenLayer Blog": 1,
     "En": 2,
     "Ethereumworldnews": 1,
+    "Finbold": 1,
     "Fortune Crypto": 1,
     "NewsBTC": 3,
-    "Odaily 星球日报": 484,
+    "Odaily 星球日报": 701,
     "OpenZeppelin Blog": 5,
     "Stacker News": 10,
-    "The Daily Hodl": 5,
+    "The Daily Hodl": 7,
     "The Guardian Tech": 2,
     "TheCryptoBasic": 1,
+    "Thecryptolark": 1,
     "Thedefiant": 1,
+    "U.Today": 2,
     "Wolf Street": 2,
     "ZeroHedge": 1,
     "ZyCrypto": 2,
@@ -112,12 +130,12 @@
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 1663,
-  "rows_new_in_latest_sample": 1633,
-  "rows_sha256": "d8365a6e2ffd7f7008014739340f3f651318517f49c0227a60985ef8063f1a1d",
+  "rows_cumulative_deduplicated": 1900,
+  "rows_new_in_latest_sample": 237,
+  "rows_sha256": "e59ad9941eb2688ecaf59a4a2d904533e875d5b6703ac400ee5f6afd14f5826b",
   "sampling_class_counts": {
     "official_all_press_releases": 1010,
-    "outcome_independent_monthly_archive": 575,
+    "outcome_independent_monthly_archive": 812,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -125,59 +143,89 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 575,
+    "cryptocurrency_cv": 812,
     "fed_press": 1011,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
-    "common_crawl": {
-      "fetched_rows": 0,
-      "status": "NO_CAPTURE_IN_SELECTED_INDEXES; CC-MAIN-2024-10: HTTP 504"
-    },
-    "crypto_news_api": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
-    },
     "cryptocurrency_cv": {
-      "fetched_rows": 575,
-      "status": "2025-04: no returned article has verified publication month; 2025-07: no returned article has verified publication month; 2025-10: no returned article has verified publication month"
-    },
-    "cryptopanic": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
-    },
-    "fed_press": {
-      "fetched_rows": 1011,
-      "status": "OFFICIAL_ANNUAL_DATE_ONLY"
-    },
-    "fomc_calendar": {
-      "fetched_rows": 48,
-      "status": "DATE_ONLY_PLUS_3_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE"
-    },
-    "fomc_statements_mirror": {
-      "fetched_rows": 0,
-      "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
-    },
-    "gdelt": {
-      "fetched_rows": 0,
-      "status": "HTTPError: HTTP Error 429: Too Many Requests"
-    },
-    "infini_news": {
-      "fetched_rows": 0,
-      "status": "OK_PREVIEW_INCOMPLETE"
-    },
-    "media_cloud": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API credentials/access required; no authorized key"
-    },
-    "newsdata_io": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: archive access key/paid tier; no authorized key or purchase"
-    },
-    "sandl": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API access unverified/key may be required; no authorized key"
+      "fetched_rows": 237,
+      "per_month": {
+        "2020-02": {
+          "ok": true,
+          "rows": 30,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2020-05": {
+          "ok": true,
+          "rows": 30,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2021-02": {
+          "ok": true,
+          "rows": 28,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2021-05": {
+          "ok": true,
+          "rows": 25,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2022-02": {
+          "ok": true,
+          "rows": 19,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2022-05": {
+          "ok": true,
+          "rows": 13,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2023-02": {
+          "ok": true,
+          "rows": 24,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2023-05": {
+          "ok": true,
+          "rows": 13,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2024-02": {
+          "ok": true,
+          "rows": 25,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2024-05": {
+          "ok": true,
+          "rows": 26,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2025-02": {
+          "ok": true,
+          "rows": 4,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2026-02": {
+          "ok": true,
+          "rows": 0,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": true
+        }
+      },
+      "status": "V40_MONTHLY_12_OR_FEWER_BOUNDED_PUBLIC_REQUESTS"
     }
   },
   "target": 10000,
