@@ -1,3 +1,31 @@
+## V40 — 2026-11-11: implied BTC/USD decomposition and unsampled historical news months (PR #22)
+
+**TOP BLOCKER:** The RBA FX series is a 2026 retrospective snapshot, not verified historical first-observed/revision vintages. Historical news has zero new independently verified pre-decision captures; earlier-inspected Kraken history cannot support untouched OOS claims. No algorithm earned Android promotion; PAPER HOLD.
+
+**SOURCE / MARKET:** Official Kraken `XBTAUD_240.csv` 13,763 completed 4h candles, 20 gaps, three >=1000-bar segments 6863/3398/1999. Official RBA AUD/USD 2018-2022 XLS 1256 rows + 2023-current CSV 968 as V39, 2224 total days; RBA release 17:00 Sydney +24h ASSUMED, not actual historical availability. All decisions at completed-bar next OPEN, 30d price and FX decomposition using only prior observations. All data previously inspected; EXPLORATORY, not untouched OOS.
+
+**FIXED STRATEGY MENU / NEGATIVE CONTROL:** H80/300 base, FX-driven-rally veto (BTC/AUD +>=2% 30d while implied BTC/USD <=0), implied BTC/USD +2% 30d momentum confirmation, 7d past-shifted FX placebo, H50/200 FX-driven veto. All SELLs unaffected; missing FX blocks new BUY only. Train 50%, validation 20%, test 30%, 20-bar embargo, earlier-data selection requiring >=2 trades and positive NET in both train/validation. Paper wallet A$1000 independent reset per segment, inclusive entry <=min(A$100,10% cash), 80bps taker +5bps half-spread +5bps slippage EACH SIDE, hypothetical next-open fills.
+
+| V40 three independent test wallets | Trades | Wins/losses | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| H80 price-only | 7 | 3/4 | +51.333281 | 11.448071 | .715531 | .715531 | **+38.454151** |
+| H80 FX-driven veto | 7 | 3/4 | +51.333281 | 11.448071 | .715531 | .715531 | **+38.454151** |
+| H80 USD momentum | 7 | 3/4 | +50.106922 | 11.438270 | .714918 | .714918 | **+37.238819** |
+| H80 FX shifted placebo | 7 | 3/4 | +51.333281 | 11.448071 | .715531 | .715531 | **+38.454151** |
+| H50 FX-driven veto | 10 | 3/7 | +25.886632 | 15.943473 | .996481 | .996481 | **+7.950200** |
+
+**SELECTION / REJECTION:** Actual train/validation selectors HOLD / H50_FX_DRIVEN / HOLD, selected test NET **-A$14.351385**, same-stake buy/hold +A$129.286037. H80 FX-driven veto and shifted placebo changed ZERO trades vs base. Implied BTC/USD momentum worse by A$1.215332. Worst H80 drawdown -4.192577% (independent wallet); aggregate H80 +1.281805% across three A$1000 wallets, not compounded. Baseline NET SMA -119.682481, momentum -374.775403, RSI -225.519567, breakout -197.561916, regime -407.787388, trend ATR -27.686213. H80 A$50 vs A$100 +19.640152/+38.454151; half/current/double friction +45.178506/+38.454151/+25.215557. **REJECTED: no incremental causal feature value, no untouched OOS and no verified FX vintages.**
+
+**NEWS / EVENT COVERAGE:** 12 predeclared unsampled 2020–2026 monthly windows, bounded public cryptocurrency.cv metadata-only queries, exact start/end filter echo and UTC publication-month checks. 237 new deduplicated article rows; 11 months populated, 2026-02 zero; 122 retrospective next-bar alignments, 0 historically independently verified as-of news signals. No news trading hypothesis can be credibly tested from these historical API timestamps; shifted news controls would also be ineligible. Publisher rights and API usage restrictions respected. Main cumulative prior checkpoint: 1,663 metadata rows, 604 article versions. Post-merge cumulative counts **PENDING verification**, not assumed.
+
+**FRESH PUBLIC MARKET:** 720 gap-free completed 4h Kraken bars through 2026-11-10 16:00 UTC, 245 post-September. Oct-Nov frozen V28 NET SMA -29.897604, momentum -40.611689, RSI -23.956927, breakout -11.968582, regime -14.495934, slow SMA .5% -4.359602, slow SMA 2% -4.142430, A$100 buyhold -12.828908. October previously inspected; not untouched.
+
+**VERIFIED TESTS / AUDITS:** GitHub Actions PR `42915539808` PASSED 24 algorithm/V39/V27 tests and 35 news/V38/persistence tests plus official archive/RBA and fresh Kraken. Algorithm report SHA256 `68baa4c6a5ec34524217c38aa0cfc585eaa41b1a575542fa3ca9c388c80aa097`; news report SHA256 `fd3c04daec23924fad827335002e2f2d9b06d1ddb22d0c48dd9d5adf295e1523`. Commands: `python -m unittest discover -s tests -p 'test_v40_fx_decomposition.py' -v`; `python -m unittest discover -s tests -p 'test_v40_monthly_news.py' -v`; `python -m research.v40_fx_decomposition`; `python -m research.v40_monthly_news --with-kraken`; `python -m research.v28_recent_bridge`. PR #22 code in branch, main merge/persistence to verify separately.
+
+**STATUS:** DONE implementation, reproducible real-data comparison, provenance sample, tests, fresh candles; PARTIAL historical article target and capture-vintage coverage; BLOCKED independent OOS promotion; NOT ATTEMPTED Android APK/live trading. **NEXT:** merge PR #22, verify main persistence read-back, make monthly cursor skip already sampled/empty months, expand original WARC/vintage evidence and prospective frozen test. PAPER ONLY HOLD.
+
+---
+
 ## V39 — 2026-11-10: RBA FX vintage-lag gate and 28-month historical news expansion (PR #21)
 
 **TOP BLOCKER:** Historical RBA FX source snapshot is retrospective and may contain later revisions. A 17:00 Sydney +24h availability assumption is NOT first-observed proof. Historical news has 0 newly verified as-of tradable versions. Previously inspected Kraken periods are NOT untouched OOS. Train+validation selectors chose HOLD/HOLD/HOLD, so Android PAPER engine remains default-off; no strategy promoted or live orders.
