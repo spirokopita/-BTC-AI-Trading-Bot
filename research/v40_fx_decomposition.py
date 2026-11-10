@@ -184,8 +184,7 @@ def main():
     report = evaluate(bars, fx, market_prov, fx_prov)
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
-    raw = (json.dumps(report, indent=2, allow_nan=False) + "
-").encode()
+    raw = (json.dumps(report, indent=2, allow_nan=False) + "\n").encode()
     target.write_bytes(raw)
     print(json.dumps({"sha256": hashlib.sha256(raw).hexdigest(),
         "folds":len(report["folds"]),"aggregate":report["totals_independent_aud1000_reset_accounts"],
