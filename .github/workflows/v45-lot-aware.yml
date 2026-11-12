@@ -1,0 +1,27 @@
+name: V45 lot-aware historical cycle
+on:
+  pull_request:
+    paths:
+      - 'research/v45_lot_aware_cycle.py'
+      - 'tests/test_v45_lot_aware_cycle.py'
+      - '.github/workflows/v45-lot-aware.yml'
+  workflow_dispatch:
+jobs:
+  historical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Deterministic lot tests
+        run: python -m unittest discover -s tests -p 'test_v45_lot_aware_cycle.py' -v
+      - name: Official Kraken historical cycle simulation
+        run: python -m research.v45_lot_aware_cycle
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v45-lot-aware-cycle-grid
+          path: audit/v45-lot-aware-cycle-grid.json
+          if-no-files-found: ignore
