@@ -423,3 +423,14 @@ Observed during this 2026-11-01 research run: The Guardian published a 2026-10-2
 **Next highest-value hypothesis:** Do lower-turnover trend/volatility filters preserve gross edge after transaction costs on **multi-year** Kraken BTC/AUD OHLCVT? Obtain official exchange archive, establish a genuinely untouched future holdout, compare against buy/hold with equal exposure, and run fee/spread sensitivity. Do not optimize against the V24 holdouts again.
 
 **Verification:** GitHub Actions run `41293127006`, artifact `BTC-AUD-Research-OOS-Report`; six offline tests passed and genuine public feed experiment completed. No Android build or physical Samsung test was performed in this research run.
+
+
+## V47 — 2026-11-14 — lot-aware fee attribution and A$50/A$100 sensitivity
+
+**State:** PAPER ONLY; dependent on V45 research branch; not merged into main. Five-line recovery: (1) main V40 HOLD; (2) Kraken archive 13,763 bars/20 gaps; (3) V45 lot-aware sell fix; (4) V46 hold duration prior-inspected exploratory; (5) Android A$100/10% cash, 80bps taker and no live execution.
+
+**DONE (implementation):** V45 replay now exposes separate entry/exit taker fee, modeled 5bps half-spread and 5bps slippage, and a configurable A$50 or A$100 entry debit cap. Added V47 official Kraken historical replay comparison with fixed 4% dip threshold, two exit-range thresholds and two permanent-hoard fractions, three gap-free segments, against same-buy no-sale comparator. CI command: `python -m unittest discover -s tests -p 'test_v47_cost_audit.py' -v && python -m research.v47_cost_audit`. Source: official Kraken archive via existing `research.v33_cross_regime.archive`; previously inspected, NOT untouched OOS. Historical news signal testing NOT ATTEMPTED in V47. No fee tier changes or Android promotion.
+
+**Caveat:** Current split accounting uses explicit modeled 5bps+5bps but total exit proceeds remain calculated from the pre-existing 10bps price friction multiplier; rounding can differ. Gross trading P&L, portfolio unrealized mark and cash reconciliation require separate full-ledger proof before strategy promotion. No profit claims before CI artifact analysis.
+
+**NEXT:** Verify CI and artifact; repair any failing test; reconcile gross/fee/spread/slippage/net at every fill; test A$50/A$100 against fixed OOS and news availability controls. Keep HOLD.
