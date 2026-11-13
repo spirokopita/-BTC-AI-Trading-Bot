@@ -934,3 +934,6 @@ Build V13 with Android SDK + Gradle and run device/instrumentation tests, then f
 6. News module — **NEXT**.
 7. Combined strategy loop — pending.
 8. Dashboard — pending.
+
+## 2026-11-14 V47 (research branch, paper only)
+Implemented explicit 80bps taker-fee and modeled 5bps spread/5bps slippage attribution in lot-aware Hoarder research; A$50/A$100 entry sizing comparison, same-buy never-sell control and deterministic safety test. Source: existing official Kraken archive (previously inspected; no untouched OOS). CI: `python -m unittest discover -s tests -p 'test_v47_cost_audit.py' -v` and `python -m research.v47_cost_audit`; see PR #28 for run/artifact. No Android promotion. Historical news expansion NOT ATTEMPTED in this scoped run. NEXT: reconcile fill-level gross/cost/NET and validate prospectively; no live orders.
