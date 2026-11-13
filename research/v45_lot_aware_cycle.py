@@ -9,9 +9,9 @@ MIN_LOT_AGE=180 # 4h bars = 30 days; 1095 bars = 182.5 days
 MIN_LOT_AGE=1095
 MIN_PROFIT=1.15
 
-def replay(bars,feat,start,end,buy_threshold,sell_level,split=.7,enable_sells=True,minimum_age=MIN_LOT_AGE):
+def replay(bars,feat,start,end,buy_threshold,sell_level,split=.7,enable_sells=True,minimum_age=MIN_LOT_AGE,max_entry_debit=100.):
     cash=CASH;hoard=0.;lots=[];buys=0;sells=0;lastbuy=-100000
-    entry_fees=0.;exit_fees=0.;realised=0.;equity=[];sale_audit=[]
+    entry_fees=0.;exit_fees=0.;entry_spread=0.;exit_spread=0.;entry_slippage=0.;exit_slippage=0.;realised=0.;equity=[];sale_audit=[]
     for i in range(start,end):
         p=bars[i][1];dip,location=feat[i]
         # Sell first; independent lot age and per-lot cost basis. Buying today cannot reset eligibility.
@@ -26,17 +26,19 @@ def replay(bars,feat,start,end,buy_threshold,sell_level,split=.7,enable_sells=Tr
                 cost=sum(x[0]["basis"] for x in eligible)
                 cash+=proceeds;realised+=proceeds-cost
                 exit_fees+=sum(x[0]["qty"]*p*(1-FRICTION)*FEE for x in eligible)
+                exit_spread+=sum(x[0]["qty"]*p*.0005 for x in eligible)
+                exit_slippage+=sum(x[0]["qty"]*p*.0005 for x in eligible)
                 ids={id(x[0]) for x in eligible}
                 lots=[lot for lot in lots if id(lot) not in ids]
                 sells+=1
-                sale_audit.append(dict(ts=bars[i][0],lots=len(eligible),proceeds_aud=proceeds,
+                sale_audit.append(dict(ts=bars[i][0],lots=len(eligible),gross_exit_mid_aud=sum(x[0]["qty"]*p for x in eligible),exit_fee_aud=sum(x[0]["qty"]*p*(1-FRICTION)*FEE for x in eligible),exit_spread_aud=sum(x[0]["qty"]*p*.0005 for x in eligible),exit_slippage_aud=sum(x[0]["qty"]*p*.0005 for x in eligible),proceeds_aud=proceeds,
                     cost_basis_aud=cost,realised_net_aud=proceeds-cost))
         if dip>=buy_threshold and i-lastbuy>=180 and cash>=10:
-            debit=min(100.,.1*cash)
+            debit=min(max_entry_debit,.1*cash)
             qty=debit/(p*(1+FRICTION)*(1+FEE))
             hoard+=qty*split
             lots.append(dict(i=i,qty=qty*(1-split),basis=debit*(1-split)))
-            cash-=debit;entry_fees+=debit*FEE/(1+FEE);buys+=1;lastbuy=i
+            cash-=debit;entry_fees+=debit*FEE/(1+FEE);entry_spread+=qty*p*.0005;entry_slippage+=qty*p*.0005;buys+=1;lastbuy=i
         trade=sum(l["qty"] for l in lots)
         equity.append(cash+(hoard+trade)*p*(1-FRICTION)*(1-FEE))
     peak=CASH;dd=0.
@@ -44,7 +46,7 @@ def replay(bars,feat,start,end,buy_threshold,sell_level,split=.7,enable_sells=Tr
     return dict(value_aud=round(equity[-1],3),net_aud=round(equity[-1]-CASH,3),
         buys=buys,bulk_sales=sells,hoard_btc=hoard,trade_btc=sum(l["qty"] for l in lots),
         remaining_lots=len(lots),cash_aud=round(cash,3),
-        realised_net_aud=round(realised,3),fees_paid_aud=round(entry_fees+exit_fees,3),
+        realised_net_aud=round(realised,3),fees_paid_aud=round(entry_fees+exit_fees,3),spread_paid_aud=round(entry_spread+exit_spread,3),slippage_paid_aud=round(entry_slippage+exit_slippage,3),
         max_drawdown_pct=round(dd*100,3),sales=sale_audit)
 
 def run(bars,source):
