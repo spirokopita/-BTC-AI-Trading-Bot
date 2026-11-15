@@ -88,7 +88,368 @@
     "2026-10"
   ],
   "retry_months": [],
-  "attempt_history": [],
-  "seeded_from": "V39 quarterly Jan/Apr/Jul/Oct 2020-2026 and V40 Feb/May bounded sample; exact prior per-month status retained in changelog",
-  "note": "Attempted months are never silently counted as successful rows; zero-row and failed attempts are persisted separately."
+  "attempt_history": [
+    {
+      "month": "2020-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2020-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2020-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2020-05",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2020-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2020-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-05",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2021-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-05",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2022-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-05",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2023-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-05",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2024-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2025-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2025-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2025-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2025-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2025-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2026-01",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2026-02",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2026-04",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2026-07",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    },
+    {
+      "month": "2026-10",
+      "retrieved_at_utc": null,
+      "rows": null,
+      "status": "LEGACY_SUCCESS_COUNTS_NOT_RECONSTRUCTED",
+      "ok": true,
+      "retryable": false,
+      "legacy": true
+    }
+  ],
+  "seeded_from": "V39 quarterly Jan/Apr/Jul/Oct 2020-2026 (28 months) and V40 February/May bounded sample (12 months); all requests completed, but exact per-month legacy row counts are not reconstructed in this cursor.",
+  "note": "Attempted months are not counted as populated articles. Legacy months are marked successful with unknown per-month row counts; V41 onward stores exact rows, zero-row and retryable-failure status."
 }
