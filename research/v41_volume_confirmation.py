@@ -245,6 +245,7 @@ def market_diagnostics(bars, provenance, min_segment_bars=1000):
     result = dict(provenance)
     result.update({
         "total_completed_bars": len(bars),
+        "archive_member_sha256_verified": bool(result.get("member_sha256")),
         "bar_step_seconds": STEP,
         "first_bar_open_utc": datetime.fromtimestamp(
             bars[0][0], timezone.utc).isoformat(),
