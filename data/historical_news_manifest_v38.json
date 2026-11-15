@@ -1,54 +1,66 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 841,
+  "historical_article_versions_cumulative": 1162,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-10T22:34:59.712841+00:00",
+  "latest_retrieval_utc": "2026-11-15T22:47:13.670223+00:00",
   "market_join_latest": {
     "examples": [
       {
-        "bar_open_utc": "2021-02-28T20:00:00+00:00",
+        "bar_open_utc": "2020-12-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/233964"
+        "url": "https://odaily.news/newsflash/224904"
       },
       {
-        "bar_open_utc": "2021-02-28T20:00:00+00:00",
+        "bar_open_utc": "2020-12-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/233965"
+        "url": "https://odaily.news/newsflash/224905"
       },
       {
-        "bar_open_utc": "2021-02-28T20:00:00+00:00",
+        "bar_open_utc": "2021-01-01T00:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5164716"
+        "url": "https://odaily.news/newsflash/224906"
       },
       {
-        "bar_open_utc": "2021-02-28T20:00:00+00:00",
+        "bar_open_utc": "2021-01-01T00:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://dailyhodl.com/2021/02/28/after-xrp-and-litecoin-flare-plans-to-bring-smart-contract-functionality-to-stellar"
+        "url": "https://odaily.news/newsflash/224908"
       },
       {
-        "bar_open_utc": "2021-02-28T20:00:00+00:00",
+        "bar_open_utc": "2021-01-01T00:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/233966"
+        "url": "https://odaily.news/newsflash/224909"
       }
     ],
     "market_bars": 6863,
     "official_release_time_aligned_not_first_observed": 0,
-    "retrospective_time_aligned": 122,
+    "retrospective_time_aligned": 175,
     "strict_asof_eligible": 0
   },
   "months_by_publication": {
     "2020-01": 30,
     "2020-02": 30,
+    "2020-03": 30,
     "2020-04": 30,
     "2020-05": 30,
+    "2020-06": 30,
     "2020-07": 30,
+    "2020-08": 27,
+    "2020-09": 30,
     "2020-10": 30,
+    "2020-11": 29,
+    "2020-12": 26,
     "2021-01": 28,
     "2021-02": 28,
+    "2021-03": 25,
     "2021-04": 23,
     "2021-05": 25,
+    "2021-06": 24,
     "2021-07": 26,
+    "2021-08": 27,
+    "2021-09": 21,
     "2021-10": 25,
+    "2021-11": 24,
+    "2021-12": 28,
     "2022-01": 13,
     "2022-02": 19,
     "2022-04": 16,
@@ -79,21 +91,22 @@
   "original_publisher_counts": {
     "247wallst.com": 4,
     "@cardanostiftung": 1,
-    "AMBCrypto": 4,
+    "AMBCrypto": 5,
     "Altcoinbuzz": 1,
     "BIS Speeches": 21,
-    "Bitcoinist": 7,
-    "Blockworks": 1,
+    "Bitcoinist": 9,
+    "Blockworks": 2,
     "CNBC Crypto": 1,
     "Coin Edition": 2,
     "CoinDesk": 1,
     "CoinPedia": 1,
-    "CoinTelegraph": 7,
-    "Crypto Briefing": 1,
+    "CoinTelegraph": 10,
+    "Crypto Briefing": 4,
     "CryptoDaily": 1,
     "CryptoPotato": 3,
     "CryptoSlate": 1,
-    "Cryptoglobe": 3,
+    "Cryptoglobe": 6,
+    "Cryptoninjas": 1,
     "DW News": 1,
     "Decrypt": 1,
     "EigenLayer Blog": 1,
@@ -101,11 +114,12 @@
     "Ethereumworldnews": 1,
     "Finbold": 1,
     "Fortune Crypto": 1,
-    "NewsBTC": 3,
-    "Odaily 星球日报": 701,
+    "NewsBTC": 4,
+    "Odaily 星球日报": 1003,
     "OpenZeppelin Blog": 5,
     "Stacker News": 10,
-    "The Daily Hodl": 7,
+    "The Block": 1,
+    "The Daily Hodl": 9,
     "The Guardian Tech": 2,
     "TheCryptoBasic": 1,
     "Thecryptolark": 1,
@@ -113,7 +127,7 @@
     "U.Today": 2,
     "Wolf Street": 2,
     "ZeroHedge": 1,
-    "ZyCrypto": 2,
+    "ZyCrypto": 3,
     "aol.com": 9,
     "cointelegraph.com": 1,
     "edaily.co.kr": 2,
@@ -130,12 +144,12 @@
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 1900,
-  "rows_new_in_latest_sample": 237,
-  "rows_sha256": "e59ad9941eb2688ecaf59a4a2d904533e875d5b6703ac400ee5f6afd14f5826b",
+  "rows_cumulative_deduplicated": 2221,
+  "rows_new_in_latest_sample": 321,
+  "rows_sha256": "63597fc2437d9ca2953c1ac897d05fb3d71e87ca54df04aa3ef2cc22afb9fa70",
   "sampling_class_counts": {
     "official_all_press_releases": 1010,
-    "outcome_independent_monthly_archive": 812,
+    "outcome_independent_monthly_archive": 1133,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -143,89 +157,101 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 812,
+    "cryptocurrency_cv": 1133,
     "fed_press": 1011,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
     "cryptocurrency_cv": {
-      "fetched_rows": 237,
+      "fetched_rows": 321,
       "per_month": {
-        "2020-02": {
+        "2020-03": {
           "ok": true,
+          "retryable": false,
           "rows": 30,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2020-05": {
+        "2020-06": {
           "ok": true,
+          "retryable": false,
           "rows": 30,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2021-02": {
+        "2020-08": {
           "ok": true,
-          "rows": 28,
+          "retryable": false,
+          "rows": 27,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2021-05": {
+        "2020-09": {
           "ok": true,
-          "rows": 25,
+          "retryable": false,
+          "rows": 30,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2022-02": {
+        "2020-11": {
           "ok": true,
-          "rows": 19,
+          "retryable": false,
+          "rows": 29,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2022-05": {
+        "2020-12": {
           "ok": true,
-          "rows": 13,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2023-02": {
-          "ok": true,
-          "rows": 24,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2023-05": {
-          "ok": true,
-          "rows": 13,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-02": {
-          "ok": true,
-          "rows": 25,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-05": {
-          "ok": true,
+          "retryable": false,
           "rows": 26,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2025-02": {
+        "2021-03": {
           "ok": true,
-          "rows": 4,
+          "retryable": false,
+          "rows": 25,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2026-02": {
+        "2021-06": {
           "ok": true,
-          "rows": 0,
+          "retryable": false,
+          "rows": 24,
           "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": true
+          "zero_rows": false
+        },
+        "2021-08": {
+          "ok": true,
+          "retryable": false,
+          "rows": 27,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2021-09": {
+          "ok": true,
+          "retryable": false,
+          "rows": 21,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2021-11": {
+          "ok": true,
+          "retryable": false,
+          "rows": 24,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2021-12": {
+          "ok": true,
+          "retryable": false,
+          "rows": 28,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
         }
       },
-      "status": "V40_MONTHLY_12_OR_FEWER_BOUNDED_PUBLIC_REQUESTS"
+      "status": "V41_PERSISTENT_UNSAMPLED_MONTH_CURSOR"
     }
   },
   "target": 10000,
