@@ -25,7 +25,7 @@
 
 ## News
 - Incremental cryptocurrency.cv archive: 321 URL-deduplicated metadata rows from 12 previously unsampled months, all 12 populated; 30 months remain. 175 retrospective joins, 0 strict as-of eligible.
-- Main manifest read-back: 2,221 metadata/version rows, 1,162 actual article versions (11.62% of 10,000 target), 1 Common Crawl capture proof, 3 official release clocks; SHA256 63597fc2437d9ca2953c1ac897d05fb3d71e87ca54df04aa3ef2cc22afb9fa70. Cursor 52 attempted/completed, no retry, 30 remaining.
+- Main manifest read-back: 2,221 metadata/version rows, 1,162 actual article versions total, of which 1,133 outcome-independent monthly-archive articles count toward the 10,000 target (11.33%); 29 GDELT topic-search rows are excluded, 1 Common Crawl capture proof, 3 official release clocks; SHA256 63597fc2437d9ca2953c1ac897d05fb3d71e87ca54df04aa3ef2cc22afb9fa70. Cursor 52 attempted/completed, no retry, 30 remaining.
 - 2,220 canonical URLs among 2,221 records because one URL is represented once as a Common Crawl capture and once as a separate FOMC calendar event; it is not counted twice as an article version.
 - V48 classifier: 1 proof passes; 1,899 lack independent capture proof; 0 eligible in V41 test windows. Historical first-observed timestamps remain null.
 - First-observed RSS corpus: 249 unique URLs, 114 new this run, SHA256 fea579b57f3d6bf5f5f2273ceb961b91edc2d8630c6ead8dfc5fb8c874126bbc. V28 bot commit 0257d71c2232b1482f2609d7fc6c5553214419c8. Four feeds succeeded; Bloomberg Crypto RSS blocked by trusted-host redirect allowlist. No historic first-seen backfill.
