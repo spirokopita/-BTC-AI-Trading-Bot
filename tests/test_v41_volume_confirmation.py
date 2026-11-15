@@ -144,7 +144,7 @@ class V41VolumeTests(unittest.TestCase):
                "availability_confidence": "retrospective_only"}
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "news.jsonl"
-            path.write_text(json.dumps(row) + "\\n")
+            path.write_text(json.dumps(row) + "\n")
             events, digest, rejected = load_verified_news(path)
         self.assertEqual(events, [])
         self.assertEqual(rejected.get("INVALID_URL"), 1)
