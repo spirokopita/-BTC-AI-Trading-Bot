@@ -85,9 +85,24 @@ def main(argv=None):
     from research.market_experiment import fetch_public
     p = argparse.ArgumentParser()
     p.add_argument('--output', default='audit/v28-recent-bridge.json')
+    p.add_argument('--bars-json-output', default=None)
     args = p.parse_args(argv)
     bars, digest = fetch_public()
-    result = run_recent(bars, digest, fetched_at_utc=datetime.now(timezone.utc).isoformat())
+    fetched_at = datetime.now(timezone.utc).isoformat()
+    result = run_recent(bars, digest, fetched_at_utc=fetched_at)
+    if args.bars_json_output:
+        bars_path = Path(args.bars_json_output)
+        bars_path.parent.mkdir(parents=True, exist_ok=True)
+        bars_path.write_text(json.dumps({
+            'schema': 'v28_recent_ohlc_1',
+            'source': 'Kraken public OHLC 240-minute BTC/AUD API',
+            'source_response_sha256': digest,
+            'fetched_at_utc': fetched_at,
+            'bars': bars,
+        }, separators=(',', ':'), allow_nan=False) + '\n', encoding='utf-8')
+        readback = json.loads(bars_path.read_text(encoding='utf-8'))
+        if readback['source_response_sha256'] != digest or len(readback['bars']) != len(bars):
+            raise AssertionError('Recent bar artifact read-back mismatch')
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(result, indent=2, allow_nan=False), encoding='utf-8')
