@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 
 from research.v41_volume_confirmation import (
     volume_feature, news_active, load_verified_news, select,
-    replay_variant, CANDIDATES, VOLUME_THRESHOLD,
+    replay_variant, CANDIDATES, VOLUME_THRESHOLD, buyhold_audit,
+    market_diagnostics,
 )
 
 STEP = 14400
@@ -163,6 +164,31 @@ class V41VolumeTests(unittest.TestCase):
             result["gross_aud"] - result["fees_aud"] - result["spread_aud"]
             - result["slippage_aud"], result["net_aud"], places=6)
         self.assertEqual(result["strategy"], "h80_base")
+
+    def test_buyhold_audits_gross_costs_net_and_matches_legacy_net(self):
+        bars = fixture()
+        result = buyhold_audit(bars, 305, 650, max_entry_debit=100.0)
+        self.assertAlmostEqual(
+            result["gross_aud"]-result["fees_aud"]-result["spread_aud"]
+            -result["slippage_aud"], result["net_aud"], places=6)
+        self.assertLessEqual(result["entry_debit_aud"], 100.0 + 1e-8)
+        self.assertAlmostEqual(result["net_aud"],
+                               __import__("research.v29_point_in_time", fromlist=["buyhold"]).buyhold(
+                                   bars, 305, 650), places=6)
+        half = buyhold_audit(bars, 305, 650, max_entry_debit=50.0)
+        self.assertLessEqual(half["entry_debit_aud"], 50.0 + 1e-8)
+        self.assertLessEqual(half["entry_debit_aud"], 0.10 * 1000.0 + 1e-8)
+
+    def test_market_diagnostics_counts_gaps_and_coverage(self):
+        bars = fixture(8)
+        rows = list(bars)
+        rows[4] = (rows[4][0] + STEP, *rows[4][1:])
+        audit = market_diagnostics(rows, {"source": "synthetic"}, min_segment_bars=2)
+        self.assertEqual(audit["total_completed_bars"], 8)
+        self.assertEqual(audit["gap_count"], 1)
+        self.assertEqual(audit["bar_step_seconds"], STEP)
+        self.assertEqual(len(audit["eligible_gap_free_segments"]), 2)
+        self.assertTrue(audit["last_bar_close_utc"].endswith("+00:00"))
 
     def test_volume_candidates_are_registered(self):
         self.assertIn("h80_vol_confirm", CANDIDATES)
