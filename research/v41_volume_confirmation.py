@@ -69,7 +69,7 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
         raise FileNotFoundError("Cumulative provenance corpus missing")
     raw = source.read_bytes()
     events = []
-    rejected = collections.Counter()
+    classification_counts = collections.Counter()
     now = datetime.now(timezone.utc).timestamp()
     for line in raw.decode("utf-8").splitlines():
         if not line.strip():
@@ -94,14 +94,14 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
             rejected["INVALID_URL"] += 1
             continue
         proof = classify_news(proof_row, now, latency_seconds=3600)
-        rejected[proof["reason"]] += 1
+        classification_counts[proof["reason"]] += 1
         if proof["eligible"]:
             events.append(proof_row)
     events.sort(key=lambda x: (
         x.get("verified_capture_at_utc", ""),
         x.get("url", ""),
         x.get("content_sha256", "")))
-    return events, hashlib.sha256(raw).hexdigest(), dict(sorted(rejected.items()))
+    return events, hashlib.sha256(raw).hexdigest(), dict(sorted(classification_counts.items()))
 
 def volume_feature(bars, decision_index, lookback=LOOKBACK, delay_bars=0):
     """At OPEN i, inspect candle i-1-delay and only the lookback candles before it."""
@@ -336,7 +336,7 @@ def buyhold_audit(bars, start, end, max_entry_debit=100.0, cost_mult=1.0):
     return result
 
 
-def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=None):
+def evaluate(bars, market_provenance, news_events, news_sha256, news_classification_counts=None):
     market_provenance = market_diagnostics(bars, market_provenance)
     slices = segments(bars, 1000)
     folds = []
@@ -440,7 +440,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
             "corpus_sha256": news_sha256,
             "verified_capture_rows": len(news_events),
             "availability_basis": "V48 exact SHA256 snapshot or Common Crawl CDX SHA1-base32 capture digest; 1h conservative latency",
-            "rejected_by_reason": news_rejections or {},
+            "classification_counts_by_reason": news_classification_counts or {},
             "historically_eligible_events_in_test_windows": sum(
                 f["strict_news_available_in_test"] for f in folds),
             "sentiment": "NOT AVAILABLE / NOT INFERRED FROM TITLES",
@@ -496,8 +496,8 @@ def main(argv=None):
     parser.add_argument("--news", default="data/historical_news_sample_v38.jsonl")
     args = parser.parse_args(argv)
     bars, provenance = archive()
-    events, news_sha, news_rejections = load_verified_news(args.news)
-    report = evaluate(bars, provenance, events, news_sha, news_rejections)
+    events, news_sha, news_classification_counts = load_verified_news(args.news)
+    report = evaluate(bars, provenance, events, news_sha, news_classification_counts)
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(report, indent=2, allow_nan=False) + "\n").encode()
