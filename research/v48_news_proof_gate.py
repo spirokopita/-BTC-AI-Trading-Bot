@@ -91,7 +91,8 @@ def classify(row,decision_ts,latency_seconds=3600):
             result["reason"]="INVALID_PROVENANCE_TIME";return result
         if None in (published,updated,capture,retrieved):
             result["reason"]="INVALID_PROVENANCE_TIME";return result
-        if updated<published or capture<published or retrieved<capture:
+        if (updated<published or capture<published or retrieved<capture
+                or updated>retrieved):
             result["reason"]="INCONSISTENT_CHRONOLOGY";return result
         available=max(published,updated,capture)+latency_seconds
         result["hash_algorithm"]="sha256"
