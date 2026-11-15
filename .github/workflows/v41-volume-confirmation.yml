@@ -116,7 +116,12 @@ jobs:
           assert e['first_observed_at_utc'] is None and e['strategy_selection'].startswith('NONE')
           assert e['max_inclusive_entry_debit_aud']==100 and e['cash_fraction_cap']==.10
           assert all(item['first_observed_at_utc'] is None for item in e['events'])
+          assert e['market']['source_response_sha256']==r['source_response_sha256']
+          assert e['market']['all_completed_bars']==r['all_completed_bars']
+          assert len(e['events'])==5
+          assert e['scheduled_future_events_not_backtested'][0]['status']=='SCHEDULED_NOT_YET_RELEASED'
           print('V41_RECENT_NEWS_EVENT_STUDY',e['aggregate'],'OVERLAPS',e['overlap_pairs'])
+          print('V41_FUTURE_SCHEDULED',e['scheduled_future_events_not_backtested'])
           print('V41_ALGORITHM_SHA256',hashlib.sha256(pathlib.Path('audit/v41-volume-confirmation.json').read_bytes()).hexdigest())
           print('V41_NEWS_SHA256',hashlib.sha256(pathlib.Path('audit/v41-monthly-news.json').read_bytes()).hexdigest())
           PY
