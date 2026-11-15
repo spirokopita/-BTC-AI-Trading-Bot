@@ -31,6 +31,30 @@ class TestAsOf(unittest.TestCase):
  def test_gap_or_irregular_4h_spacing_rejected(self):
   with self.assertRaises(ValueError):
    join([R],["2023-01-01T01:00:00Z","2023-01-01T09:00:00Z"])
+ def test_common_crawl_index_sha1_digest_is_explicitly_supported(self):
+  row=dict(R,capture_type="common_crawl_index_digest",
+           capture_source="common_crawl",version_hash_algorithm="sha1_base32",
+           version_hash="CYHH4CC5K6XQU3PWAKGE625CJS6QZ2LQ",
+           capture_reference="crawl-data/CC-MAIN-2024-10/segments/a/warc/example.warc.gz",
+           index_version="CC-MAIN-2024-10",
+           published_at_utc=None,updated_at_utc=None,
+           verified_capture_at_utc="2024-02-23T12:25:47Z",
+           retrieved_at_utc="2026-11-08T22:26:30Z")
+  proof=classify(row,"2024-02-23T13:25:47Z")
+  self.assertTrue(proof["eligible"])
+  self.assertEqual(proof["hash_algorithm"],"sha1_base32")
+  self.assertEqual(proof["available_at_utc"],1708694747.0)
+ def test_common_crawl_digest_requires_warc_reference_and_index_version(self):
+  row=dict(R,capture_type="common_crawl_index_digest",
+           capture_source="common_crawl",version_hash_algorithm="sha1_base32",
+           version_hash="CYHH4CC5K6XQU3PWAKGE625CJS6QZ2LQ",
+           capture_reference="no-warc",index_version="bad",
+           published_at_utc=None,updated_at_utc=None,
+           verified_capture_at_utc="2024-02-23T12:25:47Z",
+           retrieved_at_utc="2026-11-08T22:26:30Z")
+  self.assertEqual(classify(row,"2025-01-01T00:00:00Z")["reason"],
+                   "INVALID_CAPTURE_REFERENCE")
+
  def test_non_hex_hash_rejected(self):
   r=dict(R,content_sha256="z"*64,version_capture_sha256="z"*64)
   self.assertEqual(classify(r,"2025-01-01T00:00:00Z")["reason"],"NO_VERSION_HASH")
