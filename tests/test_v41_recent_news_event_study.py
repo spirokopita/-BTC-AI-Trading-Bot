@@ -126,6 +126,22 @@ class V41RecentEventStudyTests(unittest.TestCase):
         self.assertIsNone(loaded[0]["first_observed_at_utc"])
         self.assertEqual(source["schema"], "v41_recent_news_events_1")
 
+    def test_event_loader_rejects_future_publication_and_non_https_source(self):
+        doc = event_doc()
+        doc["events"][0]["published_at_utc"] = "2026-11-17T00:30:00Z"
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "events.json"
+            path.write_text(json.dumps(doc))
+            with self.assertRaises(ValueError):
+                load_events(path)
+        doc = event_doc()
+        doc["events"][0]["source_urls"] = ["http://example.org/e"]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "events.json"
+            path.write_text(json.dumps(doc))
+            with self.assertRaises(ValueError):
+                load_events(path)
+
     def test_event_study_labels_reconstruction_and_overlapping_events(self):
         bars = bars_fixture()
         doc = event_doc()
