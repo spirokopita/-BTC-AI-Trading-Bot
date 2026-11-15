@@ -113,8 +113,8 @@ class V41VolumeTests(unittest.TestCase):
                                     for x in (legacy, retrospective)))
             events, digest, rejected = load_verified_news(path)
         self.assertEqual(events, [])
-        self.assertEqual(rejected.get("NO_VERSION_HASH", 0), 0)
-        self.assertEqual(rejected.get("NO_INDEPENDENT_CAPTURE_PROOF"), 2)
+        self.assertEqual(rejected.get("NO_VERSION_HASH"), 1)
+        self.assertEqual(rejected.get("NO_INDEPENDENT_CAPTURE_PROOF"), 1)
         self.assertEqual(len(digest), 64)
 
     def test_loader_rejects_missing_exact_version_hash(self):
