@@ -140,6 +140,9 @@ def net_trade(entry_mid, exit_mid, *, max_entry_debit=MAX_ENTRY_DEBIT):
     spread = buy["spread"] + sell["spread"]
     slippage = buy["slippage"] + sell["slippage"]
     net = gross-fees-spread-slippage
+    execution_net = sell["notional"] - sell["fee"] - buy["notional"] - buy["fee"]
+    if not math.isclose(net, execution_net, abs_tol=1e-8):
+        raise AssertionError("Event trade does not reconcile to execution cash flows")
     result = {
         "trades": 1,
         "wins": int(net > 0),
@@ -157,10 +160,6 @@ def net_trade(entry_mid, exit_mid, *, max_entry_debit=MAX_ENTRY_DEBIT):
         "half_spread_each_side_bps": 5,
         "slippage_each_side_bps": 5,
     }
-    if not math.isclose(
-            result["gross_aud"]-result["fees_aud"]-result["spread_aud"]
-            -result["slippage_aud"], result["net_aud"], abs_tol=1e-6):
-        raise AssertionError("Event trade gross/cost/NET mismatch")
     return result
 
 
