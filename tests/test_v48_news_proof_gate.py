@@ -23,9 +23,18 @@ class TestAsOf(unittest.TestCase):
   r=dict(R,content_sha256="")
   self.assertFalse(classify(r,"2025-01-01T00:00:00Z")["eligible"])
  def test_join_no_lookahead(self):
-  bars=["2023-01-01T01:00:00Z","2023-01-01T04:00:00Z"]
+  bars=["2023-01-01T01:00:00Z","2023-01-01T05:00:00Z"]
   rows=join([R],bars)
   self.assertEqual([len(x["verified_urls"]) for x in rows],[0,1])
  def test_monotonic_bars(self):
   with self.assertRaises(ValueError):join([R],[1,1])
+ def test_gap_or_irregular_4h_spacing_rejected(self):
+  with self.assertRaises(ValueError):
+   join([R],["2023-01-01T01:00:00Z","2023-01-01T09:00:00Z"])
+ def test_non_hex_hash_rejected(self):
+  r=dict(R,content_sha256="z"*64,version_capture_sha256="z"*64)
+  self.assertEqual(classify(r,"2025-01-01T00:00:00Z")["reason"],"NO_VERSION_HASH")
+ def test_non_https_url_rejected(self):
+  r=dict(R,url="http://example.org/a")
+  self.assertEqual(classify(r,"2025-01-01T00:00:00Z")["reason"],"INVALID_URL")
 if __name__=="__main__":unittest.main()
