@@ -91,7 +91,7 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
             # Legacy corpus uses canonical_url; it still lacks the V48 proof schema.
             url = row.get("canonical_url")
         if not isinstance(url, str) or not url.startswith("https://"):
-            rejected["INVALID_URL"] += 1
+            classification_counts["INVALID_URL"] += 1
             continue
         proof = classify_news(proof_row, now, latency_seconds=3600)
         classification_counts[proof["reason"]] += 1
