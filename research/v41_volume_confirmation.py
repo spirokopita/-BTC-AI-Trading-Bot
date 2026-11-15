@@ -439,7 +439,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
         "strict_verified_news": {
             "corpus_sha256": news_sha256,
             "verified_capture_rows": len(news_events),
-            "availability_basis": "V48 exact content SHA256 must match the independently captured version; 1h conservative latency",
+            "availability_basis": "V48 exact SHA256 snapshot or Common Crawl CDX SHA1-base32 capture digest; 1h conservative latency",
             "rejected_by_reason": news_rejections or {},
             "historically_eligible_events_in_test_windows": sum(
                 f["strict_news_available_in_test"] for f in folds),
