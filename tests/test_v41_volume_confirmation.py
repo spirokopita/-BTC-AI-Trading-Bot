@@ -112,9 +112,20 @@ class V41VolumeTests(unittest.TestCase):
                                     for x in (legacy, retrospective)))
             events, digest, rejected = load_verified_news(path)
         self.assertEqual(events, [])
-        self.assertEqual(rejected.get("NO_VERSION_HASH"), 1)
-        self.assertEqual(rejected.get("NO_INDEPENDENT_CAPTURE_PROOF"), 1)
+        self.assertEqual(rejected.get("NO_VERSION_HASH", 0), 0)
+        self.assertEqual(rejected.get("NO_INDEPENDENT_CAPTURE_PROOF"), 2)
         self.assertEqual(len(digest), 64)
+
+    def test_loader_rejects_missing_exact_version_hash(self):
+        t = int(datetime.now(timezone.utc).timestamp()) - 7200
+        row = proof_row(t)
+        row["content_sha256"] = ""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "news.jsonl"
+            path.write_text(json.dumps(row) + "\n")
+            events, digest, rejected = load_verified_news(path)
+        self.assertEqual(events, [])
+        self.assertEqual(rejected.get("NO_VERSION_HASH"), 1)
 
     def test_loader_accepts_exact_hash_matching_capture(self):
         t = int(datetime.now(timezone.utc).timestamp()) - 7200
