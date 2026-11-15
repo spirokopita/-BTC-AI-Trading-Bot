@@ -4,7 +4,7 @@
 - PR #31 merged: 2a799d7d4f1f7e3bbd74bb1b1529c19f04a39e47.
 - Persistence workflow fix: 2ee3e2e92b49c537c495b14c0f1b84f5f9b005db.
 - Main research run: 43771050561 PASSED; persistence bot commit: 2636d9740b1dc121a0214e1925e3986d7ceec0b8.
-- PR checks on head f20310b295a92a5ee166cbb3034fb3e376a8faa0: V41 43770654956, V48 43770654931, V40 43770654930, V28 43770654977 all PASSED. Targeted V41/V48 tests: 46; full repository regression passed.
+- PR checks on head f20310b295a92a5ee166cbb3034fb3e376a8faa0: V41 43770654956, V48 43770654931, V40 43770654930, V28 43770654977 all PASSED. Targeted V41/V48 tests: 46; full repository regression ran 331 tests and passed.
 - V41 artifact: 14184097918. Algorithm JSON SHA256: 9b6ec5ccce148bf37f122c957ac4e198003fc340bf4e11729417e30166860527. Monthly news JSON SHA256: 76cc17a2ba384a6d5dee78a3a0ad9e7e5a260101347f2c0c94a2438b72865125.
 
 ## Market
