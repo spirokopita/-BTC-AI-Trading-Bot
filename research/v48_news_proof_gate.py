@@ -19,36 +19,77 @@ def epoch(value):
     return d.timestamp()
 
 def classify(row,decision_ts,latency_seconds=3600):
-    """Fail closed: version-specific independent capture AND release must precede decision."""
-    decision=epoch(decision_ts)
-    if latency_seconds<0:raise ValueError("Negative latency")
-    result=dict(eligible=False,reason=None)
-    url=row.get("url")
-    if not isinstance(url,str) or urlsplit(url).scheme!="https" or not urlsplit(url).netloc:
-        result["reason"]="INVALID_URL";return result
-    if row.get("capture_type") not in ("independent_warc","first_observed_snapshot","official_original_release"):
-        result["reason"]="NO_INDEPENDENT_CAPTURE_PROOF";return result
-    digest=row.get("content_sha256")
-    if not isinstance(digest,str) or not re.fullmatch(r"[0-9a-fA-F]{64}",digest):
-        result["reason"]="NO_VERSION_HASH";return result
+    """Fail-closed proof for SHA256 snapshots or Common Crawl CDX SHA1 captures."""
+    result={"eligible":False,"reason":None,"available_at_utc":None,
+            "hash_algorithm":None}
     try:
-        published=epoch(row["published_at_utc"])
-        updated=epoch(row.get("updated_at_utc") or row["published_at_utc"])
-        capture=epoch(row["verified_capture_at_utc"])
-        retrieved=epoch(row["retrieved_at_utc"])
-    except (ValueError,TypeError,KeyError):
-        result["reason"]="INVALID_PROVENANCE_TIME";return result
-    if updated<published or capture<published or retrieved<capture:
-        result["reason"]="INCONSISTENT_CHRONOLOGY";return result
-    # Capture must contain the exact hashed article version; future updates cannot leak.
-    if max(updated,capture)+latency_seconds>decision:
+        decision=epoch(decision_ts)
+    except Exception:
+        result["reason"]="INVALID_DECISION_TIME";return result
+    if not isinstance(latency_seconds,(int,float)) or latency_seconds<0:
+        result["reason"]="INVALID_LATENCY";return result
+    url=row.get("url")
+    parsed=urlsplit(url) if isinstance(url,str) else None
+    if parsed is None or parsed.scheme!="https" or not parsed.netloc:
+        result["reason"]="INVALID_URL";return result
+    capture_type=row.get("capture_type")
+
+    if capture_type=="common_crawl_index_digest":
+        digest=row.get("version_hash")
+        if (row.get("capture_source")!="common_crawl"
+                or row.get("version_hash_algorithm")!="sha1_base32"):
+            result["reason"]="NO_INDEPENDENT_CAPTURE_PROOF";return result
+        if not isinstance(digest,str) or not re.fullmatch(r"[A-Z2-7]{32}",digest):
+            result["reason"]="NO_VERSION_HASH";return result
+        reference=row.get("capture_reference")
+        index_version=row.get("index_version")
+        if (not isinstance(reference,str) or "/warc/" not in reference
+                or not isinstance(index_version,str)
+                or not index_version.startswith("CC-MAIN-")):
+            result["reason"]="INVALID_CAPTURE_REFERENCE";return result
+        published=epoch(row.get("published_at_utc"))
+        updated=epoch(row.get("updated_at_utc"))
+        capture=epoch(row.get("verified_capture_at_utc"))
+        retrieved=epoch(row.get("retrieved_at_utc"))
+        if capture is None or retrieved is None:
+            result["reason"]="INVALID_PROVENANCE_TIME";return result
+        if ((published is not None and capture<published)
+                or (published is not None and updated is not None and updated<published)
+                or (updated is not None and updated>retrieved)
+                or retrieved<capture):
+            result["reason"]="INCONSISTENT_CHRONOLOGY";return result
+        available=max(capture,published or capture,updated or capture)+latency_seconds
+        result["hash_algorithm"]="sha1_base32"
+        result["version_hash"]=digest
+    else:
+        if capture_type not in ("independent_warc","first_observed_snapshot",
+                                "official_original_release"):
+            result["reason"]="NO_INDEPENDENT_CAPTURE_PROOF";return result
+        digest=row.get("content_sha256")
+        if not isinstance(digest,str) or not re.fullmatch(r"[0-9a-fA-F]{64}",digest):
+            result["reason"]="NO_VERSION_HASH";return result
+        captured_digest=row.get("version_capture_sha256")
+        if (not isinstance(captured_digest,str)
+                or not re.fullmatch(r"[0-9a-fA-F]{64}",captured_digest)
+                or captured_digest.lower()!=digest.lower()):
+            result["reason"]="UNMATCHED_CAPTURE_VERSION";return result
+        published=epoch(row.get("published_at_utc"))
+        updated=epoch(row.get("updated_at_utc") or row.get("published_at_utc"))
+        capture=epoch(row.get("verified_capture_at_utc"))
+        retrieved=epoch(row.get("retrieved_at_utc"))
+        if None in (published,updated,capture,retrieved):
+            result["reason"]="INVALID_PROVENANCE_TIME";return result
+        if updated<published or capture<published or retrieved<capture:
+            result["reason"]="INCONSISTENT_CHRONOLOGY";return result
+        available=max(published,updated,capture)+latency_seconds
+        result["hash_algorithm"]="sha256"
+        result["version_hash"]=digest
+
+    result["available_at_utc"]=available
+    if available>decision:
         result["reason"]="VERSION_NOT_YET_AVAILABLE";return result
-    captured_digest=row.get("version_capture_sha256")
-    if (not isinstance(captured_digest,str)
-            or not re.fullmatch(r"[0-9a-fA-F]{64}",captured_digest)
-            or captured_digest.lower()!=digest.lower()):
-        result["reason"]="UNMATCHED_CAPTURE_VERSION";return result
-    result.update(eligible=True,reason="VERIFIED_AS_OF",available_at_utc=max(updated,capture)+latency_seconds)
+    result["eligible"]=True
+    result["reason"]="OK_ASOF"
     return result
 
 def join(records,bar_open_timestamps,latency_seconds=3600,expected_step_seconds=14400):
