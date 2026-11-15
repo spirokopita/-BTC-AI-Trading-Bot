@@ -63,7 +63,7 @@ def _epoch(value):
 
 
 def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
-    """Apply V48 exact-version proof; legacy WARC digests are not assumed SHA256."""
+    """Apply V48 exact-version proof without translating weaker legacy digests."""
     source = Path(path)
     if not source.is_file():
         raise FileNotFoundError("Cumulative provenance corpus missing")
@@ -75,23 +75,20 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
         if not line.strip():
             continue
         row = json.loads(line)
-        proof_row = dict(row)
-        # A Common Crawl index digest is not silently re-labelled as article SHA256.
-        if (row.get("availability_confidence") == "verified_crawl"
-                and row.get("capture_source") == "common_crawl"
-                and row.get("first_verified_capture_at_utc")):
-            proof_row["capture_type"] = "independent_warc"
-            proof_row["verified_capture_at_utc"] = row["first_verified_capture_at_utc"]
-            proof_row["content_sha256"] = row.get("content_sha256")
-            proof_row["version_capture_sha256"] = row.get("content_sha256")
-            proof_row["retrieved_at_utc"] = row.get("retrieved_at_utc")
-        proof = classify_news(proof_row, now, latency_seconds=3600)
+        url = row.get("url")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            # Legacy corpus uses canonical_url; it still lacks the V48 proof schema.
+            url = row.get("canonical_url")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            rejected["INVALID_URL"] += 1
+            continue
+        proof = classify_news(row, now, latency_seconds=3600)
         rejected[proof["reason"]] += 1
         if proof["eligible"]:
-            events.append(proof_row)
+            events.append(row)
     events.sort(key=lambda x: (
         x.get("verified_capture_at_utc", ""),
-        x.get("url", x.get("canonical_url", "")),
+        x.get("url", ""),
         x.get("content_sha256", "")))
     return events, hashlib.sha256(raw).hexdigest(), dict(sorted(rejected.items()))
 
