@@ -1,3 +1,50 @@
+## V41 — 2026-11-16: volume-confirmation rejection, strict news proof and persistent monthly cursor
+
+**Status:** DONE with strategy rejection; PAPER ONLY/HOLD retained. PR #31 merged to main commit 2a799d7d4f1f7e3bbd74bb1b1529c19f04a39e47. Persistence workflow fix commit 2ee3e2e92b49c537c495b14c0f1b84f5f9b005db. Main V41 workflow 43771050561 passed and bot persistence commit 2636d9740b1dc121a0214e1925e3986d7ceec0b8 passed read-back.
+
+### Reproducibility and data
+- Research source: research/v41_volume_confirmation.py; event study: research/v41_recent_news_event_study.py; monthly cursor: research/v41_monthly_news.py and research/v41_persist_cursor.py; V48 proof gate: research/v48_news_proof_gate.py.
+- CI: PR head f20310b295a92a5ee166cbb3034fb3e376a8faa0 passed V41 run 43770654956, V48 run 43770654931 (15 tests), V40 regression run 43770654930, and V28 run 43770654977. Targeted suites: V41 volume 14, cursor 7, event study 10, V48 proof gate 15 (46 total); full repository regression passed. Main V41 run 43771050561 and persistence job passed.
+- Kraken official archive: 13,763 completed BTC/AUD 4h bars, 20 gaps; three gap-free segments of 6,863 / 3,398 / 1,999 bars. Archive member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e. Prior-inspected history; not untouched OOS.
+- Public OHLC bridge: 720 completed bars fetched 2026-11-15 22:42:32 UTC; 275 bars beyond archive through 2026-11-15 16:00 UTC. Last completed 4h close at 20:00 UTC: A$96,181.50/BTC. Source response SHA256 20d1f114d19a0883f9e39c2b576f45abd0fc8d7901dddfc20474ebde70f37a6c.
+- Execution model: A$1,000 independently reset wallet per segment, A$100 maximum inclusive entry debit, 10% cash cap, 80bps taker +5bps half-spread +5bps slippage each side. 50/20/30 chronological partitions, 20-bar embargo; selector sees train/validation only.
+
+### Strategy results (three independent test wallets)
+- H80/300 base: 7 trades (3 wins/4 losses), gross +A$51.333281, fees A$11.448071, spread A$0.715531, slippage A$0.715531, NET +A$38.454151, return +1.281805%, worst fold max DD -4.192577%.
+- H80/300 volume+close confirmation: 7 trades (3/4), gross +A$49.330147, fees A$11.429587, spread A$0.714374, slippage A$0.714374, NET +A$36.471813, return +1.215727%, worst fold max DD -4.210041%; incremental NET -A$1.982338 versus base.
+- H80/300 volume-only: 7 trades, gross +A$51.234507, fees A$11.443846, spread A$0.715266, slippage A$0.715266, NET +A$38.360130, worst DD -4.045538%.
+- H80/300 close-only: 7 trades, gross +A$50.654452, fees A$11.438888, spread A$0.714956, slippage A$0.714956, NET +A$37.785654, worst DD -4.172310%.
+- H80/300 42-bar/7-day placebo: 7 trades, gross +A$54.114471, fees A$11.477089, spread A$0.717345, slippage A$0.717345, NET +A$41.202690, worst DD -4.162842%. Placebo exceeded the real filter.
+- H50/200 volume+close: 10 trades (2 wins/8 losses), gross +A$18.821482, fees A$15.870409, spread A$0.991910, slippage A$0.991910, NET +A$0.967253, return +0.032242%, worst DD -3.449170%.
+- SMA: 118 trades, gross +A$86.793716, fees A$183.534320, spread A$11.470939, slippage A$11.470939, NET -A$119.682481, return -3.989416%, worst DD -7.631585%.
+- Momentum: 242 trades, gross +A$24.061066, fees A$354.521285, spread A$22.157592, slippage A$22.157592, NET -A$374.775403, return -12.492513%, worst DD -19.713239%.
+- RSI mean reversion: 158 trades, gross +A$43.488769, fees A$239.118482, spread A$14.944926, slippage A$14.944926, NET -A$225.519567, return -7.517319%, worst DD -13.666897%.
+- ATR breakout: 133 trades, gross +A$30.799440, fees A$202.987846, spread A$12.686756, slippage A$12.686756, NET -A$197.561916, return -6.585397%, worst DD -9.369700%.
+- Regime baseline: 267 trades, gross +A$22.700181, fees A$382.655597, spread A$23.915986, slippage A$23.915986, NET -A$407.787388, return -13.592913%, worst DD -24.735182%.
+- Trend+ATR baseline: 20 trades, gross +A$7.746437, fees A$31.495682, spread A$1.968484, slippage A$1.968484, NET -A$27.686213, return -0.922874%, worst DD -2.153114%.
+- Buy-and-hold: 3 trades, gross +A$135.859476, fees A$5.842937, spread A$0.365252, slippage A$0.365252, NET +A$129.286037, return +4.309535%, worst DD -2.790726%.
+- Earlier-data selector chose HOLD in all three folds (selected test NET A$0). No promotion. A$50 same-period H80 base +A$19.640152 and volume-confirm +A$18.661217; at A$100 they were +A$38.454151 and +A$36.471813. H80 base half/current/double cost NET +A$45.178506 / +A$38.454151 / +A$25.215557; volume-confirm +A$43.175649 / +A$36.471813 / +A$23.273559.
+- Missed opportunities: volume+close filter vetoed 28 candidate bars; 12 had positive subsequent 24h returns and 16 negative, weighted mean subsequent 24h return -0.468%. It reduced NET and did not beat the delayed placebo. HYPOTHESIS REJECTED.
+- News-attention and 7-day delayed news placebo variants were identical to H80 base: zero trade changes because no independently verified news fell in the test windows.
+
+### News and market
+- V41 cryptocurrency.cv incremental sample: 321 URL-deduplicated metadata rows from 12 previously unsampled months (2020-03, 2020-06, 2020-08, 2020-09, 2020-11, 2020-12, 2021-03, 2021-06, 2021-08, 2021-09, 2021-11, 2021-12); all 12 populated; 30 months remain. 175 retrospective BTC/AUD 4h alignments, 0 strict as-of eligible.
+- Main read-back: 2,221 metadata/version rows, 1,162 actual article versions (11.62% of 10,000 target), 1 independent capture proof, 3 official release clocks; 2,220 unique canonical URLs because one URL is represented once as a Common Crawl capture and once as an FOMC calendar event. The latter is not counted as an article version. Manifest JSONL SHA256 63597fc2437d9ca2953c1ac897d05fb3d71e87ca54df04aa3ef2cc22afb9fa70. Cursor 52 attempted/completed, 0 retry, 30 remaining.
+- V48 classifier: 1 exact-version/CC CDX proof passes, 1,899 rows rejected for no independent capture proof; 0 eligible historical news events in the V41 test windows. No title-derived sentiment. First-observed timestamps remain null for historical archives.
+- First-observed RSS corpus: 249 unique URLs after cumulative merge; 114 new URLs this run; corpus SHA256 fea579b57f3d6bf5f5f2273ceb961b91edc2d8630c6ead8dfc5fb8c874126bbc; bot commit 0257d71c2232b1482f2609d7fc6c5553214419c8. CoinDesk, Cointelegraph, The Block and Decrypt feeds succeeded (115 inserted records, 114 new unique URLs). Bloomberg Crypto was blocked because its RSS redirect left the trusted-host allowlist. No historical first-seen backfill; news predictive value not tested until post-observation outcomes mature.
+- Five convenience-sampled Nov 3–13 events: RBA +25bp to 4.85% (official 14:30 AEDT), Reuters Australian consumer sentiment -2.7% to 78.2, US October CPI +0.4% m/m, CoinDesk ETF outflow report and BTC liquidation report. Seven prior matched controls; seven overlapping event pairs. Mean event-minus-control NET per A$100 event: 4h +A$0.366381 (0/5 event returns positive), 24h -A$0.657088 (0/5 positive), 48h -A$1.124280 (1/5 positive). Publication timestamps are retrospective reconstructions with assumed latency, not first-observed. No causal/predictive claim.
+- Future event: RBA November minutes scheduled 17 November 2026 11:30 AEDT; not released and not backtested.
+- V40 FX decomposition regression: 2,224 RBA daily FX rows; assumed +24h availability, not vintage/first-observed. FX-driven veto identical to H80 base; USD momentum did not improve NET; earlier-data selector HOLD/H50/HOLD and selected test NET -A$14.351385 versus buy-and-hold +A$129.286037. No FX strategy promotion.
+
+### Pipeline fixes, status and next
+- V48 now handles optional publication/update timestamps for Common Crawl index-digest rows without inventing timestamps, rejects update timestamps later than retrieval, and preserves strict capture/retrieval chronology. V41 invalid-URL counter bug fixed and covered by a regression test.
+- Initial V41 main persistence push failed non-fast-forward because V28 concurrently committed the first-seen corpus. Added shared concurrency group with V28 and fetch/rebase/retry. Main V41 run 43771050561 then passed; persistence commit 2636d974... verified.
+- DONE 8: state recovery; strategy comparison; fresh market bridge; timestamped event study; 12-month historical sample; V48/V41 provenance fixes; CI and PR merge; main data/cursor read-back.
+- PARTIAL 2: 10,000-article target (1,162 actual versions); strict as-of news corpus (1 capture, 0 test-window events).
+- BLOCKED 1: strategy promotion threshold not met; all train/validation selectors HOLD and no untouched OOS evidence.
+- NOT ATTEMPTED 3: Android APK rebuild (no Android source changed); paid/key-required API access (no credentials/approval); live execution (not authorized and remains disabled).
+- Next hypothesis: predeclare a volatility-normalized exit/time-stop or cash-gating overlay for H80/300, test with train-only selection on genuinely new prospective candles, and expand the 30 remaining months plus independent WARC captures.
+
 **V40 FINAL VERIFIED MERGED-MAIN CHECKPOINT (2026-11-11):** PR #22 merged `9de9a992c39df36f496aeee258bedaf868a2150d`. Main workflow `42915872177` PASSED algorithm/news/persist; cumulative bot commit `ae0554ea09ac6366d9d2dcdb840f261475010a55`. GitHub read-back: **1,900 deduplicated metadata/version records; 841 actual article versions (8.41% of 10,000); 1 independently verified historical WARC capture; 3 official release clocks; 237 newly collected articles; 0 historically as-of eligible articles** in V40 market join. Cumulative JSONL SHA256 `e59ad9941eb2688ecaf59a4a2d904533e875d5b6703ac400ee5f6afd14f5826b`. 11/12 new monthly windows populated. No FX-decomposition trading benefit; Android PAPER ONLY HOLD. NEXT: durable monthly sampling cursor and independently archived news/FX vintages; do not repeat V40 fixed months unchanged.
 
 ## V40 — 2026-11-11: implied BTC/USD decomposition and unsampled historical news months (PR #22)
