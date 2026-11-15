@@ -1,0 +1,140 @@
+{
+  "schema": "v41_recent_news_events_1",
+  "retrieved_at_utc": "2026-11-15T22:20:35Z",
+  "sample_design": "Convenience sample selected during the 2026-11-16 engineering run; not random and not outcome-independent. Descriptive event study only.",
+  "timestamp_policy": "Publisher/official publication time reconstructed in UTC; first_observed_at_utc is null for every item. Conservative 1h official-release and 2h article latency; never presented as actual bot first-observed time.",
+  "events": [
+    {
+      "event_id": "RBA_RATE_HIKE_2026-11-03",
+      "cluster_id": "RBA_POLICY_2026-11-03",
+      "event_type": "RBA monetary policy decision",
+      "causal_degree": 2,
+      "scheduled_release": true,
+      "published_at_utc": "2026-11-03T03:30:00Z",
+      "timestamp_basis": "RBA official calendar: 2:30 pm AEDT; AEDT is UTC+11",
+      "latency_seconds": 3600,
+      "first_observed_at_utc": null,
+      "updated_at_utc": null,
+      "source_urls": [
+        "https://www.rba.gov.au/media-releases/2026/mr-26-30.html",
+        "https://www.rba.gov.au/news/"
+      ],
+      "btc_usd_sign_hypothesis": "negative via tighter financial conditions",
+      "aud_usd_sign_hypothesis": "positive via higher relative cash-rate expectations",
+      "btc_aud_sign_hypothesis": "negative/ambiguous; BTC/USD down and AUD/USD up would both lower BTC/AUD",
+      "notes": "RBA raised the cash rate 25bp to 4.85%; majority 6-3."
+    },
+    {
+      "event_id": "AU_CONSUMER_SENTIMENT_2026-11-10",
+      "cluster_id": "AU_MACRO_SENTIMENT_2026-11-10",
+      "event_type": "Australian consumer sentiment survey report",
+      "causal_degree": 2,
+      "scheduled_release": null,
+      "published_at_utc": "2026-11-10T00:51:00Z",
+      "timestamp_basis": "Reuters article publisher timestamp, explicitly UTC",
+      "latency_seconds": 7200,
+      "first_observed_at_utc": null,
+      "updated_at_utc": null,
+      "source_urls": [
+        "https://www.reuters.com/world/asia-pacific/australian-consumer-sentiment-hits-four-year-low-november-rates-rise-2026-11-10/"
+      ],
+      "btc_usd_sign_hypothesis": "uncertain; global risk channel only",
+      "aud_usd_sign_hypothesis": "negative/uncertain via weaker domestic growth expectations",
+      "btc_aud_sign_hypothesis": "ambiguous; AUD weakness could raise the ratio even if BTC/USD is flat",
+      "notes": "Westpac-Melbourne Institute index fell 2.7% to 78.2, a four-year low; article reports RBA cash rate at 4.85%."
+    },
+    {
+      "event_id": "US_CPI_OCT_2026_RELEASE",
+      "cluster_id": "US_MACRO_RELEASES_2026-11-10",
+      "event_type": "US October 2026 CPI release",
+      "causal_degree": 2,
+      "scheduled_release": true,
+      "published_at_utc": "2026-11-10T13:30:00Z",
+      "timestamp_basis": "BLS embargo clock: 8:30 am EST; EST is UTC-5",
+      "latency_seconds": 3600,
+      "first_observed_at_utc": null,
+      "updated_at_utc": null,
+      "source_urls": [
+        "https://www.bls.gov/news.release/CPI.htm"
+      ],
+      "btc_usd_sign_hypothesis": "negative if inflation surprise lifts expected policy rates and real yields",
+      "aud_usd_sign_hypothesis": "negative if broad USD strengthens",
+      "btc_aud_sign_hypothesis": "ambiguous; both numerator and denominator may fall",
+      "notes": "CPI-U rose 0.4% seasonally adjusted in October; core CPI rose 0.3%. This is the reported value, not a surprise estimate."
+    },
+    {
+      "event_id": "US_BTC_ETF_OUTFLOW_STREAK_2026-11-13",
+      "cluster_id": "BTC_SPOT_ETF_OUTFLOWS_2026-11",
+      "event_type": "US spot Bitcoin ETF flow deterioration",
+      "causal_degree": 1,
+      "scheduled_release": false,
+      "published_at_utc": "2026-11-13T05:45:00Z",
+      "timestamp_basis": "CoinDesk publisher timestamp: 12:45 am EST; EST is UTC-5",
+      "latency_seconds": 7200,
+      "first_observed_at_utc": null,
+      "updated_at_utc": null,
+      "source_urls": [
+        "https://www.coindesk.com/markets/2026/11/13/bitcoin-etfs-are-now-down-over-usd1-5-billion-in-net-outflows-for-the-year"
+      ],
+      "related_publications": [
+        {
+          "published_at_utc": "2026-11-14T17:50:00Z",
+          "url": "https://www.theblock.co/news/markets/2026-11-14-bitcoin-etfs-lose-1-billion-for-the-second-week-in-a-row-as-crypto-funds-except-one-continue-bleeding-440337",
+          "note": "Later coverage of the same outflow streak; not counted as a separate independent event."
+        }
+      ],
+      "btc_usd_sign_hypothesis": "negative via reduced marginal spot demand",
+      "aud_usd_sign_hypothesis": "no direct sign hypothesized",
+      "btc_aud_sign_hypothesis": "negative if BTC/USD falls while AUD/USD is unchanged",
+      "notes": "CoinDesk reported year-to-date spot ETF net outflows of US$1.56bn and weekly outflows of US$643.6m through Thursday."
+    },
+    {
+      "event_id": "BTC_DERIVATIVES_LIQUIDATIONS_2026-11-13",
+      "cluster_id": "BTC_LEVERAGED_LONG_LIQUIDATIONS_2026-11-13",
+      "event_type": "BTC derivatives liquidation and deleveraging report",
+      "causal_degree": 1,
+      "scheduled_release": false,
+      "published_at_utc": "2026-11-13T11:52:00Z",
+      "timestamp_basis": "CoinDesk publisher timestamp: 6:52 am EST; EST is UTC-5",
+      "latency_seconds": 7200,
+      "first_observed_at_utc": null,
+      "updated_at_utc": null,
+      "source_urls": [
+        "https://www.coindesk.com/markets/2026/11/13/bitcoin-hits-12-week-low-as-dollar-rallies-on-interest-rate-outlook-liquidations-top-usd1-6-billion"
+      ],
+      "related_publications": [
+        {
+          "published_at_utc": "2026-11-14T05:56:00Z",
+          "url": "https://crypto.news/bitcoin-70k-coinbase-charter-nyse-weekly-recap/",
+          "note": "Later weekly recap; not counted as a separate independent event."
+        }
+      ],
+      "btc_usd_sign_hypothesis": "negative during forced long deleveraging",
+      "aud_usd_sign_hypothesis": "no direct sign hypothesized",
+      "btc_aud_sign_hypothesis": "negative if AUD/USD is stable",
+      "notes": "CoinDesk reported about US$1.64bn 24h liquidations, 88.6% longs, and US$916m BTC futures liquidations; metrics are source-specific and not merged with other providers."
+    }
+  ],
+  "scheduled_future_events": [
+    {
+      "event_id": "RBA_NOVEMBER_MINUTES_2026-11-17",
+      "event_type": "RBA November Monetary Policy Board minutes",
+      "scheduled_release": true,
+      "published_at_utc": "2026-11-17T00:30:00Z",
+      "timestamp_basis": "RBA calendar: 11:30 am AEDT; AEDT is UTC+11",
+      "first_observed_at_utc": null,
+      "source_urls": [
+        "https://www.rba.gov.au/coming-up/index.html",
+        "https://www.rba.gov.au/schedules-events/calendar/"
+      ],
+      "status": "SCHEDULED_NOT_YET_RELEASED",
+      "note": "Do not include in historical event study before actual release and capture."
+    }
+  ],
+  "limitations": [
+    "Publication-time reconstruction is not first-observed evidence.",
+    "No source revision time was available for several articles; updated_at_utc remains null.",
+    "Events are a convenience sample and several are overlapping reports of the same market episode.",
+    "No causal inference or strategy promotion is permitted from this small sample."
+  ]
+}
