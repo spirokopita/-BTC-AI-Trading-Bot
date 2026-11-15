@@ -139,6 +139,17 @@ class V41VolumeTests(unittest.TestCase):
         self.assertEqual(events[0]["content_sha256"], row["content_sha256"])
         self.assertEqual(len(digest), 64)
 
+    def test_loader_counts_invalid_url_without_crashing(self):
+        row = {"published_at_utc": "2023-01-01T00:00:00Z",
+               "availability_confidence": "retrospective_only"}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "news.jsonl"
+            path.write_text(json.dumps(row) + "\\n")
+            events, digest, rejected = load_verified_news(path)
+        self.assertEqual(events, [])
+        self.assertEqual(rejected.get("INVALID_URL"), 1)
+        self.assertEqual(len(digest), 64)
+
     def test_selector_requires_positive_train_and_validation(self):
         bad = {"trades": 0, "net_aud": 0.0}
         train = {name: dict(bad) for name in ("h80_base", "h80_vol_confirm", "h50_vol_confirm")}
