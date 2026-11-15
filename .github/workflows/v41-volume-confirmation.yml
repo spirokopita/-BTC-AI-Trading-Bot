@@ -66,9 +66,19 @@ jobs:
           assert a['max_inclusive_entry_debit_aud']==100 and a['cash_fraction_cap']==.10
           assert a['android_policy']=='HOLD' and a['promotion'].startswith('REJECTED')
           assert len(a['folds'])>=1
+          assert a['market']['archive_member_sha256_verified']
+          assert a['market']['total_completed_bars'] > 1000
+          assert a['market']['gap_count'] >= 0
           for name,values in a['aggregate_independent_reset_accounts'].items():
               assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
               print('V41_STRATEGY',name,values,'WORST_DD',a['worst_fold_drawdown_pct'][name])
+          for name,values in a['aggregate_price_baselines'].items():
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V41_PRICE_BASELINE',name,values,'WORST_DD',a['worst_fold_drawdown_pct_price_baselines'][name])
+          for label in ('aggregate_buyhold_aud100','aggregate_buyhold_aud50'):
+              values=a[label]
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V41_BUYHOLD',label,values)
           print('V41_MARKET',a['market'])
           print('V41_PRICE_BASELINES',a['aggregate_price_baselines'])
           print('V41_BUYHOLD_A100',a['aggregate_buyhold_aud100'])
