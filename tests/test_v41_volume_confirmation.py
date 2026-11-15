@@ -131,11 +131,6 @@ class V41VolumeTests(unittest.TestCase):
     def test_loader_accepts_exact_hash_matching_capture(self):
         t = int(datetime.now(timezone.utc).timestamp()) - 7200
         row = proof_row(t)
-        row["availability_confidence"] = "verified_crawl"
-        row["capture_source"] = "common_crawl"
-        row["first_verified_capture_at_utc"] = row["verified_capture_at_utc"]
-        row["canonical_url"] = row["url"]
-        row["version_hash"] = row["content_sha256"]
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "news.jsonl"
             path.write_text(json.dumps(row) + "\n")
