@@ -138,6 +138,10 @@ jobs:
             audit/v41-market-bars.json
   persist:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Serialize with V28's first-seen corpus writer to avoid concurrent main pushes.
+    concurrency:
+      group: v28-first-seen-corpus-main
+      cancel-in-progress: false
     needs: research
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -182,5 +186,16 @@ jobs:
             echo 'No new article metadata or cursor updates'
           else
             git commit -m 'V41: persist monthly historical news sample and cursor'
-            git push origin HEAD:main
+            # Rebase onto any main-branch news writer that completed during research.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "Push raced with another main writer; retrying (attempt $attempt)"
+              sleep $((attempt * 2))
+            done
+            echo 'Could not persist after three fast-forward retries'
+            exit 1
           fi
