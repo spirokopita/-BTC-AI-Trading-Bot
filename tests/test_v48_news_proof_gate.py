@@ -55,6 +55,21 @@ class TestAsOf(unittest.TestCase):
   self.assertEqual(classify(row,"2025-01-01T00:00:00Z")["reason"],
                    "INVALID_CAPTURE_REFERENCE")
 
+ def test_revision_after_capture_waits_for_update_plus_latency(self):
+  row=dict(R,updated_at_utc="2023-01-05T00:00:00Z",
+           retrieved_at_utc="2023-01-06T00:00:00Z")
+  self.assertEqual(classify(row,"2023-01-05T00:59:59Z")["reason"],
+                   "VERSION_NOT_YET_AVAILABLE")
+  proof=classify(row,"2023-01-05T01:00:00Z")
+  self.assertTrue(proof["eligible"])
+  self.assertEqual(proof["available_at_utc"],
+                   epoch("2023-01-05T01:00:00Z"))
+ def test_revision_after_retrieval_is_inconsistent(self):
+  row=dict(R,updated_at_utc="2023-01-07T00:00:00Z",
+           retrieved_at_utc="2023-01-06T00:00:00Z")
+  self.assertEqual(classify(row,"2025-01-01T00:00:00Z")["reason"],
+                   "INCONSISTENT_CHRONOLOGY")
+
  def test_non_hex_hash_rejected(self):
   r=dict(R,content_sha256="z"*64,version_capture_sha256="z"*64)
   self.assertEqual(classify(r,"2025-01-01T00:00:00Z")["reason"],"NO_VERSION_HASH")
