@@ -1,5 +1,5 @@
 import unittest
-from research.v48_news_proof_gate import classify,join
+from research.v48_news_proof_gate import classify,join,epoch
 R=dict(url="https://example.org/a",capture_type="independent_warc",
  published_at_utc="2023-01-01T00:00:00Z",updated_at_utc="2023-01-01T00:00:00Z",
  verified_capture_at_utc="2023-01-01T01:00:00Z",
