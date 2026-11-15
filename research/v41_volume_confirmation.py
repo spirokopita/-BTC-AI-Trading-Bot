@@ -20,7 +20,7 @@ from pathlib import Path
 from research.v33_cross_regime import archive, boundaries
 from research.v32_segments import segments
 from research.v31_hysteresis import WARMUP, replay
-from research.v29_point_in_time import simulate, buyhold
+from research.v29_point_in_time import (simulate, buyhold, CASH, FEE, SPREAD, SLIPPAGE, execution, STEP)
 from research.v48_news_proof_gate import classify as classify_news
 
 LOOKBACK = 20
@@ -227,7 +227,106 @@ def replay_variant(bars, start, end, name, events=(), *, cost_mult=1.0,
     return result
 
 
+def market_diagnostics(bars, provenance, min_segment_bars=1000):
+    if not bars:
+        raise ValueError("Official Kraken archive is empty")
+    gaps = []
+    for previous, current in zip(bars, bars[1:]):
+        delta = current[0] - previous[0]
+        if delta != STEP:
+            gaps.append({
+                "previous_open_utc": datetime.fromtimestamp(
+                    previous[0], timezone.utc).isoformat(),
+                "next_open_utc": datetime.fromtimestamp(
+                    current[0], timezone.utc).isoformat(),
+                "delta_seconds": delta,
+            })
+    eligible = segments(bars, min_segment_bars)
+    result = dict(provenance)
+    result.update({
+        "total_completed_bars": len(bars),
+        "bar_step_seconds": STEP,
+        "first_bar_open_utc": datetime.fromtimestamp(
+            bars[0][0], timezone.utc).isoformat(),
+        "last_bar_open_utc": datetime.fromtimestamp(
+            bars[-1][0], timezone.utc).isoformat(),
+        "last_bar_close_utc": datetime.fromtimestamp(
+            bars[-1][0] + STEP, timezone.utc).isoformat(),
+        "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+        "gap_count": len(gaps),
+        "gap_examples": gaps[:20],
+        "eligible_gap_free_segments": [
+            {"start_index": left, "end_index_exclusive": right,
+             "bars": right-left,
+             "first_open_utc": datetime.fromtimestamp(
+                 bars[left][0], timezone.utc).isoformat(),
+             "last_open_utc": datetime.fromtimestamp(
+                 bars[right-1][0], timezone.utc).isoformat()}
+            for left, right in eligible
+        ],
+    })
+    return result
+
+
+def buyhold_audit(bars, start, end, max_entry_debit=100.0, cost_mult=1.0):
+    if not 0 < max_entry_debit <= 100 or not 0.5 <= cost_mult <= 2.0:
+        raise ValueError("Invalid paper cap or cost multiplier")
+    if not 0 <= start < end <= len(bars) or end-start < 3:
+        raise ValueError("Invalid buy-and-hold interval")
+    entry_mid = float(bars[start][1])
+    exit_mid = float(bars[end-1][1])
+    budget = min(max_entry_debit, 0.10 * CASH)
+    qty = budget / (
+        entry_mid * (1 + (SPREAD + SLIPPAGE) * cost_mult)
+        * (1 + FEE * cost_mult))
+    entry = execution(entry_mid, qty, "buy", cost_mult)
+    exit_fill = execution(exit_mid, qty, "sell", cost_mult)
+    entry_debit = entry["notional"] + entry["fee"]
+    if entry_debit > budget + 1e-8 or entry_debit > 100.0 + 1e-8:
+        raise AssertionError("Buy-and-hold inclusive paper entry cap")
+    gross = qty * (exit_mid-entry_mid)
+    fees = entry["fee"] + exit_fill["fee"]
+    spread = entry["spread"] + exit_fill["spread"]
+    slippage = entry["slippage"] + exit_fill["slippage"]
+    net = gross-fees-spread-slippage
+    cash_after_entry = CASH-entry_debit
+    equity = [CASH]
+    equity.extend(cash_after_entry + qty * float(bar[4])
+                  for bar in bars[start:end-1])
+    equity.append(cash_after_entry + exit_fill["notional"] - exit_fill["fee"])
+    peak = equity[0]
+    max_drawdown = 0.0
+    for value in equity:
+        peak = max(peak, value)
+        if peak > 0:
+            max_drawdown = min(max_drawdown, (value/peak-1)*100)
+    result = {
+        "trades": 1,
+        "wins": int(net > 0),
+        "losses": int(net <= 0),
+        "gross_aud": round(gross, 6),
+        "fees_aud": round(fees, 6),
+        "spread_aud": round(spread, 6),
+        "slippage_aud": round(slippage, 6),
+        "net_aud": round(net, 6),
+        "return_pct": round(net/CASH*100, 6),
+        "max_drawdown_pct": round(max_drawdown, 6),
+        "entry_debit_aud": round(entry_debit, 6),
+        "cost_multiplier": cost_mult,
+    }
+    if not math.isclose(result["net_aud"], buyhold(bars, start, end)
+                        if max_entry_debit == 100.0 and cost_mult == 1.0
+                        else result["net_aud"], abs_tol=1e-6):
+        raise AssertionError("A$100 buy-and-hold parity with V29")
+    if not math.isclose(
+            result["gross_aud"]-result["fees_aud"]-result["spread_aud"]
+            -result["slippage_aud"], result["net_aud"], abs_tol=1e-6):
+        raise AssertionError("Buy-and-hold gross/cost/NET mismatch")
+    return result
+
+
 def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=None):
+    market_provenance = market_diagnostics(bars, market_provenance)
     slices = segments(bars, 1000)
     folds = []
     for left, right in slices:
@@ -257,6 +356,8 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
                     news_events, cost_mult=2.0)["net_aud"],
             }
         selected_net = tests[chosen]["net_aud"] if chosen != "HOLD" else 0.0
+        buyhold_50 = buyhold_audit(local, test_start, n, max_entry_debit=50.0)
+        buyhold_100 = buyhold_audit(local, test_start, n, max_entry_debit=100.0)
         folds.append({
             "segment_bars": n,
             "first_utc": datetime.fromtimestamp(local[0][0], timezone.utc).isoformat(),
@@ -273,7 +374,9 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
             "selected_test_net_aud": round(selected_net, 6),
             "test": tests,
             "price_baselines": baselines,
-            "buyhold_aud100_net": buyhold(local, test_start, n),
+            "buyhold_aud50": buyhold_50,
+            "buyhold_aud100": buyhold_100,
+            "buyhold_aud100_net": buyhold_100["net_aud"],
             "sensitivity": sensitivity,
             "strict_news_available_in_test": sum(
                 1 for e in news_events
@@ -282,9 +385,42 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
                         classify_news(e, local[-1][0], latency_seconds=3600))),
         })
     totals = {
-        name: {field: round(sum(f["test"][name][field] for f in folds), 6)
-               for field in FIELDS}
+        name: {
+            **{field: round(sum(f["test"][name][field] for f in folds), 6)
+               for field in FIELDS},
+            "return_pct": round(
+                sum(f["test"][name]["net_aud"] for f in folds)
+                / (CASH * len(folds)) * 100, 6),
+        }
         for name in CANDIDATES
+    }
+    baseline_totals = {
+        name: {
+            **{field: round(sum(f["price_baselines"][name][field] for f in folds), 6)
+               for field in FIELDS},
+            "return_pct": round(
+                sum(f["price_baselines"][name]["net_aud"] for f in folds)
+                / (CASH * len(folds)) * 100, 6),
+        }
+        for name in folds[0]["price_baselines"]
+    }
+    buyhold_100_totals = {
+        **{field: round(sum(f["buyhold_aud100"][field] for f in folds), 6)
+           for field in FIELDS},
+        "return_pct": round(
+            sum(f["buyhold_aud100"]["net_aud"] for f in folds)
+            / (CASH * len(folds)) * 100, 6),
+        "max_drawdown_pct": round(
+            min(f["buyhold_aud100"]["max_drawdown_pct"] for f in folds), 6),
+    }
+    buyhold_50_totals = {
+        **{field: round(sum(f["buyhold_aud50"][field] for f in folds), 6)
+           for field in FIELDS},
+        "return_pct": round(
+            sum(f["buyhold_aud50"]["net_aud"] for f in folds)
+            / (CASH * len(folds)) * 100, 6),
+        "max_drawdown_pct": round(
+            min(f["buyhold_aud50"]["max_drawdown_pct"] for f in folds), 6),
     }
     return {
         "mode": "V41_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
@@ -311,17 +447,22 @@ def evaluate(bars, market_provenance, news_events, news_sha256, news_rejections=
         "cash_fraction_cap": 0.10,
         "folds": folds,
         "aggregate_independent_reset_accounts": totals,
+        "aggregate_price_baselines": baseline_totals,
         "aggregate_price_baselines_net_aud": {
-            name: round(sum(f["price_baselines"][name]["net_aud"] for f in folds), 6)
-            for name in folds[0]["price_baselines"]
+            name: values["net_aud"] for name, values in baseline_totals.items()
         },
         "aggregate_selected_test_net_aud": round(
             sum(f["selected_test_net_aud"] for f in folds), 6),
-        "aggregate_buyhold_aud100_net": round(
-            sum(f["buyhold_aud100_net"] for f in folds), 6),
+        "aggregate_buyhold_aud100": buyhold_100_totals,
+        "aggregate_buyhold_aud50": buyhold_50_totals,
+        "aggregate_buyhold_aud100_net": buyhold_100_totals["net_aud"],
         "worst_fold_drawdown_pct": {
             name: min(f["test"][name]["max_drawdown_pct"] for f in folds)
             for name in CANDIDATES
+        },
+        "worst_fold_drawdown_pct_price_baselines": {
+            name: min(f["price_baselines"][name]["max_drawdown_pct"] for f in folds)
+            for name in folds[0]["price_baselines"]
         },
         "research_policy": "HOLD",
         "android_policy": "HOLD",
