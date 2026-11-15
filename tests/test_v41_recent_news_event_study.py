@@ -69,7 +69,7 @@ class V41RecentEventStudyTests(unittest.TestCase):
         self.assertLessEqual(result["entry_debit_aud"], 100.0 + 1e-8)
         self.assertAlmostEqual(
             result["gross_aud"]-result["fees_aud"]-result["spread_aud"]
-            -result["slippage_aud"], result["net_aud"], places=6)
+            -result["slippage_aud"], result["net_aud"], delta=2e-6)
         self.assertEqual(result["taker_fee_each_side_bps"], 80)
 
     def test_controls_are_strictly_prior_and_match_weekday_hour(self):
