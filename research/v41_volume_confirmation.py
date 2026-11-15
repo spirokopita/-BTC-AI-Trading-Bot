@@ -75,6 +75,8 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
         if not line.strip():
             continue
         row = json.loads(line)
+        if not row.get("url") and row.get("canonical_url"):
+            row["url"] = row["canonical_url"]
         url = row.get("url")
         if not isinstance(url, str) or not url.startswith("https://"):
             # Legacy corpus uses canonical_url; it still lacks the V48 proof schema.
