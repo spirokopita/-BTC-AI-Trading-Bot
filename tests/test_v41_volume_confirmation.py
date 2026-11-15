@@ -181,8 +181,10 @@ class V41VolumeTests(unittest.TestCase):
 
     def test_market_diagnostics_counts_gaps_and_coverage(self):
         bars = fixture(8)
-        rows = list(bars)
-        rows[4] = (rows[4][0] + STEP, *rows[4][1:])
+        rows = [
+            (row[0] + STEP, *row[1:]) if i >= 4 else row
+            for i, row in enumerate(bars)
+        ]
         audit = market_diagnostics(rows, {"source": "synthetic"}, min_segment_bars=2)
         self.assertEqual(audit["total_completed_bars"], 8)
         self.assertEqual(audit["gap_count"], 1)
