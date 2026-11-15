@@ -69,6 +69,10 @@ jobs:
           for name,values in a['aggregate_independent_reset_accounts'].items():
               assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
               print('V41_STRATEGY',name,values,'WORST_DD',a['worst_fold_drawdown_pct'][name])
+          print('V41_MARKET',a['market'])
+          print('V41_PRICE_BASELINES',a['aggregate_price_baselines'])
+          print('V41_BUYHOLD_A100',a['aggregate_buyhold_aud100'])
+          print('V41_BUYHOLD_A50',a['aggregate_buyhold_aud50'])
           print('V41_SELECTORS',[f['selected_using_train_validation_only'] for f in a['folds']])
           print('V41_SELECTED_NET',a['aggregate_selected_test_net_aud'],'BUYHOLD',a['aggregate_buyhold_aud100_net'])
           print('V41_NEWS',a['strict_verified_news'])
