@@ -18,6 +18,12 @@ def epoch(value):
     if d.tzinfo is None:raise ValueError("Timezone required")
     return d.timestamp()
 
+def optional_epoch(value):
+    """Parse an optional timestamp without treating absence as a valid time."""
+    if value is None or value == "":
+        return None
+    return epoch(value)
+
 def classify(row,decision_ts,latency_seconds=3600):
     """Fail-closed proof for SHA256 snapshots or Common Crawl CDX SHA1 captures."""
     result={"eligible":False,"reason":None,"available_at_utc":None,
@@ -47,10 +53,13 @@ def classify(row,decision_ts,latency_seconds=3600):
                 or not isinstance(index_version,str)
                 or not index_version.startswith("CC-MAIN-")):
             result["reason"]="INVALID_CAPTURE_REFERENCE";return result
-        published=epoch(row.get("published_at_utc"))
-        updated=epoch(row.get("updated_at_utc"))
-        capture=epoch(row.get("verified_capture_at_utc"))
-        retrieved=epoch(row.get("retrieved_at_utc"))
+        try:
+            published=optional_epoch(row.get("published_at_utc"))
+            updated=optional_epoch(row.get("updated_at_utc"))
+            capture=optional_epoch(row.get("verified_capture_at_utc"))
+            retrieved=optional_epoch(row.get("retrieved_at_utc"))
+        except (TypeError,ValueError,OverflowError):
+            result["reason"]="INVALID_PROVENANCE_TIME";return result
         if capture is None or retrieved is None:
             result["reason"]="INVALID_PROVENANCE_TIME";return result
         if ((published is not None and capture<published)
@@ -58,7 +67,7 @@ def classify(row,decision_ts,latency_seconds=3600):
                 or (updated is not None and updated>retrieved)
                 or retrieved<capture):
             result["reason"]="INCONSISTENT_CHRONOLOGY";return result
-        available=max(capture,published or capture,updated or capture)+latency_seconds
+        available=max([capture]+[x for x in (published,updated) if x is not None])+latency_seconds
         result["hash_algorithm"]="sha1_base32"
         result["version_hash"]=digest
     else:
@@ -73,10 +82,13 @@ def classify(row,decision_ts,latency_seconds=3600):
                 or not re.fullmatch(r"[0-9a-fA-F]{64}",captured_digest)
                 or captured_digest.lower()!=digest.lower()):
             result["reason"]="UNMATCHED_CAPTURE_VERSION";return result
-        published=epoch(row.get("published_at_utc"))
-        updated=epoch(row.get("updated_at_utc") or row.get("published_at_utc"))
-        capture=epoch(row.get("verified_capture_at_utc"))
-        retrieved=epoch(row.get("retrieved_at_utc"))
+        try:
+            published=optional_epoch(row.get("published_at_utc"))
+            updated=optional_epoch(row.get("updated_at_utc") or row.get("published_at_utc"))
+            capture=optional_epoch(row.get("verified_capture_at_utc"))
+            retrieved=optional_epoch(row.get("retrieved_at_utc"))
+        except (TypeError,ValueError,OverflowError):
+            result["reason"]="INVALID_PROVENANCE_TIME";return result
         if None in (published,updated,capture,retrieved):
             result["reason"]="INVALID_PROVENANCE_TIME";return result
         if updated<published or capture<published or retrieved<capture:
