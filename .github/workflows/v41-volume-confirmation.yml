@@ -1,0 +1,144 @@
+name: V41 PAPER volume confirmation and persistent news sampling
+on:
+  pull_request:
+    paths:
+      - 'research/v41_volume_confirmation.py'
+      - 'research/v41_monthly_news.py'
+      - 'research/v41_persist_cursor.py'
+      - 'tests/test_v41_volume_confirmation.py'
+      - 'tests/test_v41_monthly_news.py'
+      - 'data/historical_news_sampling_cursor_v41.json'
+      - '.github/workflows/v41-volume-confirmation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/v41_volume_confirmation.py'
+      - 'research/v41_monthly_news.py'
+      - 'research/v41_persist_cursor.py'
+      - 'tests/test_v41_volume_confirmation.py'
+      - 'tests/test_v41_monthly_news.py'
+      - '.github/workflows/v41-volume-confirmation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: V41 deterministic no-lookahead and cursor tests
+        run: |
+          python -m unittest discover -s tests -p 'test_v41_volume_confirmation.py' -v
+          python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
+          python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
+          python -m unittest discover -s tests -p 'test_v40_fx_decomposition.py' -v
+          python -m unittest discover -s tests -p 'test_v40_monthly_news.py' -v
+          python -m unittest discover -s tests -p 'test_v38_archive_ingest.py' -v
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
+          python -m unittest discover -s tests -p 'test_v27_position_sizing.py' -v
+      - name: Official Kraken archive V41 chronological algorithm study
+        run: |
+          python -m research.v41_volume_confirmation \
+            --output audit/v41-volume-confirmation.json \
+            --bars-json-output audit/v41-market-bars.json
+      - name: Fresh completed public BTC/AUD 4h bridge
+        run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json
+      - name: Bounded nonrepeating historical article months and strict market join
+        run: |
+          python -m research.v41_monthly_news \
+            --bars-json audit/v41-market-bars.json \
+            --output audit/v41-monthly-news.json
+      - name: Verify paper accounting, chronology, provenance and sampling cursor
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          a=json.loads(pathlib.Path('audit/v41-volume-confirmation.json').read_text())
+          n=json.loads(pathlib.Path('audit/v41-monthly-news.json').read_text())
+          r=json.loads(pathlib.Path('audit/v41-recent-bridge.json').read_text())
+          assert a['mode']=='V41_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY'
+          assert a['fees_each_side_bps']=={'taker':80,'half_spread':5,'slippage':5}
+          assert a['max_inclusive_entry_debit_aud']==100 and a['cash_fraction_cap']==.10
+          assert a['android_policy']=='HOLD' and a['promotion'].startswith('REJECTED')
+          assert len(a['folds'])>=1
+          for name,values in a['aggregate_independent_reset_accounts'].items():
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V41_STRATEGY',name,values,'WORST_DD',a['worst_fold_drawdown_pct'][name])
+          print('V41_SELECTORS',[f['selected_using_train_validation_only'] for f in a['folds']])
+          print('V41_SELECTED_NET',a['aggregate_selected_test_net_aud'],'BUYHOLD',a['aggregate_buyhold_aud100_net'])
+          print('V41_NEWS',a['strict_verified_news'])
+          assert n['android_strategy']=='HOLD' and n['max_paper_entry_aud']==100
+          assert len(n['archive_months_requested'])<=12
+          assert n['historically_verified_capture_rows']==0
+          assert n['historical_article_version_rows']==len(n['records'])
+          assert len(n['archive_months_requested'])==len(set(n['archive_months_requested']))
+          assert n['cursor_remaining_months']>=0
+          print('V41_NEWS_ROWS',len(n['records']),'MONTHS',n['archive_months_requested'])
+          print('V41_MONTH_STATUS',json.dumps(n['source_status'],sort_keys=True))
+          print('V41_MARKET_JOIN',n['market_join'])
+          print('V41_RECENT',r['post_archive_last_utc'],r['post_archive_bars'],
+                {k:v['net_aud'] for k,v in r['strategies'].items()},
+                'BUYHOLD',r['same_AUD100_buy_hold']['net_aud'])
+          print('V41_ALGORITHM_SHA256',hashlib.sha256(pathlib.Path('audit/v41-volume-confirmation.json').read_bytes()).hexdigest())
+          print('V41_NEWS_SHA256',hashlib.sha256(pathlib.Path('audit/v41-monthly-news.json').read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v41-paper-research
+          path: |
+            audit/v41-volume-confirmation.json
+            audit/v41-monthly-news.json
+            audit/v41-recent-bridge.json
+            audit/v41-market-bars.json
+  persist:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: research
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: v41-paper-research
+          path: audit
+      - name: Persist cumulative metadata and sampling cursor, then read back
+        run: |
+          python -m research.v38_persist_sample --audit audit/v41-monthly-news.json
+          python -m research.v41_persist_cursor --audit audit/v41-monthly-news.json
+          python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
+          python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('data/historical_news_sample_v38.jsonl')
+          m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text())
+          c=json.loads(pathlib.Path('data/historical_news_sampling_cursor_v41.json').read_text())
+          rows=[json.loads(x) for x in p.read_text().splitlines() if x]
+          assert len(rows)==m['rows_cumulative_deduplicated']
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']
+          assert m['historical_article_versions_cumulative']<=len(rows)
+          assert set(c['completed_months']).issubset(set(c['attempted_months']))
+          print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256'])
+          print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])
+          PY
+      - name: Commit verified cumulative news and cursor to main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json
+          if git diff --cached --quiet; then
+            echo 'No new article metadata or cursor updates'
+          else
+            git commit -m 'V41: persist monthly historical news sample and cursor'
+            git push origin HEAD:main
+          fi
