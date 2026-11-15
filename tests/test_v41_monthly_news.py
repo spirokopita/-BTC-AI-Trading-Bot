@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 import types
+import research
 
 from research.v41_monthly_news import (
     SCHEMA, month_scope, load_cursor, candidate_months, sample_months,
@@ -61,7 +62,7 @@ class V41MonthlyCursorTests(unittest.TestCase):
                 "published_at_utc": month + "-15T12:00:00+00:00",
                 "first_verified_capture_at_utc": None,
             }], "OK_DATE_FILTERS_VERIFIED")
-        with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}):
+        with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}), patch.object(research, "v38_archive_ingest", fake, create=True):
             rows, status = sample_months(("2020-03",), "2026-11-16T00:00:00Z", fetch)
         self.assertEqual(fake.MONTHS, ("2020-01",))
         self.assertEqual(len(rows), 1)
@@ -72,7 +73,7 @@ class V41MonthlyCursorTests(unittest.TestCase):
                 "published_at_utc": "2020-03-15T12:00:00+00:00",
                 "first_verified_capture_at_utc": "2020-03-15T12:00:00+00:00",
             }], "OK_DATE_FILTERS_VERIFIED")
-        with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}):
+        with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}), patch.object(research, "v38_archive_ingest", fake, create=True):
             rows, status = sample_months(("2020-03",), "2026-11-16T00:00:00Z", bad)
         self.assertEqual(rows, [])
         self.assertFalse(status["2020-03"]["ok"])
@@ -121,7 +122,7 @@ class V41MonthlyCursorTests(unittest.TestCase):
             fake.merge = lambda rows: list(rows)
             fake.join_market = lambda rows, bars: {
                 "retrospective_time_aligned": 0, "strict_asof_eligible": 0}
-            with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}):
+            with patch.dict("sys.modules", {"research.v38_archive_ingest": fake}), patch.object(research, "v38_archive_ingest", fake, create=True):
                 def empty(source, at):
                     return [], "OK_DATE_FILTERS_VERIFIED"
                 report = build("2026-11-16T00:00:00Z",
