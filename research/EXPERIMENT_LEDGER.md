@@ -4,7 +4,7 @@
 
 ### Reproducibility and data
 - Research source: research/v41_volume_confirmation.py; event study: research/v41_recent_news_event_study.py; monthly cursor: research/v41_monthly_news.py and research/v41_persist_cursor.py; V48 proof gate: research/v48_news_proof_gate.py.
-- CI: PR head f20310b295a92a5ee166cbb3034fb3e376a8faa0 passed V41 run 43770654956, V48 run 43770654931 (15 tests), V40 regression run 43770654930, and V28 run 43770654977. Targeted suites: V41 volume 14, cursor 7, event study 10, V48 proof gate 15 (46 total); full repository regression passed. Main V41 run 43771050561 and persistence job passed.
+- CI: PR head f20310b295a92a5ee166cbb3034fb3e376a8faa0 passed V41 run 43770654956, V48 run 43770654931 (15 tests), V40 regression run 43770654930, and V28 run 43770654977. Targeted suites: V41 volume 14, cursor 7, event study 10, V48 proof gate 15 (46 total); full repository regression ran 331 tests and passed. Main V41 run 43771050561 and persistence job passed.
 - Kraken official archive: 13,763 completed BTC/AUD 4h bars, 20 gaps; three gap-free segments of 6,863 / 3,398 / 1,999 bars. Archive member SHA256 ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e. Prior-inspected history; not untouched OOS.
 - Public OHLC bridge: 720 completed bars fetched 2026-11-15 22:42:32 UTC; 275 bars beyond archive through 2026-11-15 16:00 UTC. Last completed 4h close at 20:00 UTC: A$96,181.50/BTC. Source response SHA256 20d1f114d19a0883f9e39c2b576f45abd0fc8d7901dddfc20474ebde70f37a6c.
 - Execution model: A$1,000 independently reset wallet per segment, A$100 maximum inclusive entry debit, 10% cash cap, 80bps taker +5bps half-spread +5bps slippage each side. 50/20/30 chronological partitions, 20-bar embargo; selector sees train/validation only.
