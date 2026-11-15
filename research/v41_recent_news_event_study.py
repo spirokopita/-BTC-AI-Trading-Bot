@@ -70,6 +70,7 @@ def load_events(path):
         raise ValueError("Unknown event corpus schema")
     if not doc.get("retrieved_at_utc"):
         raise ValueError("Missing event retrieval timestamp")
+    retrieved_ts = epoch(doc["retrieved_at_utc"])
     events = []
     seen = set()
     for row in doc.get("events", []):
@@ -84,6 +85,11 @@ def load_events(path):
         if not isinstance(latency, int) or latency < 0:
             raise ValueError("Invalid conservative latency")
         published = epoch(row.get("published_at_utc"))
+        if published > retrieved_ts:
+            raise ValueError("Future publication included in current event sample")
+        if any(not isinstance(url, str) or not url.startswith("https://")
+               for url in row["source_urls"]):
+            raise ValueError("Invalid event source URL")
         events.append({**row, "_published_ts": published,
                        "_available_ts": published + latency})
     events.sort(key=lambda x: (x["_published_ts"], x["event_id"]))
@@ -135,6 +141,9 @@ def net_trade(entry_mid, exit_mid, *, max_entry_debit=MAX_ENTRY_DEBIT):
     slippage = buy["slippage"] + sell["slippage"]
     net = gross-fees-spread-slippage
     result = {
+        "trades": 1,
+        "wins": int(net > 0),
+        "losses": int(net <= 0),
         "gross_aud": round(gross, 6),
         "fees_aud": round(fees, 6),
         "spread_aud": round(spread, 6),
