@@ -2,6 +2,7 @@
 import sys
 import types
 import unittest
+import research
 from unittest.mock import patch
 from research.v40_monthly_news import candidate_months,sample_months,build,MAX_MONTHS_PER_RUN
 
@@ -30,7 +31,7 @@ class V40NewsTests(unittest.TestCase):
                 'source_ids':['cryptocurrency_cv'],
                 'published_at_utc':m+'-12T12:00:00+00:00',
                 'first_verified_capture_at_utc':None}], 'OK_DATE_FILTERS_VERIFIED')
-        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}):
+        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}), patch.object(research,'v38_archive_ingest',fake,create=True):
             from research import v38_archive_ingest
             with patch.object(v38_archive_ingest,'MONTHS',('2020-01',)):
                 rows,status=sample_months(candidate_months(3),
@@ -46,7 +47,7 @@ class V40NewsTests(unittest.TestCase):
             return ([{'source_ids':['cryptocurrency_cv'],
                 'published_at_utc':'2024-12-31T23:00:00+00:00'}],
                 'OK_DATE_FILTERS_VERIFIED')
-        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}):
+        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}), patch.object(research,'v38_archive_ingest',fake,create=True):
             rows,status=sample_months(candidate_months(1),
                 '2026-11-11T00:00:00+00:00',bad)
         self.assertEqual(rows,[])
@@ -59,7 +60,7 @@ class V40NewsTests(unittest.TestCase):
                 'published_at_utc':'2020-02-01T00:00:00+00:00',
                 'first_verified_capture_at_utc':'2020-02-01T00:00:00+00:00'}],
                 'OK_DATE_FILTERS_VERIFIED')
-        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}):
+        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}), patch.object(research,'v38_archive_ingest',fake,create=True):
             rows,status=sample_months(candidate_months(1),
                 '2026-11-11T00:00:00+00:00',bad)
         self.assertEqual(rows,[])
@@ -68,7 +69,7 @@ class V40NewsTests(unittest.TestCase):
     def test_audit_preserves_paper_safety(self):
         fake=self.fake_module()
         def empty(source,at):return [],'OK_DATE_FILTERS_VERIFIED'
-        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}):
+        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}), patch.object(research,'v38_archive_ingest',fake,create=True):
             report=build(candidate_months(1),'2026-11-11T00:00:00+00:00',empty)
         self.assertEqual(report['android_strategy'],'HOLD')
         self.assertEqual(report['max_paper_entry_aud'],100)
@@ -78,7 +79,7 @@ class V40NewsTests(unittest.TestCase):
 
     def test_too_many_or_duplicate_requests_blocked(self):
         fake=self.fake_module()
-        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}):
+        with patch.dict(sys.modules,{'research.v38_archive_ingest':fake}), patch.object(research,'v38_archive_ingest',fake,create=True):
             with self.assertRaises(ValueError):
                 sample_months(candidate_months()+('2021-03',),
                               '2026-11-11T00:00:00+00:00')
