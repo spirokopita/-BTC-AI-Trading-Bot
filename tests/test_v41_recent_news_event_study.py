@@ -8,7 +8,7 @@ from pathlib import Path
 
 from research.v41_recent_news_event_study import (
     epoch, entry_index, prior_features, net_trade, match_controls,
-    load_events, run_event_study, STEP,
+    load_events, load_market, run_event_study, STEP,
 )
 
 START = int(datetime(2026, 7, 1, tzinfo=timezone.utc).timestamp())
@@ -91,6 +91,40 @@ class V41RecentEventStudyTests(unittest.TestCase):
             path.write_text(json.dumps(doc))
             with self.assertRaises(ValueError):
                 load_events(path)
+
+    def test_market_loader_requires_contiguous_4h_bars_and_hash(self):
+        bars = bars_fixture(500)
+        doc = {
+            "schema": "v28_recent_ohlc_1",
+            "source": "Kraken public OHLC 240-minute BTC/AUD API",
+            "source_response_sha256": "a"*64,
+            "fetched_at_utc": datetime.fromtimestamp(
+                bars[-1][0]+STEP+60, timezone.utc).isoformat(),
+            "bars": bars,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "market.json"
+            path.write_text(json.dumps(doc))
+            loaded, meta = load_market(path)
+            self.assertEqual(len(loaded), 500)
+            self.assertEqual(meta["source_response_sha256"], "a"*64)
+            broken = list(bars)
+            row = broken[250]
+            broken[250] = (row[0]+STEP, *row[1:])
+            doc["bars"] = broken
+            path.write_text(json.dumps(doc))
+            with self.assertRaises(ValueError):
+                load_market(path)
+
+    def test_event_loader_keeps_publication_reconstruction_distinct(self):
+        doc = event_doc()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "events.json"
+            path.write_text(json.dumps(doc))
+            loaded, source = load_events(path)
+        self.assertEqual(len(loaded), 1)
+        self.assertIsNone(loaded[0]["first_observed_at_utc"])
+        self.assertEqual(source["schema"], "v41_recent_news_events_1")
 
     def test_event_study_labels_reconstruction_and_overlapping_events(self):
         bars = bars_fixture()
