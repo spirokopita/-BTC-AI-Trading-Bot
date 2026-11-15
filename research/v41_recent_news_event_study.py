@@ -350,6 +350,8 @@ def main(argv=None):
     start, end = bridge_window(bars)
     report = run_event_study(bars, market, events, start, end)
     report["event_corpus_retrieved_at_utc"] = source_doc["retrieved_at_utc"]
+    report["scheduled_future_events_not_backtested"] = source_doc.get(
+        "scheduled_future_events", [])
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(report, indent=2, ensure_ascii=False,
