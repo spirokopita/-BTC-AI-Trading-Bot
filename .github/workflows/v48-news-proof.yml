@@ -1,0 +1,17 @@
+name: V48 strict as-of news provenance
+on:
+  pull_request:
+    paths:
+      - 'research/v48_news_proof_gate.py'
+      - 'tests/test_v48_news_proof_gate.py'
+      - '.github/workflows/v48-news-proof.yml'
+  workflow_dispatch:
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
