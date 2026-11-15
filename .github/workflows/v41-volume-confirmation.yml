@@ -5,6 +5,10 @@ on:
       - 'research/v41_volume_confirmation.py'
       - 'research/v41_monthly_news.py'
       - 'research/v41_persist_cursor.py'
+      - 'research/v41_recent_news_event_study.py'
+      - 'data/v41_recent_news_events.json'
+      - 'tests/test_v41_recent_news_event_study.py'
+      - 'tests/test_v40_monthly_news.py'
       - 'tests/test_v41_volume_confirmation.py'
       - 'tests/test_v41_monthly_news.py'
       - 'data/historical_news_sampling_cursor_v41.json'
@@ -15,6 +19,10 @@ on:
       - 'research/v41_volume_confirmation.py'
       - 'research/v41_monthly_news.py'
       - 'research/v41_persist_cursor.py'
+      - 'research/v41_recent_news_event_study.py'
+      - 'data/v41_recent_news_events.json'
+      - 'tests/test_v41_recent_news_event_study.py'
+      - 'tests/test_v40_monthly_news.py'
       - 'tests/test_v41_volume_confirmation.py'
       - 'tests/test_v41_monthly_news.py'
       - '.github/workflows/v41-volume-confirmation.yml'
@@ -34,6 +42,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_v41_volume_confirmation.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
+          python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
           python -m unittest discover -s tests -p 'test_v40_fx_decomposition.py' -v
           python -m unittest discover -s tests -p 'test_v40_monthly_news.py' -v
@@ -50,7 +59,9 @@ jobs:
             --output audit/v41-volume-confirmation.json \
             --bars-json-output audit/v41-market-bars.json
       - name: Fresh completed public BTC/AUD 4h bridge
-        run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json
+        run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json --bars-json-output audit/v41-recent-bars.json
+      - name: Timestamped recent macro/crypto event study with prior matched controls
+        run: python -m research.v41_recent_news_event_study --bars-json audit/v41-recent-bars.json --events data/v41_recent_news_events.json --output audit/v41-recent-news-event-study.json
       - name: Bounded nonrepeating historical article months and strict market join
         run: |
           python -m research.v41_monthly_news \
@@ -63,6 +74,7 @@ jobs:
           a=json.loads(pathlib.Path('audit/v41-volume-confirmation.json').read_text())
           n=json.loads(pathlib.Path('audit/v41-monthly-news.json').read_text())
           r=json.loads(pathlib.Path('audit/v41-recent-bridge.json').read_text())
+          e=json.loads(pathlib.Path('audit/v41-recent-news-event-study.json').read_text())
           assert a['mode']=='V41_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY'
           assert a['fees_each_side_bps']=={'taker':80,'half_spread':5,'slippage':5}
           assert a['max_inclusive_entry_debit_aud']==100 and a['cash_fraction_cap']==.10
@@ -100,6 +112,11 @@ jobs:
           print('V41_RECENT',r['post_archive_last_utc'],r['post_archive_bars'],
                 {k:v['net_aud'] for k,v in r['strategies'].items()},
                 'BUYHOLD',r['same_AUD100_buy_hold']['net_aud'])
+          assert e['mode']=='V41_RETROSPECTIVE_PUBLICATION_TIME_EVENT_STUDY'
+          assert e['first_observed_at_utc'] is None and e['strategy_selection'].startswith('NONE')
+          assert e['max_inclusive_entry_debit_aud']==100 and e['cash_fraction_cap']==.10
+          assert all(item['first_observed_at_utc'] is None for item in e['events'])
+          print('V41_RECENT_NEWS_EVENT_STUDY',e['aggregate'],'OVERLAPS',e['overlap_pairs'])
           print('V41_ALGORITHM_SHA256',hashlib.sha256(pathlib.Path('audit/v41-volume-confirmation.json').read_bytes()).hexdigest())
           print('V41_NEWS_SHA256',hashlib.sha256(pathlib.Path('audit/v41-monthly-news.json').read_bytes()).hexdigest())
           PY
@@ -111,6 +128,8 @@ jobs:
             audit/v41-volume-confirmation.json
             audit/v41-monthly-news.json
             audit/v41-recent-bridge.json
+            audit/v41-recent-bars.json
+            audit/v41-recent-news-event-study.json
             audit/v41-market-bars.json
   persist:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
