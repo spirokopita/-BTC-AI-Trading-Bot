@@ -327,10 +327,11 @@ def buyhold_audit(bars, start, end, max_entry_debit=100.0, cost_mult=1.0):
                         if max_entry_debit == 100.0 and cost_mult == 1.0
                         else result["net_aud"], abs_tol=1e-6):
         raise AssertionError("A$100 buy-and-hold parity with V29")
-    if not math.isclose(
-            result["gross_aud"]-result["fees_aud"]-result["spread_aud"]
-            -result["slippage_aud"], result["net_aud"], abs_tol=1e-6):
-        raise AssertionError("Buy-and-hold gross/cost/NET mismatch")
+    execution_net = (
+        exit_fill["notional"] - exit_fill["fee"]
+        - entry["notional"] - entry["fee"])
+    if not math.isclose(net, execution_net, abs_tol=1e-8):
+        raise AssertionError("Buy-and-hold does not reconcile to execution cash flows")
     return result
 
 
