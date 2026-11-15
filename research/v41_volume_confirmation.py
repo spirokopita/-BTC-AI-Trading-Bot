@@ -83,7 +83,8 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
                 and row.get("first_verified_capture_at_utc")):
             # The WARC index proves a capture timestamp, but its legacy digest
             # is not promoted to SHA256. V48 will still fail closed on hash proof.
-            proof_row["capture_type"] = "independent_warc"
+            proof_row["capture_type"] = "common_crawl_index_digest"
+            proof_row["version_hash_algorithm"] = "sha1_base32"
             proof_row["verified_capture_at_utc"] = row["first_verified_capture_at_utc"]
         url = proof_row.get("url")
         if not isinstance(url, str) or not url.startswith("https://"):
