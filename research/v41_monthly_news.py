@@ -19,9 +19,11 @@ SCHEMA = "v41_monthly_sampling_cursor_1"
 
 
 def month_scope():
-    return tuple(f"{year}-{month:02d}"
-                 for year in range(2020, 2027)
-                 for month in range(1, 11))
+    return tuple(
+        f"{year}-{month:02d}"
+        for year in range(2020, 2027)
+        for month in range(1, 13 if year < 2026 else 11)
+    )
 
 
 def load_cursor(path=CURSOR_PATH):
