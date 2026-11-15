@@ -3,7 +3,8 @@ PAPER research only. An article's publication/update timestamp is not proof
 that the exact content version was independently captured before a trade.
 """
 from __future__ import annotations
-import hashlib,json
+import hashlib,json,re
+from urllib.parse import urlsplit
 from datetime import datetime,timezone
 from pathlib import Path
 
@@ -22,9 +23,13 @@ def classify(row,decision_ts,latency_seconds=3600):
     decision=epoch(decision_ts)
     if latency_seconds<0:raise ValueError("Negative latency")
     result=dict(eligible=False,reason=None)
+    url=row.get("url")
+    if not isinstance(url,str) or urlsplit(url).scheme!="https" or not urlsplit(url).netloc:
+        result["reason"]="INVALID_URL";return result
     if row.get("capture_type") not in ("independent_warc","first_observed_snapshot","official_original_release"):
         result["reason"]="NO_INDEPENDENT_CAPTURE_PROOF";return result
-    if not row.get("content_sha256") or len(row["content_sha256"])!=64:
+    digest=row.get("content_sha256")
+    if not isinstance(digest,str) or not re.fullmatch(r"[0-9a-fA-F]{64}",digest):
         result["reason"]="NO_VERSION_HASH";return result
     try:
         published=epoch(row["published_at_utc"])
@@ -38,15 +43,21 @@ def classify(row,decision_ts,latency_seconds=3600):
     # Capture must contain the exact hashed article version; future updates cannot leak.
     if max(updated,capture)+latency_seconds>decision:
         result["reason"]="VERSION_NOT_YET_AVAILABLE";return result
-    if row.get("version_capture_sha256")!=row["content_sha256"]:
+    captured_digest=row.get("version_capture_sha256")
+    if (not isinstance(captured_digest,str)
+            or not re.fullmatch(r"[0-9a-fA-F]{64}",captured_digest)
+            or captured_digest.lower()!=digest.lower()):
         result["reason"]="UNMATCHED_CAPTURE_VERSION";return result
     result.update(eligible=True,reason="VERIFIED_AS_OF",available_at_utc=max(updated,capture)+latency_seconds)
     return result
 
-def join(records,bar_open_timestamps,latency_seconds=3600):
-    """Sorted, gap-safe as-of eligibility; no price/return fields used for selection."""
+def join(records,bar_open_timestamps,latency_seconds=3600,expected_step_seconds=14400):
+    """Strict 4h gap-safe as-of eligibility; no price/return fields used for selection."""
+    if expected_step_seconds<=0:raise ValueError("Invalid expected bar step")
     ts=[epoch(t) for t in bar_open_timestamps]
     if any(b<=a for a,b in zip(ts,ts[1:])):raise ValueError("Non-monotonic bars")
+    if any(b-a!=expected_step_seconds for a,b in zip(ts,ts[1:])):
+        raise ValueError("Gap or irregular bar spacing")
     output=[]
     for bar in ts:
         eligible=[]
