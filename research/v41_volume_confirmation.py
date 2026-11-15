@@ -77,17 +77,25 @@ def load_verified_news(path="data/historical_news_sample_v38.jsonl"):
         row = json.loads(line)
         if not row.get("url") and row.get("canonical_url"):
             row["url"] = row["canonical_url"]
-        url = row.get("url")
+        proof_row = dict(row)
+        if (row.get("availability_confidence") == "verified_crawl"
+                and row.get("capture_source") == "common_crawl"
+                and row.get("first_verified_capture_at_utc")):
+            # The WARC index proves a capture timestamp, but its legacy digest
+            # is not promoted to SHA256. V48 will still fail closed on hash proof.
+            proof_row["capture_type"] = "independent_warc"
+            proof_row["verified_capture_at_utc"] = row["first_verified_capture_at_utc"]
+        url = proof_row.get("url")
         if not isinstance(url, str) or not url.startswith("https://"):
             # Legacy corpus uses canonical_url; it still lacks the V48 proof schema.
             url = row.get("canonical_url")
         if not isinstance(url, str) or not url.startswith("https://"):
             rejected["INVALID_URL"] += 1
             continue
-        proof = classify_news(row, now, latency_seconds=3600)
+        proof = classify_news(proof_row, now, latency_seconds=3600)
         rejected[proof["reason"]] += 1
         if proof["eligible"]:
-            events.append(row)
+            events.append(proof_row)
     events.sort(key=lambda x: (
         x.get("verified_capture_at_utc", ""),
         x.get("url", ""),
