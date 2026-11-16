@@ -554,3 +554,22 @@ Observed during this 2026-11-01 research run: The Guardian published a 2026-10-2
 
 
 - Follow-up execution guard commit `0184ea21d94f5f5a827716666fa32b0e8f81b5cf` excludes cursor/workflow-only bot commits from push-triggered research and adds an explicit `github-actions[bot]` guard. Rerun `43975610213` has passed regression, V41/V42 strategy, fresh market bridge, event study and monthly sample; WARC probe remains in progress and persistence has not yet reached final read-back.
+
+
+## Full price-baseline cost reconciliation (V41 report bundled in V42 main artifact)
+
+All figures are summed across the same three independent A$1,000 test accounts, with A$100 inclusive entry cap, 10% cash cap, 80bps taker plus 5bps half-spread and 5bps slippage per side.
+
+| Baseline | Trades | Gross A$ | Fees A$ | Spread A$ | Slippage A$ | NET A$ | Return | Worst fold DD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| SMA | 118 | 86.793716 | 183.534320 | 11.470939 | 11.470939 | -119.682481 | -3.989416% | -7.631585% |
+| Momentum | 242 | 24.061066 | 354.521285 | 22.157592 | 22.157592 | -374.775403 | -12.492513% | -19.713239% |
+| RSI mean reversion | 158 | 43.488769 | 239.118482 | 14.944926 | 14.944926 | -225.519567 | -7.517319% | -13.666897% |
+| ATR/volatility breakout | 133 | 30.799440 | 202.987846 | 12.686756 | 12.686756 | -197.561916 | -6.585397% | -9.369700% |
+| Regime filter | 267 | 22.700181 | 382.655597 | 23.915986 | 23.915986 | -407.787388 | -13.592913% | -24.735182% |
+| Trend + ATR | 20 | 7.746437 | 31.495682 | 1.968484 | 1.968484 | -27.686213 | -0.922874% | -2.153114% |
+
+- V41 H80 volume-confirmation variant: 7 trades, gross +49.330147, fees 11.429587, spread .714374, slippage .714374, NET +36.471813, return +1.215727%, worst fold DD -4.210041%; worse than H80 base.
+- Volume-only: 7 trades, NET +38.360130; close-only: 7, +37.785654; shifted 7-day volume placebo: 7, +41.202690. The placebo was higher than the real feature, so no volume-confirmation edge.
+- News-attention and 7-day delayed-news variants were exactly identical to H80 base (7 trades, NET +38.454151) because **zero strict as-of news events** entered the replay. This is not evidence that news is neutral or predictive; it means the available news sample could not change a decision.
+- Same-stake A$100 buy-and-hold: 3 positions, gross +135.859476, fees 5.842937, spread .365252, slippage .365252, NET +129.286037, return +4.309535%, worst fold DD -2.790726%. It beat every selected/price-only strategy in aggregate.
