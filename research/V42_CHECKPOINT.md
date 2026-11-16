@@ -94,3 +94,8 @@
 ### First-observed corpus limitation
 - `data/first_observed_news.jsonl` read-back: **249** RSS observations. Its current fields are `first_seen_ts`, `published_ts`, headline, source, summary and URL; it does not preserve a per-version content hash, explicit capture source, retrieval timestamp or confidence. It remains useful as an RSS observation-time record but is not a complete immutable article-version proof. V42 added **0** new first-observed snapshots.
 - The V42 265 rows are retrospective publication-time metadata; 265 aligned to Kraken bars, **0 strict as-of eligible**. The one pre-existing verified Common Crawl capture does not align to these 265 records.
+
+
+## Follow-up execution guard
+- Commit `0184ea21d94f5f5a827716666fa32b0e8f81b5cf` prevents persistence commits from recursively triggering another full V42 run by excluding cursor/workflow-only pushes and skipping bot actors.
+- Rerun `43975610213`: 348-test regression and V41/V42 research, fresh bridge, event study and monthly sample passed; Common Crawl probe remains in progress; conflict-safe persistence/read-back is pending.
