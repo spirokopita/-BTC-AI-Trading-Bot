@@ -514,3 +514,10 @@ Observed during this 2026-11-01 research run: The Guardian published a 2026-10-2
 **Next highest-value hypothesis:** Do lower-turnover trend/volatility filters preserve gross edge after transaction costs on **multi-year** Kraken BTC/AUD OHLCVT? Obtain official exchange archive, establish a genuinely untouched future holdout, compare against buy/hold with equal exposure, and run fee/spread sensitivity. Do not optimize against the V24 holdouts again.
 
 **Verification:** GitHub Actions run `41293127006`, artifact `BTC-AUD-Research-OOS-Report`; six offline tests passed and genuine public feed experiment completed. No Android build or physical Samsung test was performed in this research run.
+
+
+### Persistence failure and self-correction
+- Main research run `43974285006` succeeded; its persistence job failed at `git rebase origin/main` with content conflicts in `data/historical_news_manifest_v38.json` and `data/historical_news_sample_v38.jsonl`. The V42 workspace had already verified 2,486 rows / 1,427 article versions / 64 completed months / 18 remaining and SHA256 `f452b0ef5c21e12520b3c758087ae220010768e364189ec4d91fd1f7ed7d6ad0`, but the push did not succeed.
+- Read-back from main after the failure still showed 2,226 rows / 1,163 article versions / 52 completed months / 30 remaining. This is the authoritative committed state.
+- Corrective commit `c47ef37891aea530eaae351263e469573f0f19c1` changes the workflow to fetch/reset to latest main and rerun the idempotent merge, tests and read-back on every push retry instead of rebasing a stale JSONL commit.
+- Follow-up main run `43975610213` is in progress. Completion requires successful persistence job plus fresh GitHub read-back of row count, SHA256, article count and cursor. Until then, report the V42 increment as workspace-verified but not committed.
