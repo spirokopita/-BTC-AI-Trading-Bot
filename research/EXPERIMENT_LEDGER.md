@@ -551,3 +551,6 @@ Observed during this 2026-11-01 research run: The Guardian published a 2026-10-2
 ### First-observed corpus limitation
 - `data/first_observed_news.jsonl` read-back: **249** RSS observations. Its current fields are `first_seen_ts`, `published_ts`, headline, source, summary and URL; it does not preserve a per-version content hash, explicit capture source, retrieval timestamp or confidence. It remains useful as an RSS observation-time record but is not a complete immutable article-version proof. V42 added **0** new first-observed snapshots.
 - The V42 265 rows are retrospective publication-time metadata; 265 aligned to Kraken bars, **0 strict as-of eligible**. The one pre-existing verified Common Crawl capture does not align to these 265 records.
+
+
+- Follow-up execution guard commit `0184ea21d94f5f5a827716666fa32b0e8f81b5cf` excludes cursor/workflow-only bot commits from push-triggered research and adds an explicit `github-actions[bot]` guard. Rerun `43975610213` has passed regression, V41/V42 strategy, fresh market bridge, event study and monthly sample; WARC probe remains in progress and persistence has not yet reached final read-back.
