@@ -1,0 +1,24 @@
+name: V44 Hoarder cycle grid
+on:
+  pull_request:
+    paths:
+      - 'research/v44_hoarder_grid.py'
+      - '.github/workflows/v44-hoarder-grid.yml'
+  workflow_dispatch:
+jobs:
+  grid:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Official Kraken BTC AUD historical 80-combination grid
+        run: python -m research.v44_hoarder_grid
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v44-hoarder-cycle-grid
+          path: audit/v44-hoarder-cycle-grid.json
+          if-no-files-found: ignore
