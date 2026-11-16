@@ -48,9 +48,14 @@
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "CDXJ index metadata only; URL-specific capture, not representative",
+      "limitations": "CDXJ index metadata only; URL-specific capture, not representative V42 discovered collinfo from/to fields without timezone offsets; treating them as unknown selected invalid 2008/2009 index IDs. V42.1 explicitly normalizes those Common Crawl collection times to UTC and reruns bounded probes.",
       "last_sample_utc": "2026-11-09T22:46:12Z",
-      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main",
+      "last_probe_status": "V42_PROBE_FAILED_DUE_TO_NAIVE_INDEX_TIME_PARSING",
+      "last_probe_attempted_urls": 12,
+      "last_probe_requests": 24,
+      "last_probe_verified_captures": 0,
+      "last_probe_failures": 24
     },
     {
       "id": "newsdata_io",
@@ -73,7 +78,23 @@
       "connector": "research.v38_archive_ingest.source_fetch",
       "limitations": "Source-claimed 662047 not independently verified; historical first_seen unverified",
       "last_sample_utc": "2026-11-09T22:46:12Z",
-      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main",
+      "last_probe_rows": 265,
+      "last_probe_months": [
+        "2022-03",
+        "2022-06",
+        "2022-08",
+        "2022-09",
+        "2022-11",
+        "2022-12",
+        "2023-03",
+        "2023-06",
+        "2023-08",
+        "2023-09",
+        "2023-11",
+        "2023-12"
+      ],
+      "last_probe_status": "12_MONTHS_OK_DATE_FILTERS_VERIFIED; NOT YET PERSISTED FROM PR RUN"
     },
     {
       "id": "cryptopanic",
@@ -301,6 +322,36 @@
       "verified_rows": 0,
       "access_class": "PAID_OR_LICENSE_RESTRICTED",
       "limitations": "No paid subscription or licensed historical feed authorized; do not substitute unverified proxies"
+    },
+    {
+      "id": "defillama_stablecoins",
+      "url": "https://stablecoins.llama.fi/",
+      "role": "historical_stablecoin_supply_by_chain_and_issuer",
+      "access": "public_api",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Historical daily values are descriptive snapshots; no historical first-observed or vintage availability is established, so not eligible for point-in-time trading features"
+    },
+    {
+      "id": "kraken_public_book",
+      "url": "https://docs.kraken.com/api/docs/rest-api/get-order-book",
+      "role": "current_kraken_spot_order_book_depth",
+      "access": "public_api_no_auth",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Public REST order book is current snapshot only; no historical depth archive or first-observed snapshots yet, so not eligible for historical execution backtests"
+    },
+    {
+      "id": "blockchain_com",
+      "url": "https://www.blockchain.com/explorer/api/charts_api",
+      "role": "bitcoin_difficulty_hashrate_and_network_series",
+      "access": "public_api",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Historical chart values are not vintage/first-observed snapshots; retain for descriptive research until release/capture availability is archived"
     }
   ],
   "topics": [
@@ -402,7 +453,7 @@
     "A100_inclusive_debit_cap",
     "10pct_cash_cap"
   ],
-  "next": "V42: test predeclared ATR-normalized exits/time stops on H80/300; continue at most 12 unsampled cryptocurrency.cv months and bounded Common Crawl CDX capture probes; preserve exact digest/offset/length and sampled-index scope. Degree 1-3 graph edges remain hypotheses only. No macro/news predictive claim without point-in-time source versions, negative controls and untouched OOS. PAPER ONLY HOLD.",
+  "next": "V42.1: correct Common Crawl collinfo naive from/to timestamps as UTC and rerun the 12-URL/two-index probe; V42 initial attempt selected invalid 2008/2009 IDs (24 failed queries, 0 captures). Re-run V42 walk-forward with 84-bar embargo matching the 84-bar maximum holding horizon. Then verify merge/main persistence. Continue monthly cryptocurrency.cv sampling; no article target claim until cumulative unique-URL read-back.",
   "graph_hypotheses": [
     {
       "from": "BTC spot ETF inflows",
@@ -584,7 +635,7 @@
       "lag_hypothesis": "days-weeks",
       "channel": "incremental settlement liquidity and exchange buying power",
       "source_ids": [
-        "fred_alfred"
+        "defillama_stablecoins"
       ],
       "confounders": [
         "exchange inventory",
@@ -633,7 +684,7 @@
       "lag_hypothesis": "immediate-minutes",
       "channel": "less displayed depth increases spread and market impact",
       "source_ids": [
-        "cme_futures"
+        "kraken_public_book"
       ],
       "confounders": [
         "trade size",
@@ -650,7 +701,7 @@
       "lag_hypothesis": "immediate",
       "channel": "lower spread/impact reduces round-trip friction",
       "source_ids": [
-        "cme_futures"
+        "kraken_public_book"
       ],
       "confounders": [
         "maker queue",
@@ -686,7 +737,7 @@
       "lag_hypothesis": "weeks-months",
       "channel": "miner economics, network security and expected issuance pressure",
       "source_ids": [
-        "cftc"
+        "blockchain_com"
       ],
       "confounders": [
         "BTC price",
@@ -1265,5 +1316,5 @@
     "article_target_excludes_date_only_fed_releases": true
   },
   "last_updated_utc": "2026-11-17",
-  "graph_status": "All graph edges are proposed transmission hypotheses, not established causal relationships. No degree-2/3 feature is promoted without archived release/vintage availability, train-only selection, purged walk-forward and negative controls."
+  "graph_status": "All degree 1-3 edges are untested transmission hypotheses, not causal claims. Stablecoin, Kraken depth and mining network sources are registered but not ingested; retrospective values without verified first-observed/vintage availability remain descriptive only."
 }
