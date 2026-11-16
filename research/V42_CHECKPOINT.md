@@ -12,7 +12,7 @@
 - V42 algorithm report SHA256 `c2079dd26f4bd13ba207256a76621129d55a92f8872bc71b5e3c98034d5bc2af`; enriched news audit SHA256 `b9e36bfbab174f6585aa7ef9f6b866fe8c935ee7a37393b0839f2574b04b7d41`.
 - Source files: `research/v42_volatility_exit.py`, `research/v42_warc_capture_probe.py`, `tests/test_v42_volatility_exit.py`, `tests/test_v42_warc_capture_probe.py`, `research/v37_source_topic_registry.json`, `.github/workflows/v41-volume-confirmation.yml`.
 - Reproduction: `python -m unittest discover -s tests -p 'test_v42_volatility_exit.py' -v`; `python -m unittest discover -s tests -p 'test_v42_warc_capture_probe.py' -v`; `python -m unittest discover -s tests -q`; `python -m research.v41_volume_confirmation --output audit/v41-volume-confirmation.json --bars-json-output audit/v41-market-bars.json`; `python -m research.v42_volatility_exit --bars-json audit/v41-market-bars.json --output audit/v42-volatility-exit.json --bars-json-output audit/v42-market-bars.json`; `python -m research.v41_monthly_news --bars-json audit/v42-market-bars.json --output audit/v42-monthly-news.json`; `python -m research.v42_warc_capture_probe --audit audit/v42-monthly-news.json --bars-json audit/v42-market-bars.json --output audit/v42-monthly-news-enriched.json`.
-- PR #32 CI was run before these documentation-only checkpoint commits; no algorithm source changed after the passing run. Merge and main persistence are still pending at this checkpoint.
+- PR #32 merged to main as e1b983f36941d986924433966f38ebb4fa2a2488. Main push workflow 43974285006 is re-running research and the cumulative persistence/read-back job is pending. No algorithm source changed after the passing PR CI.
 
 ## Market data
 
