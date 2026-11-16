@@ -27,6 +27,7 @@ from research.v48_news_proof_gate import classify
 MAX_ARTICLES = 12
 MAX_INDEXES_PER_ARTICLE = 2
 COLLINFO_URL = "https://index.commoncrawl.org/collinfo.json"
+INDEX_TIMEZONE_ASSUMPTION = "Common Crawl collinfo from/to values without offsets are interpreted as UTC"
 USER_AGENT_NOTE = (
     "Common Crawl CDX metadata/digests only; no WARC body retrieved; "
     "only first two chronological post-publication indexes queried"
@@ -86,7 +87,24 @@ def select_articles(records, limit=MAX_ARTICLES):
 
 def _index_epoch(value):
     parsed = parse_utc(value)
-    return parsed.timestamp() if parsed else None
+    if parsed is not None:
+        return parsed.timestamp()
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    # Common Crawl collinfo currently omits an offset on from/to fields.
+    # The index service's collection times are UTC; record this assumption.
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc).timestamp()
+
+
+def _index_iso(value):
+    epoch = _index_epoch(value)
+    return datetime.fromtimestamp(epoch, timezone.utc).isoformat() if epoch is not None else None
 
 
 def indexes_for_article(indexes, published_at_utc, limit=MAX_INDEXES_PER_ARTICLE):
@@ -104,7 +122,7 @@ def indexes_for_article(indexes, published_at_utc, limit=MAX_INDEXES_PER_ARTICLE
         end = _index_epoch(index.get("to"))
         if not index.get("cdx-api"):
             continue
-        if published is not None and end is not None and end < published:
+        if published is not None and (end is None or end < published):
             continue
         eligible.append((start if start is not None else float("inf"), index))
     eligible.sort(key=lambda item: (item[0], item[1].get("id", "")))
@@ -133,12 +151,34 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=request, limit=MAX
     if retrieved is None:
         raise ValueError("retrieved_at_utc must be timezone-aware UTC")
     if indexes is None:
-        indexes = json.loads(_bounded_request(COLLINFO_URL, fetcher).decode("utf-8"))
+        try:
+            indexes = json.loads(_bounded_request(COLLINFO_URL, fetcher).decode("utf-8"))
+        except Exception as exc:
+            return [], {
+                "status": "BLOCKED_OR_FAILED",
+                "access_class": "FREE_PUBLIC_METADATA",
+                "attempted_article_urls": 0,
+                "requests_attempted": 1,
+                "successful_index_queries": 0,
+                "verified_capture_versions": 0,
+                "failed_or_rejected": 1,
+                "failures": [{
+                    "url": COLLINFO_URL,
+                    "status": type(exc).__name__ + ": " + str(exc)[:180],
+                }],
+                "body_downloaded": False,
+                "index_selection_scope": (
+                    "collinfo retrieval failed before URL-specific probes"
+                ),
+                "index_timezone_assumption": INDEX_TIMEZONE_ASSUMPTION,
+                "license_note": USER_AGENT_NOTE,
+            }
     targets = select_articles(records, limit=limit)
     captures = []
     failures = []
     requests_attempted = 0
     successful_queries = 0
+    selected_index_ids = []
     for target, article in targets:
         selected_indexes = indexes_for_article(
             indexes, article.get("published_at_utc")
@@ -147,6 +187,7 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=request, limit=MAX
             failures.append({"url": target, "status": "NO_POST_PUBLICATION_INDEX"})
             continue
         for index in selected_indexes:
+            selected_index_ids.append(index["id"])
             params = [
                 ("url", target),
                 ("output", "json"),
@@ -209,6 +250,9 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=request, limit=MAX
                         "version_hash_algorithm": "sha1_base32",
                         "capture_reference": normalized.get("capture_reference"),
                         "index_version": index["id"],
+                        "index_collection_from_utc": _index_iso(index.get("from")),
+                        "index_collection_to_utc": _index_iso(index.get("to")),
+                        "index_timezone_assumption": INDEX_TIMEZONE_ASSUMPTION,
                         "first_verified_capture_at_utc": normalized.get(
                             "first_verified_capture_at_utc"
                         ),
@@ -257,6 +301,8 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=request, limit=MAX
             "first two chronological post-publication indexes per sampled URL; "
             "absence in these indexes does not prove absence from all Common Crawl"
         ),
+        "index_ids_queried": sorted(set(selected_index_ids)),
+        "index_timezone_assumption": INDEX_TIMEZONE_ASSUMPTION,
         "license_note": USER_AGENT_NOTE,
     }
 
