@@ -958,3 +958,6 @@ Build V13 with Android SDK + Gradle and run device/instrumentation tests, then f
 6. News module — **NEXT**.
 7. Combined strategy loop — pending.
 8. Dashboard — pending.
+
+
+**V42 MAIN PERSISTENCE FAILURE / CORRECTION (2026-11-17):** Main research run `43974285006` PASSED, but its persistence job failed after a concurrent main writer changed `data/historical_news_manifest_v38.json` and `data/historical_news_sample_v38.jsonl`; the precomputed commit could not rebase. The failed job's workspace read-back had verified 2,486 cumulative metadata rows, 1,427 historical article versions, 64/64 attempted months complete, 18 months remaining, SHA256 `f452b0ef5c21e12520b3c758087ae220010768e364189ec4d91fd1f7ed7d6ad0`; **these are not yet main-branch counts**. Main read-back remains 2,226 rows, 1,163 article versions, 52 months complete and 30 remaining. Corrective workflow commit `c47ef37891aea530eaae351263e469573f0f19c1` replaces rebase of stale JSONL commits with fetch/reset/rebuild/idempotent-push retries. Follow-up run `43975610213` is in progress. Do not claim the 265-row increment persisted until its read-back succeeds.
