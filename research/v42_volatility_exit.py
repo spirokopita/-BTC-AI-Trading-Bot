@@ -101,7 +101,7 @@ def select(training, validation):
 
 
 def boundaries_v42(n, embargo_bars=V42_EMBARGO_BARS):
-    """50/20/30 chronological split with embargo matching the 84-bar max hold."""
+    """50/20/30 chronological split with an 84-bar embargo."""
     if embargo_bars < max(
             (hold or 0) for _, hold in EXIT_RULES.values()):
         raise ValueError("Embargo must cover the longest registered holding horizon")
@@ -459,7 +459,8 @@ def evaluate(bars, market_provenance, news_events, news_sha256,
             "atr_stop_clock": "completed close breach; fill next OPEN",
             "candidate_count": len(CANDIDATES),
             "selection": "train/validation only; >=2 trades and positive NET in both; otherwise HOLD",
-            "embargo_bars": 20,
+            "embargo_bars": V42_EMBARGO_BARS,
+            "purge_rule": "84-bar embargo on both partition boundaries; independent wallets; terminal liquidation; no positions carried across partitions",
         },
         "fees_each_side_bps": {
             "taker": 80, "half_spread": 5, "slippage": 5,
