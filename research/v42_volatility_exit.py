@@ -20,7 +20,7 @@ from research.v31_hysteresis import (
     COOLDOWN, WARMUP, decision as base_decision,
 )
 from research.v32_segments import segments
-from research.v33_cross_regime import archive, boundaries
+from research.v33_cross_regime import archive
 from research.v41_volume_confirmation import (
     buyhold_audit, load_verified_news, market_diagnostics,
 )
@@ -38,6 +38,7 @@ CANDIDATES = (
     "h50_base",
 )
 SELECTABLE = CANDIDATES
+V42_EMBARGO_BARS = 84
 BASE_STRATEGY = {
     "h80_base": "h80_300",
     "h80_atr25": "h80_300",
@@ -96,6 +97,22 @@ def select(training, validation):
     return max(eligible, key=lambda name: min(
         training[name]["net_aud"], validation[name]["net_aud"]
     ))
+
+
+
+def boundaries_v42(n, embargo_bars=V42_EMBARGO_BARS):
+    """50/20/30 chronological split with embargo matching the 84-bar max hold."""
+    if embargo_bars < max(
+            (hold or 0) for _, hold in EXIT_RULES.values()):
+        raise ValueError("Embargo must cover the longest registered holding horizon")
+    train_end = int(n * 0.50)
+    validation_start = train_end + embargo_bars
+    validation_end = int(n * 0.70) - embargo_bars
+    test_start = int(n * 0.70)
+    if (train_end <= WARMUP or validation_start >= validation_end
+            or validation_end >= test_start or test_start >= n):
+        raise ValueError("Segment too short for V42 84-bar embargo")
+    return train_end, validation_start, validation_end, test_start
 
 
 def replay_exit(
@@ -291,7 +308,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256,
     for left, right in segments(bars, 1000):
         local = bars[left:right]
         n = len(local)
-        train_end, val_start, val_end, test_start = boundaries(n)
+        train_end, val_start, val_end, test_start = boundaries_v42(n)
         training = {
             name: replay_exit(local, WARMUP, train_end, name)
             for name in SELECTABLE
@@ -364,7 +381,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256,
             "test_end_utc": datetime.fromtimestamp(
                 test_end_ts, timezone.utc
             ).isoformat(),
-            "embargo_bars": 20,
+            "embargo_bars": V42_EMBARGO_BARS,
             "training": training,
             "validation": validation,
             "selected_using_train_validation_only": chosen,
@@ -463,6 +480,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256,
         "limitations": [
             "All official archive periods were previously inspected; NOT untouched OOS",
             "Historical current fees are applied to old prices, not actual historic fills",
+            "H80/H50 base variants have no fixed maximum holding period; forced terminal liquidation prevents cross-partition carry but truncates boundary trades",
             "ATR stop is close-confirmed and filled at next open; no intrabar stop or order-book execution",
             "All fills are hypothetical next-open taker fills with modeled spread/slippage",
             "News has no independently verified eligible test-window signal and is not used",
