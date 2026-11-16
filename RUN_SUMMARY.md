@@ -1,5 +1,5 @@
-1. Main is V41 at 611d377; PR #32 V42 source head a8769fb passed CI 43972653807 (348 regression tests); merge and main persistence/read-back pending; Android PAPER ONLY/HOLD unchanged.
-2. Official Kraken archive: 13,763 BTC/AUD 4h bars, 20 gaps, three gap-free segments 6,863/3,398/1,999; fresh 720-bar bridge through 2026-11-16 16:00 UTC, 281 post-archive bars; last completed close A$96,088.40 at 20:00 UTC.
+1. V42 merged to main as e1b983f36941d986924433966f38ebb4fa2a2488; main workflow 43974285006 is running; PR CI 43972653807 passed 348 tests; cumulative persistence/read-back pending.
+2. Official Kraken archive: 13,763 BTC/AUD 4h bars, 20 gaps, segments 6,863/3,398/1,999; fresh 720-bar bridge through 2026-11-16 16:00 UTC, 281 post-archive bars; close A$96,088.40 at 20:00 UTC.
 3. V42: H80 base 7 trades NET +A$38.454151; H50 base +A$7.771157; ATR/time exits -A$13.396773 to -A$65.689772; A$100 buy-and-hold +A$129.286037; all 3 train/validation selectors HOLD; no promotion.
-4. News: 265 retrospective article metadata rows across 12 months, 18 remaining; 0 strict as-of eligible; Common Crawl 12 URLs/24 queries/0 captures; existing main 2,221 rows/1,162 article versions; registry 31 sources/56 untested degree-1/2/3 hypotheses.
-5. DONE 348 tests and artifact 14280272081; PARTIAL 10k archive target/version provenance/untouched OOS; BLOCKED promotion; NOT ATTEMPTED APK/live; NEXT merge/persist/read-back, diagnose CDX misses and test new low-turnover risk gating. PAPER ONLY/HOLD.
+4. News: 265 retrospective article rows across 12 months, 18 remaining; 0 strict as-of eligible; Common Crawl 12 URLs/24 queries/0 captures; main pre-persist corpus 2,221 rows/1,162 article versions; graph 31 sources/56 untested hypotheses.
+5. DONE V42 research, 348 tests and artifact 14280272081; PARTIAL archive target/version proof/untouched OOS; BLOCKED promotion; NOT ATTEMPTED APK/live; NEXT main persistence/read-back and CDX diagnosis. PAPER ONLY/HOLD.
