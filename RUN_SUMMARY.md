@@ -1,17 +1,7 @@
-# V41 volume-confirmation research and monthly news persistence — 2026-11-16 AEDT
+# V42 research and provenance checkpoint — 2026-11-17
 
-1. Native Android remains PAPER ONLY/HOLD, default-disabled, A$1,000 wallet, A$100 inclusive entry/10% cash cap, 80bps taker +5bps half-spread +5bps slippage each side; no Android source changes, APK or live orders.
-2. Official Kraken archive: 13,763 BTC/AUD 4h bars, 20 gaps, three gap-free segments (6,863/3,398/1,999); fresh public 720-bar bridge fetched 2026-11-15 22:42 UTC, 275 post-archive bars through 16:00 UTC, last completed close A$96,181.50 at 20:00 UTC.
-3. V41 volume+close confirmation NET +A$36.471813 versus H80/300 base +A$38.454151 and 7-day placebo +A$41.202690; all three train/validation selectors chose HOLD; buy-and-hold +A$129.286037; volume hypothesis rejected.
-4. Historical news main read-back: 2,221 metadata/version rows, 1,162 actual article versions (1,133 outcome-independent archive articles = 11.33% of 10,000 target; 29 topic-search rows excluded), 1 independently verified capture, 3 official release clocks, 321 new monthly rows, 175 retrospective joins, 0 strict as-of joins; cursor 52/82 months, 30 remaining. First-observed corpus 249 unique URLs, 114 new, no backfill.
-5. PR #31 merged; V41 main run 43771050561 and persistence commit 2636d974... passed read-back. DONE 8 / PARTIAL 2 / BLOCKED 1 / NOT ATTEMPTED 3; full repository regression: 331 tests passed. Next: volatility-normalized exit/time-stop hypothesis and independent WARC capture coverage; no strategy promotion.
-
-# V40 FX decomposition and monthly historical news — 2026-11-11 AEDT
-
-1. Android native PAPER ONLY remains default-disabled/HOLD, A$1,000 starting simulated wallet, A$100 inclusive entry/10% cash cap, 80bps taker +5bps half-spread +5bps slippage each side, no real execution/APK changes.
-2. Official Kraken archive 13,763 BTC/AUD 4h bars/20 gaps/three >=1000-bar segments; fresh public 720 completed gap-free bars through 2026-11-10 16:00 UTC, 245 post-Sep30; frozen recent candidates all NET-negative.
-3. New 30d BTC/AUD-implied BTC/USD/AUD/USD decomposition uses only completed bars and RBA FX with ASSUMED 17:00 Sydney +24h availability, NOT verified historical FX revision vintages; prior-inspected archive remains EXPLORATORY.
-4. H80 FX-driven veto and 7d placebo identical to H80 base (7 trades gross +A$51.333281, fees 11.448071, spread .715531, slippage .715531, NET +38.454151); USD momentum NET +37.238819; train/validation-selected policy HOLD/H50/HOLD NET -14.351385 vs A$100 buyhold +129.286037; REJECT promotion.
-5. PR #22 MERGED main 9de9a992c39df36f496aeee258bedaf868a2150d; main CI 42915872177 PASSED 59 tests, Kraken/RBA and persistence; +237 articles, cumulative 1,900 metadata rows/841 actual articles, SHA256 e59ad9941eb2688ecaf59a4a2d904533e875d5b6703ac400ee5f6afd14f5826b, 0 historical as-of eligible.
-
-DONE: source, code, tests, market/news research and PR CI. PARTIAL: 10k article target, verified historical vintages and untouched OOS. BLOCKED: promotion. NOT ATTEMPTED: APK/live orders. NEXT: persistent monthly sampling cursor (avoid repeats), independent historical WARC/FX vintages and prospective frozen testing. PAPER ONLY HOLD.
+1. Main is still V41 at 611d377; PR #32 V42 source head a8769fb passed CI 43972653807 (348 regression tests); merge and main persistence/read-back remain pending; Android PAPER ONLY/HOLD unchanged.
+2. Official Kraken archive: 13,763 BTC/AUD 4h bars, 20 gaps, three gap-free segments 6,863/3,398/1,999; fresh 720-bar bridge through 2026-11-16 16:00 UTC, 281 post-archive bars; last completed close A$96,088.40 at 20:00 UTC.
+3. V42: H80 base 7 trades NET +A$38.454151; H50 base +A$7.771157; ATR/time exits -A$13.396773 to -A$65.689772; A$100 buy-and-hold +A$129.286037; all 3 train/validation selectors HOLD; no promotion.
+4. News: 265 retrospective article metadata rows across 12 months, 18 remaining; 0 strict as-of eligible; Common Crawl 12 URLs/24 queries/0 captures; existing main 2,221 rows/1,162 article versions; registry 31 sources/56 untested degree-1/2/3 hypotheses.
+5. DONE 348 tests and artifact 14280272081; PARTIAL 10k archive target/version provenance/untouched OOS; BLOCKED promotion; NOT ATTEMPTED APK/live; NEXT merge/persist/read-back, diagnose CDX misses and test new low-turnover risk gating. PAPER ONLY/HOLD.
