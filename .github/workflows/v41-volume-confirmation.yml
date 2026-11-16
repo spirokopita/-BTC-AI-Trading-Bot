@@ -73,6 +73,7 @@ jobs:
       - name: Official Kraken archive V42 volatility-normalized exits and time-stop walk-forward
         run: |
           python -m research.v42_volatility_exit \
+            --bars-json audit/v41-market-bars.json \
             --output audit/v42-volatility-exit.json \
             --bars-json-output audit/v42-market-bars.json
       - name: Fresh completed public BTC/AUD 4h bridge
