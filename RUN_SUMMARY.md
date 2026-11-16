@@ -1,6 +1,4 @@
-# V42 research and provenance checkpoint — 2026-11-17
-
-1. Main is still V41 at 611d377; PR #32 V42 source head a8769fb passed CI 43972653807 (348 regression tests); merge and main persistence/read-back remain pending; Android PAPER ONLY/HOLD unchanged.
+1. Main is V41 at 611d377; PR #32 V42 source head a8769fb passed CI 43972653807 (348 regression tests); merge and main persistence/read-back pending; Android PAPER ONLY/HOLD unchanged.
 2. Official Kraken archive: 13,763 BTC/AUD 4h bars, 20 gaps, three gap-free segments 6,863/3,398/1,999; fresh 720-bar bridge through 2026-11-16 16:00 UTC, 281 post-archive bars; last completed close A$96,088.40 at 20:00 UTC.
 3. V42: H80 base 7 trades NET +A$38.454151; H50 base +A$7.771157; ATR/time exits -A$13.396773 to -A$65.689772; A$100 buy-and-hold +A$129.286037; all 3 train/validation selectors HOLD; no promotion.
 4. News: 265 retrospective article metadata rows across 12 months, 18 remaining; 0 strict as-of eligible; Common Crawl 12 URLs/24 queries/0 captures; existing main 2,221 rows/1,162 article versions; registry 31 sources/56 untested degree-1/2/3 hypotheses.
