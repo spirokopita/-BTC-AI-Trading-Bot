@@ -144,6 +144,7 @@ jobs:
           assert n['historical_article_version_rows']==n['source_status']['cryptocurrency_cv']['fetched_rows']
           cc=n['source_status']['common_crawl']
           assert cc['attempted_article_urls']<=12 and cc['requests_attempted']<=24
+          assert 'UTC' in cc['index_timezone_assumption']
           assert cc['verified_capture_versions']==n['historically_verified_capture_rows']
           assert n['market_join']['strict_asof_eligible']<=cc['verified_capture_versions']
           assert len(n['archive_months_requested'])==len(set(n['archive_months_requested']))
