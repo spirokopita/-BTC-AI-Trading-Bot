@@ -1,6 +1,8 @@
 """V42 Common Crawl version-provenance and strict as-of tests."""
 import json
 import unittest
+from urllib.error import HTTPError
+from unittest.mock import patch
 from datetime import datetime, timezone
 
 from research.v42_warc_capture_probe import (
@@ -72,6 +74,42 @@ class V42WarcCaptureTests(unittest.TestCase):
             [x["id"] for x in selected],
             ["CC-MAIN-2024-05", "CC-MAIN-2024-10"],
         )
+
+    def test_naive_common_crawl_collection_times_are_interpreted_as_utc(self):
+        indexes = [
+            {
+                "id": "CC-MAIN-2022-49",
+                "from": "2022-11-26T00:00:00",
+                "to": "2022-12-10T00:00:00",
+                "cdx-api": "https://index.commoncrawl.org/a",
+            },
+            {
+                "id": "CC-MAIN-2023-06",
+                "from": "2023-01-26T00:00:00",
+                "to": "2023-02-09T00:00:00",
+                "cdx-api": "https://index.commoncrawl.org/b",
+            },
+        ]
+        selected = indexes_for_article(
+            indexes, "2022-11-29T00:00:00Z",
+        )
+        self.assertEqual(
+            [x["id"] for x in selected],
+            ["CC-MAIN-2022-49", "CC-MAIN-2023-06"],
+        )
+
+    def test_collinfo_failure_is_recorded_not_raised(self):
+        def unavailable(url, max_bytes=250_000):
+            raise HTTPError(url, 404, "not found", None, None)
+        with patch("research.v42_warc_capture_probe.time.sleep"):
+            captures, status = probe(
+                [article()], iso(2026, 11, 17), indexes=None,
+                fetcher=unavailable,
+            )
+        self.assertEqual(captures, [])
+        self.assertEqual(status["status"], "BLOCKED_OR_FAILED")
+        self.assertEqual(status["requests_attempted"], 1)
+        self.assertIn("HTTPError", status["failures"][0]["status"])
 
     def test_cdx_capture_digest_and_warc_locator_are_preserved(self):
         source = article()
