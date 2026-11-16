@@ -55,3 +55,12 @@
 - **BLOCKED:** strategy promotion and historical news predictive use; no candidate selected above HOLD; zero strict as-of eligible events.
 - **NOT ATTEMPTED:** Android APK rebuild or live execution. Native Android source/risk configuration remains unchanged; paper-only safeguards remain.
 - **NEXT:** merge PR #32 after review; run main-only cumulative metadata/cursor persistence and read-back; diagnose CDX URL/index misses with alternate representative URLs; continue the remaining 18 monthly archive samples; develop a new low-turnover risk/cash-gating hypothesis with predeclared train-only selection and independent prospective validation. Keep PAPER ONLY/HOLD.
+
+
+## Main persistence failure and correction
+
+- Main run `43974285006` research job PASSED; persistence failed because `git rebase origin/main` conflicted in the cumulative JSONL and manifest after a concurrent writer updated main.
+- Workspace-only verified result: 2,486 rows, 1,427 article versions, 64/64 months completed, 18 remaining; SHA256 `f452b0ef5c21e12520b3c758087ae220010768e364189ec4d91fd1f7ed7d6ad0`. Not committed.
+- Authoritative main read-back after failure: 2,226 rows, 1,163 article versions, 52 completed months, 30 remaining.
+- Conflict-safe correction committed as `c47ef37891aea530eaae351263e469573f0f19c1`: fetch/reset to latest main, rerun idempotent merge and cursor scripts, test/read-back, then push; repeat from latest main on race.
+- Follow-up run `43975610213` is in progress. Do not mark the 265-row increment DONE until main read-back confirms it.
