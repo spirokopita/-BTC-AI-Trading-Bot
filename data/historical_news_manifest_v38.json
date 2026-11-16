@@ -1,39 +1,39 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 1162,
+  "historical_article_versions_cumulative": 1163,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-15T22:47:13.670223+00:00",
+  "latest_retrieval_utc": "2026-11-16T22:53:38.822298+00:00",
   "market_join_latest": {
     "examples": [
       {
-        "bar_open_utc": "2020-12-31T20:00:00+00:00",
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/224904"
+        "url": "https://odaily.news/post/5163532"
       },
       {
-        "bar_open_utc": "2020-12-31T20:00:00+00:00",
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/224905"
+        "url": "https://odaily.news/post/5163528"
       },
       {
-        "bar_open_utc": "2021-01-01T00:00:00+00:00",
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/224906"
+        "url": "https://odaily.news/post/5163508"
       },
       {
-        "bar_open_utc": "2021-01-01T00:00:00+00:00",
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/224908"
+        "url": "https://odaily.news/post/5163540"
       },
       {
-        "bar_open_utc": "2021-01-01T00:00:00+00:00",
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
         "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/224909"
+        "url": "https://odaily.news/post/5163539"
       }
     ],
     "market_bars": 6863,
-    "official_release_time_aligned_not_first_observed": 0,
-    "retrospective_time_aligned": 175,
+    "official_release_time_aligned_not_first_observed": 2,
+    "retrospective_time_aligned": 282,
     "strict_asof_eligible": 0
   },
   "months_by_publication": {
@@ -83,8 +83,8 @@
     "2025-02": 4,
     "2026-07": 30,
     "2026-09": 10,
-    "2026-10": 49,
-    "unknown": 1059
+    "2026-10": 50,
+    "unknown": 1063
   },
   "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
   "official_release_clock_rows": 3,
@@ -124,6 +124,7 @@
     "TheCryptoBasic": 1,
     "Thecryptolark": 1,
     "Thedefiant": 1,
+    "Trustnodes": 1,
     "U.Today": 2,
     "Wolf Street": 2,
     "ZeroHedge": 1,
@@ -139,17 +140,17 @@
     "r/defi": 4,
     "r/ethereum": 5,
     "segye.com": 2,
-    "unspecified": 1059,
+    "unspecified": 1063,
     "wikitree.co.kr": 3,
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 2221,
-  "rows_new_in_latest_sample": 321,
-  "rows_sha256": "63597fc2437d9ca2953c1ac897d05fb3d71e87ca54df04aa3ef2cc22afb9fa70",
+  "rows_cumulative_deduplicated": 2226,
+  "rows_new_in_latest_sample": 1637,
+  "rows_sha256": "0ae73d7f395fe41758b6f8a1b326f04d09afb0d638ec5b69eb9047933261da57",
   "sampling_class_counts": {
-    "official_all_press_releases": 1010,
-    "outcome_independent_monthly_archive": 1133,
+    "official_all_press_releases": 1014,
+    "outcome_independent_monthly_archive": 1134,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -157,101 +158,59 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 1133,
-    "fed_press": 1011,
+    "cryptocurrency_cv": 1134,
+    "fed_press": 1015,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
+    "common_crawl": {
+      "fetched_rows": 0,
+      "status": "NO_CAPTURE_IN_SELECTED_INDEXES; CC-MAIN-2024-10: HTTP 504"
+    },
+    "crypto_news_api": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
+    },
     "cryptocurrency_cv": {
-      "fetched_rows": 321,
-      "per_month": {
-        "2020-03": {
-          "ok": true,
-          "retryable": false,
-          "rows": 30,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2020-06": {
-          "ok": true,
-          "retryable": false,
-          "rows": 30,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2020-08": {
-          "ok": true,
-          "retryable": false,
-          "rows": 27,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2020-09": {
-          "ok": true,
-          "retryable": false,
-          "rows": 30,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2020-11": {
-          "ok": true,
-          "retryable": false,
-          "rows": 29,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2020-12": {
-          "ok": true,
-          "retryable": false,
-          "rows": 26,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-03": {
-          "ok": true,
-          "retryable": false,
-          "rows": 25,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-06": {
-          "ok": true,
-          "retryable": false,
-          "rows": 24,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-08": {
-          "ok": true,
-          "retryable": false,
-          "rows": 27,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-09": {
-          "ok": true,
-          "retryable": false,
-          "rows": 21,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-11": {
-          "ok": true,
-          "retryable": false,
-          "rows": 24,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2021-12": {
-          "ok": true,
-          "retryable": false,
-          "rows": 28,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        }
-      },
-      "status": "V41_PERSISTENT_UNSAMPLED_MONTH_CURSOR"
+      "fetched_rows": 575,
+      "status": "2025-04: no returned article has verified publication month; 2025-07: no returned article has verified publication month; 2025-10: no returned article has verified publication month"
+    },
+    "cryptopanic": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
+    },
+    "fed_press": {
+      "fetched_rows": 1015,
+      "status": "OFFICIAL_ANNUAL_DATE_ONLY"
+    },
+    "fomc_calendar": {
+      "fetched_rows": 48,
+      "status": "DATE_ONLY_PLUS_3_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE"
+    },
+    "fomc_statements_mirror": {
+      "fetched_rows": 0,
+      "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
+    },
+    "gdelt": {
+      "fetched_rows": 0,
+      "status": "HTTPError: HTTP Error 429: Too Many Requests"
+    },
+    "infini_news": {
+      "fetched_rows": 0,
+      "status": "OK_PREVIEW_INCOMPLETE"
+    },
+    "media_cloud": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API credentials/access required; no authorized key"
+    },
+    "newsdata_io": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: archive access key/paid tier; no authorized key or purchase"
+    },
+    "sandl": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API access unverified/key may be required; no authorized key"
     }
   },
   "target": 10000,
