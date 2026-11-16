@@ -429,7 +429,7 @@ def evaluate(bars, market_provenance, news_events, news_sha256,
                 f["strict_verified_news_available_in_test"] for f in folds
             ),
             "use_in_strategy": False,
-            "reason": "No verified news signal was added; V41 proof gate had one capture and zero eligible test-window events",
+            "reason": "This exit experiment is price-only; proof-gated news is reported separately and is not used as a trading feature",
             "sentiment": "NOT AVAILABLE / NOT INFERRED",
         },
         "parameters_predeclared": {
@@ -489,7 +489,7 @@ def main(argv=None):
         path = Path(args.bars_json_output)
         path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
-            "schema": "v42_kraken_ohlcvt_1",
+            "schema": "v41_kraken_ohlcvt_1",
             "market_provenance": report["market"],
             "bars": bars,
         }
