@@ -212,6 +212,9 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=request, limit=MAX
                         "first_verified_capture_at_utc": normalized.get(
                             "first_verified_capture_at_utc"
                         ),
+                        "verified_capture_at_utc": normalized.get(
+                            "first_verified_capture_at_utc"
+                        ),
                         "retrieved_at_utc": retrieved_at_utc,
                     })
                     proof = classify(
