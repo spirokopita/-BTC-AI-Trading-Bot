@@ -106,6 +106,8 @@ jobs:
           assert v['fees_each_side_bps']=={'taker':80,'half_spread':5,'slippage':5}
           assert v['max_inclusive_entry_debit_aud']==100 and v['cash_fraction_cap']==.10
           assert len(v['folds'])>=1
+          assert v['parameters_predeclared']['embargo_bars']==84
+          assert all(f['embargo_bars']==84 for f in v['folds'])
           assert a['fees_each_side_bps']=={'taker':80,'half_spread':5,'slippage':5}
           assert a['max_inclusive_entry_debit_aud']==100 and a['cash_fraction_cap']==.10
           assert a['android_policy']=='HOLD' and a['promotion'].startswith('REJECTED')
