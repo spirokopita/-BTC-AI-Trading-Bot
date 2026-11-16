@@ -521,3 +521,33 @@ Observed during this 2026-11-01 research run: The Guardian published a 2026-10-2
 - Read-back from main after the failure still showed 2,226 rows / 1,163 article versions / 52 completed months / 30 remaining. This is the authoritative committed state.
 - Corrective commit `c47ef37891aea530eaae351263e469573f0f19c1` changes the workflow to fetch/reset to latest main and rerun the idempotent merge, tests and read-back on every push retry instead of rebasing a stale JSONL commit.
 - Follow-up main run `43975610213` is in progress. Completion requires successful persistence job plus fresh GitHub read-back of row count, SHA256, article count and cursor. Until then, report the V42 increment as workspace-verified but not committed.
+
+
+## Fold diagnostics, missed opportunities and source audit
+
+### Fold-level NET and post-exit diagnostics
+- H80/300 base test NET by segment: **+A$18.208983 / −A$7.361149 / +A$27.606317**. Same-stake A$100 buy-and-hold: **+A$97.488848 / +A$2.464909 / +A$29.332280**. H80 beat buy-and-hold in none of the three segments.
+- H50/200 base: +A$16.320851 / −A$14.351385 / +A$5.801691. H80 ATR2.5x: +A$12.716815 / −A$26.692014 / +A$0.578426. All three train/validation selectors chose HOLD.
+- Missed-opportunity diagnostic is a forward-return observation after exit, not an executable counterfactual P&L: in segment 1, H80 ATR2.5x had 7 post-exit observations and all 7 were followed by a positive 7-day return (mean +6.992303%); the tight stop often exited before a rebound. H80 base's 3 segment-1 post-exit observations had mean +9.271928% over 7 days. Other segments were mixed. This supports rejecting the tighter stop, not claiming recoverable profit.
+
+### Twelve requested news sources — access and run status
+| Source | Access class | Latest verified result | Status |
+|---|---|---|---|
+| INFINI-NEWS | FREE/PUBLIC dataset | 0 usable rows; preview incomplete | PARTIAL |
+| GDELT 2.0 | FREE/PUBLIC | 0 new rows in latest audit; HTTP 429; 29 earlier topic-search rows remain in cumulative metadata | BLOCKED |
+| Media Cloud | KEY REQUIRED / restricted | No authorized API key; 0 rows | NOT ATTEMPTED |
+| Common Crawl CDX | FREE/PUBLIC metadata | 12 URLs / 24 requests; 1 successful empty query, 23 failed/rejected; 0 new captures and no WARC body; 1 older verified capture remains in corpus | PARTIAL |
+| NewsData.io archive | PAID / KEY REQUIRED | No authorized key or paid plan; 0 rows | NOT ATTEMPTED |
+| cryptocurrency.cv | FREE/PUBLIC metadata | V42: 265 rows across 12 verified month-filtered requests; V38's separate 575-row sample overlaps and is not additive | DONE |
+| CryptoPanic | KEY REQUIRED / plan | No authorized key/plan; 0 rows | NOT ATTEMPTED |
+| Crypto News API | KEY REQUIRED / paid limits | No authorized key/plan; 0 rows | NOT ATTEMPTED |
+| Federal Reserve FOMC calendar | FREE/PUBLIC | 48 date-only calendar rows plus 3 official release-clock records; not first-observed | DONE |
+| Federal Reserve press archive | FREE/PUBLIC | 1,015 official date-only release records; not intraday timestamps | DONE |
+| FOMC statements mirror | FREE/PUBLIC mirror | Reachable, but no original release timing verified; 0 usable timed rows | PARTIAL |
+| SANDL | KEY REQUIRED / access unverified | No authorized key; 0 rows | NOT ATTEMPTED |
+
+**Exact source-status counts:** DONE **3/12**; PARTIAL **3/12**; BLOCKED **1/12**; NOT ATTEMPTED **5/12**. No paid subscription or credential was obtained. Fed date-only records are event metadata, not article versions and are excluded from the 10,000-article target.
+
+### First-observed corpus limitation
+- `data/first_observed_news.jsonl` read-back: **249** RSS observations. Its current fields are `first_seen_ts`, `published_ts`, headline, source, summary and URL; it does not preserve a per-version content hash, explicit capture source, retrieval timestamp or confidence. It remains useful as an RSS observation-time record but is not a complete immutable article-version proof. V42 added **0** new first-observed snapshots.
+- The V42 265 rows are retrospective publication-time metadata; 265 aligned to Kraken bars, **0 strict as-of eligible**. The one pre-existing verified Common Crawl capture does not align to these 265 records.
