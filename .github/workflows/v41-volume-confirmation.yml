@@ -227,25 +227,44 @@ jobs:
           print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256'])
           print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])
           PY
-      - name: Commit verified cumulative news and cursor to main
+      - name: Persist and commit cumulative news conflict-safely
         run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json
-          if git diff --cached --quiet; then
-            echo 'No new article metadata or cursor updates'
-          else
-            git commit -m 'V41: persist monthly historical news sample and cursor'
-            # Rebase onto any main-branch news writer that completed during research.
-            for attempt in 1 2 3; do
-              git fetch origin main
-              git rebase origin/main
-              if git push origin HEAD:main; then
-                exit 0
-              fi
-              echo "Push raced with another main writer; retrying (attempt $attempt)"
-              sleep $((attempt * 2))
-            done
-            echo 'Could not persist after three fast-forward retries'
-            exit 1
-          fi
+          # Never rebase a precomputed JSONL/manifest commit over another writer.
+          # Rebuild idempotently on the latest main tree on every attempt.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m research.v38_persist_sample --audit audit/v42-monthly-news-enriched.json
+            python -m research.v41_persist_cursor --audit audit/v42-monthly-news-enriched.json
+            python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -q
+            python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -q
+            python - <<'PY'
+            import hashlib,json,pathlib
+            p=pathlib.Path('data/historical_news_sample_v38.jsonl')
+            m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text())
+            c=json.loads(pathlib.Path('data/historical_news_sampling_cursor_v41.json').read_text())
+            rows=[json.loads(x) for x in p.read_text().splitlines() if x]
+            assert len(rows)==m['rows_cumulative_deduplicated']
+            assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']
+            assert m['historical_article_versions_cumulative']<=len(rows)
+            assert set(c['completed_months']).issubset(set(c['attempted_months']))
+            print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256'])
+            print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])
+            PY
+            git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json
+            if git diff --cached --quiet; then
+              echo 'No new article metadata or cursor updates'
+              exit 0
+            fi
+            git commit -m 'V42: persist cumulative monthly news sample and cursor'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Main changed during persistence; rebuilding on latest main (attempt $attempt)"
+            sleep $((attempt * 2))
+          done
+          echo 'Could not persist after three conflict-safe retries'
+          exit 1
