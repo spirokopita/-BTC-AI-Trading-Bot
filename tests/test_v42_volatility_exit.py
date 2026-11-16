@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from unittest.mock import patch
 
 from research.v42_volatility_exit import (
-    ATR_LOOKBACK, CANDIDATES, EXIT_RULES, SELECTABLE,
-    atr14, replay_exit, select,
+    ATR_LOOKBACK, CANDIDATES, EXIT_RULES, SELECTABLE, V42_EMBARGO_BARS,
+    atr14, boundaries_v42, replay_exit, select,
 )
 
 STEP = 14400
@@ -152,6 +152,13 @@ class V42VolatilityExitTests(unittest.TestCase):
         for name in SELECTABLE:
             training[name]["trades"] = 1
         self.assertEqual(select(training, validation), "HOLD")
+
+    def test_84_bar_embargo_covers_longest_time_stop(self):
+        train_end, validation_start, validation_end, test_start = boundaries_v42(2000)
+        self.assertEqual(V42_EMBARGO_BARS, 84)
+        self.assertEqual(validation_start - train_end, 84)
+        self.assertEqual(test_start - validation_end, 84)
+        self.assertEqual(max(hold or 0 for _, hold in EXIT_RULES.values()), 84)
 
     def test_candidate_menu_is_frozen_and_registered(self):
         self.assertEqual(len(CANDIDATES), 7)
