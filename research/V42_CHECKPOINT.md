@@ -54,7 +54,7 @@
 - **PARTIAL:** 10,000 article target (pre-PR main 1,133 qualifying articles); first-observed historical versions, representative ordinary/non-event coverage, and true untouched OOS.
 - **BLOCKED:** strategy promotion and historical news predictive use; no candidate selected above HOLD; zero strict as-of eligible events.
 - **NOT ATTEMPTED:** Android APK rebuild or live execution. Native Android source/risk configuration remains unchanged; paper-only safeguards remain.
-- **NEXT:** merge PR #32 after review; run main-only cumulative metadata/cursor persistence and read-back; diagnose CDX URL/index misses with alternate representative URLs; continue the remaining 18 monthly archive samples; develop a new low-turnover risk/cash-gating hypothesis with predeclared train-only selection and independent prospective validation. Keep PAPER ONLY/HOLD.
+- **NEXT:** verify conflict-safe cumulative metadata/cursor persistence and read-back; diagnose CDX URL/index misses with alternate representative URLs; continue the remaining 18 monthly archive samples; develop a new low-turnover risk/cash-gating hypothesis with predeclared train-only selection and independent prospective validation. Keep PAPER ONLY/HOLD.
 
 
 ## Main persistence failure and correction
