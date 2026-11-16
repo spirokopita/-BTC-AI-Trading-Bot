@@ -476,9 +476,17 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="audit/v42-volatility-exit.json")
     parser.add_argument("--news", default="data/historical_news_sample_v38.jsonl")
+    parser.add_argument("--bars-json", default=None)
     parser.add_argument("--bars-json-output", default=None)
     args = parser.parse_args(argv)
-    bars, provenance = archive()
+    if args.bars_json:
+        source_doc = json.loads(Path(args.bars_json).read_text(encoding="utf-8"))
+        if source_doc.get("schema") != "v41_kraken_ohlcvt_1":
+            raise ValueError("Unknown official Kraken market-bar artifact schema")
+        bars = source_doc["bars"]
+        provenance = source_doc["market_provenance"]
+    else:
+        bars, provenance = archive()
     events, news_sha, counts = load_verified_news(args.news)
     report = evaluate(bars, provenance, events, news_sha, counts)
     output = Path(args.output)
