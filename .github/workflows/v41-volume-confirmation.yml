@@ -35,12 +35,12 @@ on:
       - 'tests/test_v40_monthly_news.py'
       - 'tests/test_v41_volume_confirmation.py'
       - 'tests/test_v41_monthly_news.py'
-      - '.github/workflows/v41-volume-confirmation.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   research:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
@@ -187,7 +187,7 @@ jobs:
             audit/v41-recent-news-event-study.json
             audit/v41-market-bars.json
   persist:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'github-actions[bot]'
     # Serialize with V28's first-seen corpus writer to avoid concurrent main pushes.
     concurrency:
       group: v28-first-seen-corpus-main
