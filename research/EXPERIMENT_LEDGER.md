@@ -1,6 +1,6 @@
 ## V42 — 2026-11-17: ATR-normalized exit and time-stop rejection; Common Crawl version-proof probe
 
-**Status:** PR #32 MERGED to main as e1b983f36941d986924433966f38ebb4fa2a2488; main workflow run 43974285006 is in progress; cumulative persistence/read-back pending. PAPER ONLY/HOLD. No Android source change or strategy promotion.
+**Status:** PR #32 MERGED to main as e1b983f36941d986924433966f38ebb4fa2a2488; research run 43974285006 PASSED but persistence failed on concurrent JSONL/manifest rebase; conflict-safe fix c47ef37891aea530eaae351263e469573f0f19c1 committed; rerun 43975610213 in progress. Main corpus read-back remains 2,226 rows / 1,163 articles / 52 months. PAPER ONLY/HOLD. No Android source change or strategy promotion.
 
 ### Reproduction / provenance
 - Source: `research/v42_volatility_exit.py`, `research/v42_warc_capture_probe.py`, tests `test_v42_volatility_exit.py` (9), `test_v42_warc_capture_probe.py` (8), registry `research/v37_source_topic_registry.json`.
