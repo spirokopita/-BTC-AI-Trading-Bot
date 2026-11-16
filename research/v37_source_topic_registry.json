@@ -48,9 +48,14 @@
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_METADATA",
       "connector": "research.v38_archive_ingest.source_fetch",
-      "limitations": "CDXJ index metadata only; URL-specific capture, not representative",
+      "limitations": "CDXJ index metadata only; URL-specific capture, not representative V42 discovered collinfo from/to fields without timezone offsets; treating them as unknown selected invalid 2008/2009 index IDs. V42.1 explicitly normalizes those Common Crawl collection times to UTC and reruns bounded probes.",
       "last_sample_utc": "2026-11-09T22:46:12Z",
-      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main",
+      "last_probe_status": "V42_PROBE_FAILED_DUE_TO_NAIVE_INDEX_TIME_PARSING",
+      "last_probe_attempted_urls": 12,
+      "last_probe_requests": 24,
+      "last_probe_verified_captures": 0,
+      "last_probe_failures": 24
     },
     {
       "id": "newsdata_io",
@@ -73,7 +78,23 @@
       "connector": "research.v38_archive_ingest.source_fetch",
       "limitations": "Source-claimed 662047 not independently verified; historical first_seen unverified",
       "last_sample_utc": "2026-11-09T22:46:12Z",
-      "verified_rows_scope": "latest PR sample only, NOT cumulative main"
+      "verified_rows_scope": "latest PR sample only, NOT cumulative main",
+      "last_probe_rows": 265,
+      "last_probe_months": [
+        "2022-03",
+        "2022-06",
+        "2022-08",
+        "2022-09",
+        "2022-11",
+        "2022-12",
+        "2023-03",
+        "2023-06",
+        "2023-08",
+        "2023-09",
+        "2023-11",
+        "2023-12"
+      ],
+      "last_probe_status": "12_MONTHS_OK_DATE_FILTERS_VERIFIED; NOT YET PERSISTED FROM PR RUN"
     },
     {
       "id": "cryptopanic",
@@ -147,9 +168,10 @@
       "url": "https://fred.stlouisfed.org/",
       "role": "economic_series_vintages",
       "access": "public_api_constraints",
-      "ingestion_status": "not_implemented",
+      "ingestion_status": "not_implemented_no_authorized_api_key",
       "verified_rows": 0,
-      "access_class": "UNVERIFIED"
+      "access_class": "KEY_REQUIRED_FREE_API",
+      "limitations": "FRED/ALFRED API key required; ALFRED vintage data is preferred for point-in-time values; no API key or vintage observations used in this run"
     },
     {
       "id": "rba",
@@ -183,7 +205,8 @@
       "access": "public",
       "ingestion_status": "not_implemented",
       "verified_rows": 0,
-      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
+      "access_class": "FREE_PUBLIC_API_V1_KEY_OPTIONAL",
+      "limitations": "BLS public API v1 is limited without key; v2 key optional; release timestamps and revision vintages still required"
     },
     {
       "id": "bea",
@@ -192,7 +215,8 @@
       "access": "public",
       "ingestion_status": "not_implemented",
       "verified_rows": 0,
-      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
+      "access_class": "KEY_REQUIRED_FREE_API",
+      "limitations": "Free BEA API key required; no key present; vintage/release timing required for point-in-time simulation"
     },
     {
       "id": "eia",
@@ -201,7 +225,8 @@
       "access": "public",
       "ingestion_status": "not_implemented",
       "verified_rows": 0,
-      "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
+      "access_class": "KEY_REQUIRED_FREE_API",
+      "limitations": "Free EIA API key required; historical publication/revision availability must be preserved before as-of use"
     },
     {
       "id": "cftc",
@@ -247,6 +272,86 @@
       "ingestion_status": "not_implemented",
       "verified_rows": 0,
       "access_class": "FREE_PUBLIC_UNIMPLEMENTED"
+    },
+    {
+      "id": "us_treasury",
+      "url": "https://fiscaldata.treasury.gov/",
+      "role": "treasury_issuance_auction_and_cash_data",
+      "access": "public_api",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Official fiscal/auction data; publication and revision timestamps must be checked per dataset; no point-in-time series ingested yet"
+    },
+    {
+      "id": "cme_futures",
+      "url": "https://www.cmegroup.com/markets/cryptocurrencies/bitcoin/bitcoin.quotes.html",
+      "role": "btc_futures_basis_and_volume",
+      "access": "public_summary_license_restricted_depth",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "LICENSE_RESTRICTED_PUBLIC_SUMMARY",
+      "limitations": "Public quote/summary pages do not grant unrestricted historical depth or redistribution; no paid data access authorized"
+    },
+    {
+      "id": "etf_issuer_data",
+      "url": "https://www.ishares.com/us/products/333011/ishares-bitcoin-trust",
+      "role": "spot_btc_etf_holdings_and_flows",
+      "access": "public_issuer_pages",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_ISSUER_METADATA",
+      "limitations": "Issuer-specific holdings/flow timestamps and revisions must be archived at observation time; no standardized consolidated feed"
+    },
+    {
+      "id": "cboe_vix",
+      "url": "https://www.cboe.com/tradable_products/vix/",
+      "role": "volatility_and_risk_appetite",
+      "access": "public_reference_license_check",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "LICENSE_RESTRICTED_PUBLIC_REFERENCE",
+      "limitations": "Public reference material does not imply unrestricted historical series redistribution"
+    },
+    {
+      "id": "baltic_freight",
+      "url": "https://www.balticexchange.com/",
+      "role": "shipping_freight_and_chokepoints",
+      "access": "commercial_data",
+      "ingestion_status": "disabled_no_paid_access",
+      "verified_rows": 0,
+      "access_class": "PAID_OR_LICENSE_RESTRICTED",
+      "limitations": "No paid subscription or licensed historical feed authorized; do not substitute unverified proxies"
+    },
+    {
+      "id": "defillama_stablecoins",
+      "url": "https://stablecoins.llama.fi/",
+      "role": "historical_stablecoin_supply_by_chain_and_issuer",
+      "access": "public_api",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Historical daily values are descriptive snapshots; no historical first-observed or vintage availability is established, so not eligible for point-in-time trading features"
+    },
+    {
+      "id": "kraken_public_book",
+      "url": "https://docs.kraken.com/api/docs/rest-api/get-order-book",
+      "role": "current_kraken_spot_order_book_depth",
+      "access": "public_api_no_auth",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Public REST order book is current snapshot only; no historical depth archive or first-observed snapshots yet, so not eligible for historical execution backtests"
+    },
+    {
+      "id": "blockchain_com",
+      "url": "https://www.blockchain.com/explorer/api/charts_api",
+      "role": "bitcoin_difficulty_hashrate_and_network_series",
+      "access": "public_api",
+      "ingestion_status": "not_implemented",
+      "verified_rows": 0,
+      "access_class": "FREE_PUBLIC_API",
+      "limitations": "Historical chart values are not vintage/first-observed snapshots; retain for descriptive research until release/capture availability is archived"
     }
   ],
   "topics": [
@@ -260,7 +365,14 @@
         "hashrate_difficulty",
         "btc_usd",
         "aud_usd",
-        "kraken_liquidity"
+        "kraken_liquidity",
+        "spot_etf_creations_redemptions",
+        "stablecoin_net_issuance",
+        "exchange_outages",
+        "exchange_order_book_depth",
+        "crypto_regulatory_enforcement",
+        "mining_difficulty_hashrate",
+        "kraken_realized_spread"
       ]
     },
     {
@@ -273,7 +385,15 @@
         "dxy_vix",
         "credit_spreads",
         "energy_mining_costs",
-        "institutional_positioning"
+        "institutional_positioning",
+        "us_cpi_pce_surprises",
+        "payrolls_unemployment_surprises",
+        "real_yield_vintages",
+        "dxy",
+        "nasdaq_risk_appetite",
+        "usd_funding_stress",
+        "banking_rails",
+        "cme_futures_basis"
       ]
     },
     {
@@ -290,7 +410,19 @@
         "central_bank_liquidity",
         "ai_power_demand",
         "cyber_outages",
-        "australian_export_prices"
+        "australian_export_prices",
+        "opec_oil_gas_supply",
+        "shipping_chokepoints_freight",
+        "wars_sanctions_election_uncertainty",
+        "drought_flood_el_nino",
+        "china_property_credit",
+        "treasury_issuance_debt_ceiling",
+        "central_bank_balance_sheet_rrp",
+        "cyber_cloud_outages",
+        "ai_semiconductor_power_demand",
+        "australian_wages_rents",
+        "sovereign_auction_collateral_stress",
+        "iron_ore_coal_terms_of_trade"
       ]
     }
   ],
@@ -321,7 +453,7 @@
     "A100_inclusive_debit_cap",
     "10pct_cash_cap"
   ],
-  "next": "V39: verify quarterly 28-month crypto archive and all 7 Fed press years via merged-main persistence; maintain strict first-verified-crawl gate. RBA FX retrospective source is available for 2018-2026 but requires historical revision provenance before causal claims. Next test non-price historical vintage series and untouched OOS.",
+  "next": "V42.1: correct Common Crawl collinfo naive from/to timestamps as UTC and rerun the 12-URL/two-index probe; V42 initial attempt selected invalid 2008/2009 IDs (24 failed queries, 0 captures). Re-run V42 walk-forward with 84-bar embargo matching the 84-bar maximum holding horizon. Then verify merge/main persistence. Continue monthly cryptocurrency.cv sampling; no article target claim until cumulative unique-URL read-back.",
   "graph_hypotheses": [
     {
       "from": "BTC spot ETF inflows",
@@ -478,6 +610,655 @@
       "sign_hypothesis": "ambiguous",
       "lag_hypothesis": "weeks-months",
       "channel": "miner sales and hash rate"
+    },
+    {
+      "from": "Spot BTC ETF net creations",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "primary-market share creation/redemption transmits spot demand",
+      "source_ids": [
+        "etf_issuer_data"
+      ],
+      "confounders": [
+        "risk appetite",
+        "basis arbitrage"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Stablecoin net issuance",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "incremental settlement liquidity and exchange buying power",
+      "source_ids": [
+        "defillama_stablecoins"
+      ],
+      "confounders": [
+        "exchange inventory",
+        "chain migration",
+        "risk appetite"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Stablecoin depeg",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "minutes-hours",
+      "channel": "redemptions, collateral haircuts and forced deleveraging",
+      "source_ids": [
+        "gdelt"
+      ],
+      "confounders": [
+        "stablecoin issuer solvency",
+        "market depth"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Major exchange outage",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "minutes-hours",
+      "channel": "venue fragmentation, basis dislocation and impaired arbitrage",
+      "source_ids": [
+        "gdelt"
+      ],
+      "confounders": [
+        "other venue liquidity",
+        "outage scope"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "BTC/AUD order-book depth deterioration",
+      "to": "BTC/AUD execution spread",
+      "degree": 1,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "immediate-minutes",
+      "channel": "less displayed depth increases spread and market impact",
+      "source_ids": [
+        "kraken_public_book"
+      ],
+      "confounders": [
+        "trade size",
+        "volatility",
+        "venue outages"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Kraken BTC/AUD depth improvement",
+      "to": "BTC/AUD realized NET",
+      "degree": 1,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "immediate",
+      "channel": "lower spread/impact reduces round-trip friction",
+      "source_ids": [
+        "kraken_public_book"
+      ],
+      "confounders": [
+        "maker queue",
+        "volatility",
+        "trade size"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Crypto regulatory enforcement shock",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-weeks",
+      "channel": "access restrictions, compliance costs and risk repricing",
+      "source_ids": [
+        "sec",
+        "asic",
+        "gdelt"
+      ],
+      "confounders": [
+        "jurisdiction",
+        "court stays",
+        "policy expectations"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Mining difficulty or hashrate shock",
+      "to": "BTC/USD",
+      "degree": 1,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "weeks-months",
+      "channel": "miner economics, network security and expected issuance pressure",
+      "source_ids": [
+        "blockchain_com"
+      ],
+      "confounders": [
+        "BTC price",
+        "hardware efficiency",
+        "energy cost"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "US CPI/PCE upside surprise",
+      "to": "US real yields",
+      "degree": 2,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "minutes-days",
+      "channel": "inflation repricing changes expected policy path and real discount rates",
+      "source_ids": [
+        "bls",
+        "bea",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "nominal yields",
+        "inflation expectations",
+        "Fed reaction"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "US payrolls upside surprise",
+      "to": "US real yields",
+      "degree": 2,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "minutes-days",
+      "channel": "stronger labour demand may shift expected policy rates",
+      "source_ids": [
+        "bls",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "wage growth",
+        "participation",
+        "prior revisions"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "DXY appreciation",
+      "to": "BTC/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "broad USD strength can pressure USD-priced risk assets",
+      "source_ids": [
+        "fred_alfred"
+      ],
+      "confounders": [
+        "global risk-off",
+        "US yields",
+        "commodity cycle"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "DXY appreciation",
+      "to": "AUD/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "USD strength and relative rate expectations weaken AUD cross",
+      "source_ids": [
+        "fred_alfred",
+        "rba"
+      ],
+      "confounders": [
+        "China demand",
+        "iron ore",
+        "RBA repricing"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "VIX volatility spike",
+      "to": "AUD/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "risk aversion can pressure high-beta AUD",
+      "source_ids": [
+        "cboe_vix",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "China data",
+        "commodity prices",
+        "rate differential"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Credit spread widening",
+      "to": "BTC/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "credit stress tightens financing and risk capacity",
+      "source_ids": [
+        "fred_alfred"
+      ],
+      "confounders": [
+        "bank liquidity",
+        "policy backstop",
+        "growth outlook"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "USD funding stress",
+      "to": "BTC/USD",
+      "degree": 2,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "dollar funding scarcity can force deleveraging and reduce market liquidity",
+      "source_ids": [
+        "fred_alfred",
+        "us_treasury"
+      ],
+      "confounders": [
+        "swap lines",
+        "Treasury cash balance",
+        "repo facilities"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "China property and credit stress",
+      "to": "Iron ore export prices",
+      "degree": 3,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "construction and steel demand affect bulk commodity demand",
+      "source_ids": [
+        "fred_alfred"
+      ],
+      "confounders": [
+        "Chinese stimulus",
+        "steel exports",
+        "supply disruptions"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Iron ore and coal export price rise",
+      "to": "AUD/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "stronger Australian terms of trade can support AUD",
+      "source_ids": [
+        "rba",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "China demand",
+        "USD strength",
+        "risk appetite"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "JPY carry-trade unwind",
+      "to": "Global risk appetite",
+      "degree": 3,
+      "sign_hypothesis": "-",
+      "lag_hypothesis": "hours-days",
+      "channel": "cross-asset deleveraging reduces leveraged risk exposure",
+      "source_ids": [
+        "boj",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "BoJ policy",
+        "volatility",
+        "positioning"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Global risk appetite",
+      "to": "BTC/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "risk-on demand can support speculative assets",
+      "source_ids": [
+        "cboe_vix",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "crypto-specific flows",
+        "real yields",
+        "leverage"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Global risk appetite",
+      "to": "AUD/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "risk-on and commodity demand can support cyclical AUD",
+      "source_ids": [
+        "rba",
+        "cboe_vix"
+      ],
+      "confounders": [
+        "China growth",
+        "iron ore",
+        "rate differentials"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "OPEC or oil supply shock",
+      "to": "Global oil price",
+      "degree": 3,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "hours-days",
+      "channel": "physical supply expectations change energy benchmarks",
+      "source_ids": [
+        "eia"
+      ],
+      "confounders": [
+        "demand destruction",
+        "inventory",
+        "spare capacity"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Global oil price rise",
+      "to": "Inflation expectations",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "energy input costs can lift headline inflation expectations",
+      "source_ids": [
+        "eia",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "wages",
+        "substitution",
+        "policy response"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Inflation expectations",
+      "to": "US real yields",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "days-weeks",
+      "channel": "nominal yield and expected inflation components can move differently",
+      "source_ids": [
+        "fred_alfred"
+      ],
+      "confounders": [
+        "Fed reaction",
+        "term premium",
+        "growth"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Shipping chokepoint disruption",
+      "to": "Freight rates",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "route length, insurance and vessel scarcity increase transport costs",
+      "source_ids": [
+        "baltic_freight"
+      ],
+      "confounders": [
+        "fleet capacity",
+        "rerouting",
+        "global demand"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Freight rate increase",
+      "to": "Imported inflation",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "higher transport costs feed landed goods prices",
+      "source_ids": [
+        "baltic_freight",
+        "abs"
+      ],
+      "confounders": [
+        "FX pass-through",
+        "contracts",
+        "inventory"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "War or sanctions escalation",
+      "to": "Global risk appetite",
+      "degree": 3,
+      "sign_hypothesis": "-",
+      "lag_hypothesis": "minutes-days",
+      "channel": "uncertainty and risk premia can reduce exposure to risky assets",
+      "source_ids": [
+        "gdelt",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "safe-haven flows",
+        "energy shock",
+        "regional exposure"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "El Nino drought or flood shock",
+      "to": "Food and energy inflation",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "crop and hydroelectric supply shocks affect commodity prices",
+      "source_ids": [
+        "eia",
+        "abs"
+      ],
+      "confounders": [
+        "inventories",
+        "substitution",
+        "insurance"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "US Treasury issuance or debt-ceiling stress",
+      "to": "USD funding conditions",
+      "degree": 3,
+      "sign_hypothesis": "tighten uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "collateral supply, cash balances and repo demand alter funding liquidity",
+      "source_ids": [
+        "us_treasury",
+        "fred_alfred"
+      ],
+      "confounders": [
+        "Fed facilities",
+        "foreign demand",
+        "Treasury cash balance"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Central-bank balance-sheet liquidity expansion",
+      "to": "Global USD liquidity",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "asset purchases and reserve supply can ease funding constraints",
+      "source_ids": [
+        "fred_alfred",
+        "rba",
+        "boj"
+      ],
+      "confounders": [
+        "sterilization",
+        "bank reserves",
+        "fiscal cash flows"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Global USD liquidity",
+      "to": "BTC/USD",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "easier funding may raise marginal risk-asset demand",
+      "source_ids": [
+        "fred_alfred"
+      ],
+      "confounders": [
+        "real yields",
+        "regulation",
+        "crypto leverage"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "AI and semiconductor power demand",
+      "to": "Electricity prices",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "incremental data-centre load can tighten regional power supply",
+      "source_ids": [
+        "eia",
+        "abs"
+      ],
+      "confounders": [
+        "generation additions",
+        "grid constraints",
+        "weather"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Electricity price rise",
+      "to": "Bitcoin mining operating cost",
+      "degree": 3,
+      "sign_hypothesis": "+",
+      "lag_hypothesis": "weeks-months",
+      "channel": "electricity is a direct marginal mining input",
+      "source_ids": [
+        "eia"
+      ],
+      "confounders": [
+        "ASIC efficiency",
+        "hedges",
+        "curtailment"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Australian wage and rent inflation surprise",
+      "to": "Expected RBA policy path",
+      "degree": 3,
+      "sign_hypothesis": "+ uncertain",
+      "lag_hypothesis": "days-weeks",
+      "channel": "persistent domestic inflation can shift expected cash-rate path",
+      "source_ids": [
+        "abs",
+        "rba"
+      ],
+      "confounders": [
+        "productivity",
+        "migration",
+        "global inflation"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Australian sovereign bond auction or collateral stress",
+      "to": "AUD/USD",
+      "degree": 3,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "hours-days",
+      "channel": "auction tail or collateral stress can raise local funding premia",
+      "source_ids": [
+        "us_treasury",
+        "rba"
+      ],
+      "confounders": [
+        "global duration selloff",
+        "RBA operations",
+        "foreign demand"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Cybersecurity or cloud-network outage",
+      "to": "Exchange availability and liquidity",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "minutes-hours",
+      "channel": "infrastructure impairment can interrupt order routing and market making",
+      "source_ids": [
+        "gdelt"
+      ],
+      "confounders": [
+        "redundancy",
+        "venue concentration",
+        "incident scope"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Exchange availability and liquidity",
+      "to": "BTC/AUD execution spread",
+      "degree": 3,
+      "sign_hypothesis": "ambiguous",
+      "lag_hypothesis": "immediate-minutes",
+      "channel": "venue outages and fragmented liquidity alter executable quotes",
+      "source_ids": [
+        "cme_futures"
+      ],
+      "confounders": [
+        "cross-venue arbitrage",
+        "market volatility",
+        "trade size"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "Imported inflation",
+      "to": "AUD/USD",
+      "degree": 3,
+      "sign_hypothesis": "- uncertain",
+      "lag_hypothesis": "weeks-months",
+      "channel": "terms-of-trade and policy repricing can weigh on AUD",
+      "source_ids": [
+        "abs",
+        "rba"
+      ],
+      "confounders": [
+        "commodity exports",
+        "RBA reaction",
+        "USD"
+      ],
+      "hypothesis_status": "UNTESTED_NOT_CAUSAL"
     }
   ],
   "sampling_plan": {
@@ -534,5 +1315,6 @@
     "last_total_records_including_official": 1633,
     "article_target_excludes_date_only_fed_releases": true
   },
-  "last_updated_utc": "2026-11-10"
+  "last_updated_utc": "2026-11-17",
+  "graph_status": "All degree 1-3 edges are untested transmission hypotheses, not causal claims. Stablecoin, Kraken depth and mining network sources are registered but not ingested; retrospective values without verified first-observed/vintage availability remain descriptive only."
 }

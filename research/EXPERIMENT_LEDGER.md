@@ -1,3 +1,47 @@
+## V42 — 2026-11-17: ATR-normalized exit and time-stop rejection; Common Crawl version-proof probe
+
+**Status:** PR #32 CI passed; documentation checkpoint written to PR branch; merge and main-only persistence/read-back pending. PAPER ONLY/HOLD. No Android source change or strategy promotion.
+
+### Reproduction / provenance
+- Source: `research/v42_volatility_exit.py`, `research/v42_warc_capture_probe.py`, tests `test_v42_volatility_exit.py` (9), `test_v42_warc_capture_probe.py` (8), registry `research/v37_source_topic_registry.json`.
+- GitHub Actions PR run `43972653807` PASSED 348 full repository regression tests and all targeted suites. Artifact `14280272081`, SHA256 `fd7703c3b09ef574661c7b689d0c4c9bf877ebfc5fb7cc716a4514d445f5baec`. V42 algorithm SHA256 `c2079dd26f4bd13ba207256a76621129d55a92f8872bc71b5e3c98034d5bc2af`; enriched news SHA256 `b9e36bfbab174f6585aa7ef9f6b866fe8c935ee7a37393b0839f2574b04b7d41`.
+- PR head tested: `a8769fbf37f9ddadb42fbc71772fae9e651fcb9c`. Documentation-only commits followed; no algorithm source changed after the passing CI.
+- Commands: `python -m unittest discover -s tests -p 'test_v42_volatility_exit.py' -v`; `python -m unittest discover -s tests -p 'test_v42_warc_capture_probe.py' -v`; `python -m unittest discover -s tests -q`; `python -m research.v42_volatility_exit`; `python -m research.v42_warc_capture_probe`.
+
+### Market and costs
+- Official Kraken archive member `XBTAUD_240.csv`, 13,763 completed 4h bars, 20 gaps, SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`; three gap-free segments 6863/3398/1999. Prior-inspected, not untouched OOS. Full ZIP SHA not verified.
+- Fresh public Kraken bridge 720 completed gap-free 4h bars from 2026-07-19 20:00 UTC to 2026-11-16 16:00 UTC; 281 post-archive bars from 2026-10-01 00:00 to 2026-11-16 16:00 UTC. Last completed close A$96,088.40 at 2026-11-16 20:00 UTC; fetched 22:44:34 UTC; response SHA256 `c8dce30d2c5c657ca383b5f995a37af8d7992f7ff329feb68e77e601a6111e55`.
+- A$1,000 per reset wallet, A$100 inclusive entry debit and 10% cash cap, 80bps taker +5bps half-spread +5bps slippage per side. Fees and spread/slippage are separate; every trade reconciles gross less costs to NET.
+
+### Strategy results (3 independent test accounts)
+- H80/300 base: 7 trades (3 wins/4 losses), gross +51.333281, fees 11.448071, spread .715531, slippage .715531, NET **+38.454151**, return +1.281805%, worst fold DD -4.192577%.
+- H80 ATR 2.5x: 16 trades (2/14), gross +14.941552, fees 25.189608, spread 1.574358, slippage 1.574358, NET **-13.396773**, return -0.446559%, worst DD -4.710642%.
+- H80 ATR 3.5x: 13 trades (2/11), gross +8.000425, fees 20.472618, spread 1.279542, slippage 1.279542, NET **-15.031278**, return -0.501043%, worst DD -4.637510%.
+- H80 42-bar time stop: 38 trades (12/26), gross +17.232776, fees 59.944547, spread 3.746543, slippage 3.746543, NET **-50.204856**, return -1.673495%, worst DD -3.856194%.
+- H80 ATR2.5 +84-bar stop: 33 trades (10/23), gross +33.031476, fees 52.319573, spread 3.269989, slippage 3.269989, NET **-25.828077**, return -0.860936%, worst DD -3.347621%.
+- H80 ATR3.5 +42-bar stop: 43 trades (13/30), gross +10.601610, fees 67.814553, spread 4.238414, slippage 4.238414, NET **-65.689772**, return -2.189659%, worst DD -4.569391%.
+- H50/200 base: 10 trades (3/7), gross +25.705656, fees 15.941756, spread .996373, slippage .996373, NET **+7.771157**, return +0.259039%, worst DD -3.469220%.
+- Same-stake A$100 buy-and-hold: 3 positions, gross +135.859476, fees 5.842937, spread .365252, slippage .365252, NET **+129.286037**, return +4.309535%, worst DD -2.790726%.
+- Price-only baselines: SMA 118 trades NET -119.682481; momentum 242/-374.775403; RSI 158/-225.519567; breakout 133/-197.561916; regime 267/-407.787388; trend+ATR 20/-27.686213.
+- All 3 train/validation selectors chose HOLD, selected test NET A$0. V42 is not untouched OOS. ATR/time-stop variants increase turnover and fee drag; REJECTED. No Android promotion.
+- Sensitivity: H80 base A$50/A$100 current-cost NET +19.640152/+38.454151; H50 base +4.442762/+7.771157. H80 base A$100 half/current/double total friction +45.178506/+38.454151/+25.215557. H50 base +16.941450/+7.771157/-10.221027.
+
+### News, event study and graph
+- cryptocurrency.cv: 265 metadata/article-version rows from 12 nonrepeating predeclared months (2022-03, 2022-06, 2022-08, 2022-09, 2022-11, 2022-12, 2023-03, 2023-06, 2023-08, 2023-09, 2023-11, 2023-12); 18 months remain. Publication timestamps are retrospective, not first-observed. 265 retrospective alignments; 0 strict as-of eligible.
+- Common Crawl: collinfo UTC normalization verified; 12 deterministic article URLs, 24 URL-specific CDX requests, 0 successful queries, 0 capture versions, 24 HTTP failures (404/400/504). No WARC body downloaded. Query scope was first two post-publication indexes per URL; 404 is not proof that all Common Crawl indexes lack the page.
+- Existing main corpus before PR: 2,221 metadata/version rows, 1,162 actual article versions (1,133 counted toward 10k article target), 1 independent capture, 0 strict as-of historical events. V42 sample is not counted as cumulative main until main persistence is verified.
+- Registry: 31 source records and 56 proposed degree 1/2/3 BTC/USD, AUD/USD and BTC/AUD transmission hypotheses. All untested, not causal. Paid/key/license-restricted feeds remain disabled; no spend.
+- Recent event study: 5 convenience-sampled events, 7 prior matched controls, 7 overlapping event pairs; mean event-minus-control NET at 4h/24h/48h +.366381/-.657088/-1.124280 AUD. First-observed timestamps null; not causal/tradable. RBA November minutes scheduled 2026-11-17 11:30 AEDT (00:30 UTC), not yet released at run fetch.
+
+### Status / next
+- DONE: algorithm, tests, full CI, official market study, fresh bridge, 265 metadata rows, 24 Common Crawl probes and provenance report.
+- PARTIAL: 10k article target, first-observed/version history, representative ordinary/non-event sampling, truly untouched OOS.
+- BLOCKED: promotion and news-driven trading; selectors HOLD and strict as-of events zero.
+- NOT ATTEMPTED: Android APK build, live execution.
+- NEXT: merge PR #32; main-only persist 265-row sample and cursor, read back counts/SHA; troubleshoot CDX URL/index misses; continue 18 unsampled months; test a new low-turnover cash/risk-gating hypothesis with train-only selection and independent prospective data. Keep PAPER ONLY/HOLD.
+
+---
+
 ## V41 — 2026-11-16: volume-confirmation rejection, strict news proof and persistent monthly cursor
 
 **Status:** DONE with strategy rejection; PAPER ONLY/HOLD retained. PR #31 merged to main commit 2a799d7d4f1f7e3bbd74bb1b1529c19f04a39e47. Persistence workflow fix commit 2ee3e2e92b49c537c495b14c0f1b84f5f9b005db. Main V41 workflow 43771050561 passed and bot persistence commit 2636d9740b1dc121a0214e1925e3986d7ceec0b8 passed read-back.
