@@ -54,7 +54,6 @@ jobs:
           python -m unittest discover -s tests -p 'test_v42_volatility_exit.py' -v
           python -m unittest discover -s tests -p 'test_v42_warc_capture_probe.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
-          python -m unittest discover -s tests -p 'test_v42_warc_capture_probe.py' -v
           python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
           python -m unittest discover -s tests -p 'test_v40_fx_decomposition.py' -v
@@ -151,7 +150,7 @@ jobs:
           print('V42_STRICT_NEWS_MARKET_JOIN',n['market_join'])
           print('V42_NEWS_CLASSIFICATION',v['news'])
           print('V41_MONTH_STATUS',json.dumps(n['source_status'],sort_keys=True))
-          print('V41_MARKET_JOIN',n['market_join'])
+          print('V42_MARKET_JOIN',n['market_join'])
           print('V41_RECENT',r['post_archive_last_utc'],r['post_archive_bars'],
                 {k:v['net_aud'] for k,v in r['strategies'].items()},
                 'BUYHOLD',r['same_AUD100_buy_hold']['net_aud'])
@@ -167,7 +166,7 @@ jobs:
           print('V41_FUTURE_SCHEDULED',e['scheduled_future_events_not_backtested'])
           print('V41_ALGORITHM_SHA256',hashlib.sha256(pathlib.Path('audit/v41-volume-confirmation.json').read_bytes()).hexdigest())
           print('V42_ALGORITHM_SHA256',hashlib.sha256(pathlib.Path('audit/v42-volatility-exit.json').read_bytes()).hexdigest())
-          print('V41_NEWS_SHA256',hashlib.sha256(pathlib.Path('audit/v41-monthly-news.json').read_bytes()).hexdigest())
+          print('V42_NEWS_SHA256',hashlib.sha256(pathlib.Path('audit/v42-monthly-news-enriched.json').read_bytes()).hexdigest())
           PY
       - uses: actions/upload-artifact@v4
         if: always()
@@ -179,7 +178,6 @@ jobs:
             audit/v42-market-bars.json
             audit/v42-monthly-news.json
             audit/v42-monthly-news-enriched.json
-            audit/v41-monthly-news.json
             audit/v41-recent-bridge.json
             audit/v41-recent-bars.json
             audit/v41-recent-news-event-study.json
