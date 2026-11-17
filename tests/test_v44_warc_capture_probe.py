@@ -77,16 +77,29 @@ class V44WarcProbeTests(unittest.TestCase):
                 return (json.dumps(payload) + "\n").encode()
             raise urllib.error.HTTPError(url, 404, "not found", {}, None)
 
+        base = int(datetime(2022, 7, 10, 12, 0,
+                             tzinfo=timezone.utc).timestamp())
+        bars = [
+            (base, 100, 101, 99, 100, 1),
+            (base + 14400, 100, 101, 99, 100, 1),
+            (base + 28800, 100, 101, 99, 100, 1),
+        ]
         result = probe(
             [article], "2026-11-18T00:00:00Z",
             indexes=indexes, fetcher=fake_fetch,
-            preferred_url=target,
+            preferred_url=target, bars=bars,
+            market_provenance={"source": "fixture"},
         )
         self.assertEqual(result["verified_capture_versions"], 1)
         row = result["capture_rows"][0]
         self.assertEqual(row["version_hash_algorithm"], "sha1_base32")
         self.assertEqual(row["verified_capture_at_utc"], "2022-07-10T12:34:56Z")
         self.assertFalse(result["body_downloaded"])
+        self.assertEqual(result["market_join"]["strict_asof_eligible"], 1)
+        self.assertEqual(
+            result["market_join"]["matches"][0]["first_tradable_bar_open_utc"],
+            "2022-07-10T16:00:00Z",
+        )
         self.assertTrue(all("data.commoncrawl.org" not in call for call in calls))
         self.assertLessEqual(result["requests_attempted"], 9)
 
