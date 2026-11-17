@@ -168,7 +168,7 @@ class V44FxExitTests(unittest.TestCase):
         audit = []
         with patch("research.v48_news_proof_gate.classify",
                    return_value={"eligible": True,
-                                 "available_at_utc": START + 10}):
+                                 "available_at_utc": bars[500][0] - 10}):
             veto, _ = make_news_entry_veto(
                 events, "h80_news_negative_veto",
                 bars=bars, audit_rows=audit)
