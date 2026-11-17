@@ -405,6 +405,12 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         for name in folds[0]["price_baselines"]
     }
     buyhold_totals = aggregate([fold["buyhold_aud100"] for fold in folds])
+    news_vetoed = sum(
+        fold["test"]["h80_news_negative_veto"]["news_counts"]["vetoed_candidate_bars"]
+        for fold in folds)
+    news_placebo_vetoed = sum(
+        fold["test"]["h80_news_negative_veto_placebo7d"]["news_counts"]["vetoed_candidate_bars"]
+        for fold in folds)
     return {
         "mode": "V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
         "market": market_provenance,
@@ -431,6 +437,8 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         "aggregate_buyhold_aud100_net": buyhold_totals["net_aud"],
         "aggregate_selected_test_net_aud": round(sum(
             fold["selected_test_net_aud"] for fold in folds), 6),
+        "aggregate_news_vetoed_candidate_bars": news_vetoed,
+        "aggregate_news_placebo_vetoed_candidate_bars": news_placebo_vetoed,
         "selected_by_fold": [
             fold["selected_using_train_validation_only"] for fold in folds],
         "worst_fold_drawdown_pct": {
