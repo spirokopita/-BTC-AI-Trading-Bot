@@ -30,12 +30,12 @@ class V44FxExitTests(unittest.TestCase):
             "btc_aud_log30": math.log(1.03),
             "implied_btc_usd_log30": -0.001,
         }
+        fx = object()
         with patch("research.v44_fx_exit.decomposition",
                    return_value=feature) as mocked:
-            veto, counts = make_exit_veto(bars, object(),
-                                          "h80_fx_mask_exit_0")
+            veto, counts = make_exit_veto(bars, fx, "h80_fx_mask_exit_0")
             self.assertTrue(veto(bars[idx][0]))
-            mocked.assert_called_once_with(bars, idx, object(), delay_days=0)
+            mocked.assert_called_once_with(bars, idx, fx, delay_days=0)
             self.assertEqual(counts["forced_exits"], 1)
 
     def test_mask_exit_rejects_weak_btc_aud_or_strong_usd_component(self):
