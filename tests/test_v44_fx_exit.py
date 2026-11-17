@@ -6,7 +6,8 @@ from unittest.mock import patch
 
 from research.v31_hysteresis import replay as base_replay
 from research.v44_fx_exit import (
-    CANDIDATES, make_exit_veto, make_news_entry_veto, replay_variant, select,
+    CANDIDATES, buyhold_detail, make_exit_veto, make_news_entry_veto,
+    replay_variant, select,
 )
 
 STEP = 14400
@@ -186,6 +187,23 @@ class V44FxExitTests(unittest.TestCase):
             self.assertFalse(veto(START + 9 * 86400))
             self.assertEqual(
                 mocked.call_args.args[1], START + 2 * 86400)
+
+    def test_buyhold_benchmark_reports_gross_costs_net_and_drawdown(self):
+        bars = bars_fixture()
+        for i in range(700, 720):
+            price = 100.0 - (i - 700) * 0.2
+            bars[i] = (bars[i][0], price, price + 1, price - 1,
+                       price, 100.0)
+        result = buyhold_detail(bars, 700, 720)
+        self.assertEqual(result["trades"], 1)
+        self.assertEqual(result["losses"], 1)
+        self.assertLess(result["net_aud"], 0)
+        self.assertAlmostEqual(
+            result["gross_aud"] - result["fees_aud"]
+            - result["spread_aud"] - result["slippage_aud"],
+            result["net_aud"], places=5,
+        )
+        self.assertLessEqual(result["max_drawdown_pct"], 0.0)
 
     def test_candidate_menu_and_base_have_no_exit_override(self):
         bars = bars_fixture()
