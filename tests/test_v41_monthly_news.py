@@ -48,6 +48,9 @@ class V41MonthlyCursorTests(unittest.TestCase):
         cursor["retry_months"].append("2020-03")
         self.assertEqual(candidate_months(cursor)[0], "2020-03")
         self.assertTrue(retryable_status("HTTP Error 503: Service Unavailable"))
+        self.assertTrue(retryable_status("2025-05: no returned article has verified publication month"))
+        self.assertTrue(retryable_status("archive API did not echo requested date filters"))
+        self.assertTrue(retryable_status("outside requested UTC publication month"))
         self.assertFalse(retryable_status("HTTP Error 404: Not Found"))
 
     def test_sample_restores_global_months_and_rejects_backdated_capture(self):
