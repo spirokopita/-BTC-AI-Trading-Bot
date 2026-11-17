@@ -1,0 +1,884 @@
+{
+  "schema": "v44_btc_aud_driver_graph_1",
+  "status": "HYPOTHESIS_GRAPH_NOT_CAUSAL_EVIDENCE",
+  "identity": "BTC/AUD = BTC/USD divided by AUD/USD, subject to exchange basis and timing mismatch",
+  "sign_convention": {
+    "btc_usd": "positive means BTC/USD rises",
+    "aud_usd": "positive means USD per AUD rises (AUD strengthens)",
+    "btc_aud": "positive means BTC/AUD rises",
+    "denominator_identity": "holding BTC/USD constant, AUD/USD up implies BTC/AUD down; AUD/USD down implies BTC/AUD up"
+  },
+  "method": {
+    "required_tests": [
+      "point-in-time source availability and exact version capture",
+      "publication, update, capture and retrieval timestamps stored separately",
+      "scheduled versus unscheduled event classification",
+      "non-event and matched-time controls",
+      "degree-1 baseline versus degree-2 and degree-3 incremental ablations",
+      "blocked and purged chronological walk-forward with train-only feature selection",
+      "shifted and randomized event placebos",
+      "multiple-testing correction and confidence intervals",
+      "80bps taker per side plus separate spread and slippage",
+      "A$100 inclusive entry debit and 10% available-cash cap"
+    ],
+    "causality_warning": "Edges are transmission hypotheses only. Correlation, lag association or event coincidence does not establish causation.",
+    "market_basis_warning": "BTC/USD, AUD/USD and BTC/AUD sources may have different venues, timestamps, spreads and settlement conventions; align only completed observations and record basis residuals."
+  },
+  "nodes": [
+    {
+      "id": "btc_spot_etf_flows",
+      "degree": 1,
+      "label": "BTC spot ETF flows",
+      "preferred_sources": [
+        "Farside Investors daily flows",
+        "US ETF issuer daily files",
+        "SEC N-PORT/13F where applicable"
+      ]
+    },
+    {
+      "id": "btc_futures_basis_funding",
+      "degree": 1,
+      "label": "BTC futures basis and funding",
+      "preferred_sources": [
+        "CME market data",
+        "CFTC Commitments of Traders",
+        "exchange public funding endpoints"
+      ]
+    },
+    {
+      "id": "exchange_liquidations_depth_outages",
+      "degree": 1,
+      "label": "Exchange liquidations, depth and outages",
+      "preferred_sources": [
+        "Kraken public order book and status",
+        "exchange status pages",
+        "licensed liquidation data if already available"
+      ]
+    },
+    {
+      "id": "mining_hashrate_difficulty",
+      "degree": 1,
+      "label": "Mining hashrate and difficulty",
+      "preferred_sources": [
+        "Bitcoin Core chain data",
+        "mempool.space",
+        "Cambridge Centre for Alternative Finance"
+      ]
+    },
+    {
+      "id": "halving_supply_schedule",
+      "degree": 1,
+      "label": "Bitcoin halving and issuance",
+      "preferred_sources": [
+        "Bitcoin Core consensus schedule",
+        "Bitcoin block headers"
+      ]
+    },
+    {
+      "id": "wallet_exchange_flows",
+      "degree": 1,
+      "label": "Wallet and exchange flows",
+      "preferred_sources": [
+        "public Bitcoin node data",
+        "exchange proof-of-reserves disclosures",
+        "licensed on-chain providers if already authorized"
+      ]
+    },
+    {
+      "id": "stablecoin_supply_depeg",
+      "degree": 1,
+      "label": "Stablecoin issuance and depegs",
+      "preferred_sources": [
+        "issuer reserve attestations",
+        "DefiLlama public datasets",
+        "stablecoin contract supply data"
+      ]
+    },
+    {
+      "id": "crypto_regulation",
+      "degree": 1,
+      "label": "Crypto regulation",
+      "preferred_sources": [
+        "SEC",
+        "ASIC",
+        "CFTC",
+        "EU ESMA and official court dockets"
+      ]
+    },
+    {
+      "id": "aud_usd_spot",
+      "degree": 1,
+      "label": "AUD/USD spot",
+      "preferred_sources": [
+        "RBA F11.1",
+        "FRED/ALFRED DEXUSAL",
+        "official central-bank FX releases"
+      ]
+    },
+    {
+      "id": "kraken_btc_aud_microstructure",
+      "degree": 1,
+      "label": "Kraken BTC/AUD liquidity, fees and basis",
+      "preferred_sources": [
+        "Kraken public OHLC and order-book endpoints",
+        "Kraken status and fee schedule"
+      ]
+    },
+    {
+      "id": "fed_rba_policy",
+      "degree": 2,
+      "label": "Fed and RBA policy / forward guidance",
+      "preferred_sources": [
+        "Federal Reserve FOMC",
+        "RBA monetary policy decisions and minutes"
+      ]
+    },
+    {
+      "id": "inflation_cpi_pce",
+      "degree": 2,
+      "label": "CPI and PCE inflation",
+      "preferred_sources": [
+        "BLS CPI",
+        "BEA PCE",
+        "ABS CPI"
+      ]
+    },
+    {
+      "id": "payrolls_unemployment",
+      "degree": 2,
+      "label": "Payrolls and unemployment",
+      "preferred_sources": [
+        "BLS Employment Situation",
+        "ABS Labour Force"
+      ]
+    },
+    {
+      "id": "bond_real_yields",
+      "degree": 2,
+      "label": "Nominal and real bond yields",
+      "preferred_sources": [
+        "FRED/ALFRED",
+        "US Treasury",
+        "RBA statistical tables"
+      ]
+    },
+    {
+      "id": "dxy_usd_funding",
+      "degree": 2,
+      "label": "DXY and USD funding",
+      "preferred_sources": [
+        "FRED broad trade-weighted USD indices",
+        "official Treasury and Federal Reserve releases",
+        "ICE DXY only with licensed access"
+      ]
+    },
+    {
+      "id": "equity_risk_vix",
+      "degree": 2,
+      "label": "Nasdaq, broad equities and VIX",
+      "preferred_sources": [
+        "Nasdaq official index data",
+        "CBOE VIX",
+        "FRED market series"
+      ]
+    },
+    {
+      "id": "credit_spreads_bank_stress",
+      "degree": 2,
+      "label": "Credit spreads, Treasury liquidity and bank stress",
+      "preferred_sources": [
+        "FRED credit spread series",
+        "FDIC",
+        "Federal Reserve H.8 and Financial Stability reports"
+      ]
+    },
+    {
+      "id": "energy_mining_profitability",
+      "degree": 2,
+      "label": "Energy prices and mining profitability",
+      "preferred_sources": [
+        "EIA",
+        "AEMO",
+        "RBA commodity prices",
+        "public miner filings"
+      ]
+    },
+    {
+      "id": "asic_semiconductor_supply",
+      "degree": 2,
+      "label": "ASIC and semiconductor supply",
+      "preferred_sources": [
+        "SEC/ASX company filings",
+        "manufacturer investor releases",
+        "customs trade statistics"
+      ]
+    },
+    {
+      "id": "exchange_banking_rails",
+      "degree": 2,
+      "label": "Exchange banking rails and payment restrictions",
+      "preferred_sources": [
+        "exchange status pages",
+        "ASIC",
+        "APRA",
+        "official bank service notices"
+      ]
+    },
+    {
+      "id": "etf_custody_institutional_positioning",
+      "degree": 2,
+      "label": "ETF custody and institutional positioning",
+      "preferred_sources": [
+        "SEC filings",
+        "ETF issuer daily holdings and flows",
+        "CFTC COT"
+      ]
+    },
+    {
+      "id": "sanctions_capital_controls",
+      "degree": 2,
+      "label": "Geopolitical sanctions and capital controls",
+      "preferred_sources": [
+        "OFAC",
+        "DFAT",
+        "EU sanctions map",
+        "official central-bank notices"
+      ]
+    },
+    {
+      "id": "oil_gas_opec",
+      "degree": 3,
+      "label": "Oil, gas and OPEC supply shocks",
+      "preferred_sources": [
+        "EIA",
+        "OPEC monthly reports",
+        "World Bank Pink Sheet"
+      ]
+    },
+    {
+      "id": "shipping_freight_chokepoints",
+      "degree": 3,
+      "label": "Shipping chokepoints and freight rates",
+      "preferred_sources": [
+        "UNCTAD",
+        "port authority releases",
+        "IMO",
+        "freight series only where licensed"
+      ]
+    },
+    {
+      "id": "wars_elections_policy_uncertainty",
+      "degree": 3,
+      "label": "Wars, elections and policy uncertainty",
+      "preferred_sources": [
+        "official election commissions",
+        "government releases",
+        "ACLED only within its terms"
+      ]
+    },
+    {
+      "id": "weather_food_energy_stress",
+      "degree": 3,
+      "label": "Droughts, floods, food and energy stress",
+      "preferred_sources": [
+        "BOM",
+        "NOAA",
+        "FAO",
+        "AEMO"
+      ]
+    },
+    {
+      "id": "china_property_industrial_demand",
+      "degree": 3,
+      "label": "China property, credit and industrial demand",
+      "preferred_sources": [
+        "China NBS",
+        "PBOC",
+        "World Bank",
+        "RBA commodity series"
+      ]
+    },
+    {
+      "id": "jpy_carry_unwind",
+      "degree": 3,
+      "label": "Japanese yen carry-trade unwind",
+      "preferred_sources": [
+        "Bank of Japan",
+        "CFTC COT",
+        "FRED/ALFRED FX and rates"
+      ]
+    },
+    {
+      "id": "us_fiscal_treasury_issuance",
+      "degree": 3,
+      "label": "US fiscal deficit, Treasury issuance and debt ceiling",
+      "preferred_sources": [
+        "US Treasury FiscalData",
+        "Treasury auction results",
+        "CBO"
+      ]
+    },
+    {
+      "id": "central_bank_balance_sheet_repo",
+      "degree": 3,
+      "label": "Central-bank balance sheets and reverse repo",
+      "preferred_sources": [
+        "Federal Reserve H.4.1",
+        "New York Fed repo and reverse-repo operations",
+        "RBA balance sheet"
+      ]
+    },
+    {
+      "id": "regulatory_enforcement_courts",
+      "degree": 3,
+      "label": "Regulatory enforcement and court decisions",
+      "preferred_sources": [
+        "SEC",
+        "ASIC",
+        "CFTC",
+        "official federal and state court dockets"
+      ]
+    },
+    {
+      "id": "cyber_cloud_network_outages",
+      "degree": 3,
+      "label": "Cyber incidents and cloud/network outages",
+      "preferred_sources": [
+        "CISA",
+        "Australian Cyber Security Centre",
+        "official cloud and exchange status pages"
+      ]
+    },
+    {
+      "id": "sovereign_capital_flight",
+      "degree": 3,
+      "label": "Sovereign capital flight",
+      "preferred_sources": [
+        "IMF Balance of Payments",
+        "World Bank",
+        "official central-bank capital-flow data"
+      ]
+    },
+    {
+      "id": "social_attention_sentiment",
+      "degree": 3,
+      "label": "Public sentiment and social-media attention",
+      "preferred_sources": [
+        "Reddit public API subject to terms",
+        "Google Trends",
+        "publisher RSS and first-observed snapshots"
+      ]
+    },
+    {
+      "id": "ai_semiconductor_power_demand",
+      "degree": 3,
+      "label": "AI/semiconductor power demand",
+      "preferred_sources": [
+        "EIA",
+        "AEMO",
+        "IEA",
+        "ASX/SEC company filings"
+      ]
+    },
+    {
+      "id": "australia_iron_ore_coal_china_trade",
+      "degree": 3,
+      "label": "Australian iron ore, coal and China trade",
+      "preferred_sources": [
+        "ABS trade data",
+        "RBA commodity prices",
+        "World Bank Pink Sheet"
+      ]
+    },
+    {
+      "id": "australia_wages_rents_inflation",
+      "degree": 3,
+      "label": "Australian wage, rent and inflation shocks",
+      "preferred_sources": [
+        "ABS Wage Price Index and CPI",
+        "RBA statistical tables"
+      ]
+    },
+    {
+      "id": "australia_energy_tariffs",
+      "degree": 3,
+      "label": "Australian energy tariffs and industrial power costs",
+      "preferred_sources": [
+        "AEMO",
+        "AER",
+        "state energy regulators",
+        "ABS producer price data"
+      ]
+    },
+    {
+      "id": "sovereign_auctions_collateral",
+      "degree": 3,
+      "label": "Sovereign bond auctions and collateral stress",
+      "preferred_sources": [
+        "US Treasury auction results",
+        "RBA domestic market operations",
+        "AFMA and official debt-office releases"
+      ]
+    },
+    {
+      "id": "btc_usd",
+      "degree": 0,
+      "label": "BTC/USD outcome",
+      "preferred_sources": [
+        "Kraken BTC/USD OHLC",
+        "official venue trade data"
+      ]
+    },
+    {
+      "id": "aud_usd",
+      "degree": 0,
+      "label": "AUD/USD outcome",
+      "preferred_sources": [
+        "RBA F11.1",
+        "FRED/ALFRED DEXUSAL"
+      ]
+    },
+    {
+      "id": "btc_aud",
+      "degree": 0,
+      "label": "BTC/AUD outcome",
+      "preferred_sources": [
+        "Kraken BTC/AUD OHLC and order-book data"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "btc_spot_etf_flows",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "spot demand and marginal institutional buying",
+      "sign": "positive hypothesis",
+      "lag": "0-3 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "btc_spot_etf_flows",
+      "to": "btc_aud",
+      "degree": 1,
+      "channel": "BTC/USD numerator through cross rate",
+      "sign": "positive conditional on AUD/USD",
+      "lag": "0-3 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "btc_futures_basis_funding",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "leveraged positioning and basis convergence",
+      "sign": "mixed; crowded positive funding may precede negative unwind",
+      "lag": "4h-7 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "exchange_liquidations_depth_outages",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "forced selling, spread widening and impaired price discovery",
+      "sign": "negative during liquidation/outage stress",
+      "lag": "minutes-48h",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "exchange_liquidations_depth_outages",
+      "to": "btc_aud",
+      "degree": 1,
+      "channel": "BTC/USD shock plus local BTC/AUD basis/liquidity",
+      "sign": "negative stress hypothesis",
+      "lag": "minutes-48h",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "mining_hashrate_difficulty",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "security, miner economics and supply-side selling",
+      "sign": "ambiguous; higher hashrate may be confidence or cost pressure",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "halving_supply_schedule",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "protocol issuance reduction and miner inventory",
+      "sign": "positive long-run hypothesis; event may be priced in",
+      "lag": "30-365 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "wallet_exchange_flows",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "exchange inflow/outflow as potential sell/buy inventory proxy",
+      "sign": "exchange inflow negative hypothesis; noisy",
+      "lag": "4h-7 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "stablecoin_supply_depeg",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "stablecoin liquidity and collateral confidence",
+      "sign": "issuance positive / depeg negative hypothesis",
+      "lag": "4h-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "crypto_regulation",
+      "to": "btc_usd",
+      "degree": 1,
+      "channel": "market access, compliance costs and institutional eligibility",
+      "sign": "direction depends on rule and jurisdiction",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "aud_usd_spot",
+      "to": "btc_aud",
+      "degree": 1,
+      "channel": "denominator in BTC/AUD = BTC/USD divided by AUD/USD",
+      "sign": "AUD/USD positive implies BTC/AUD negative, ceteris paribus",
+      "lag": "same observation to 7 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "kraken_btc_aud_microstructure",
+      "to": "btc_aud",
+      "degree": 1,
+      "channel": "local spread, depth, fees, latency and venue basis",
+      "sign": "wider spread/slippage reduces executable NET; direction uncertain",
+      "lag": "intraday",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "fed_rba_policy",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "global discount rates and USD liquidity",
+      "sign": "hawkish Fed generally negative risk/liquidity hypothesis",
+      "lag": "minutes-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "fed_rba_policy",
+      "to": "aud_usd",
+      "degree": 2,
+      "channel": "relative Fed/RBA rate path and carry",
+      "sign": "RBA hawkish relative to Fed may strengthen AUD/USD",
+      "lag": "minutes-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "inflation_cpi_pce",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "policy-rate repricing and real yields",
+      "sign": "upside surprise often negative via tighter expected policy",
+      "lag": "minutes-14 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "payrolls_unemployment",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "growth and policy reaction function",
+      "sign": "mixed; strong employment can support risk or raise rates",
+      "lag": "minutes-14 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "bond_real_yields",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "opportunity cost and valuation discount rate",
+      "sign": "real yields positive generally negative hypothesis",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "dxy_usd_funding",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "USD liquidity and global funding conditions",
+      "sign": "DXY/funding stress positive generally negative hypothesis",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "dxy_usd_funding",
+      "to": "aud_usd",
+      "degree": 2,
+      "channel": "broad USD strength versus AUD",
+      "sign": "DXY positive generally AUD/USD negative hypothesis",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "equity_risk_vix",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "risk appetite and cross-asset deleveraging",
+      "sign": "Nasdaq positive/VIX negative often supportive, not invariant",
+      "lag": "minutes-7 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "credit_spreads_bank_stress",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "credit availability, collateral and forced deleveraging",
+      "sign": "stress generally negative risk/liquidity hypothesis",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "energy_mining_profitability",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "miner margins, hash-rate investment and potential inventory sales",
+      "sign": "higher energy cost may pressure miners; supply response delayed",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "asic_semiconductor_supply",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "mining capital expenditure, hashrate and miner balance sheets",
+      "sign": "ambiguous; efficiency gains versus competitive capex",
+      "lag": "7-180 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "exchange_banking_rails",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "fiat on/off-ramp access and exchange liquidity",
+      "sign": "restriction negative; restored access positive hypothesis",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "etf_custody_institutional_positioning",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "custody eligibility, portfolio allocation and ETF creation/redemption",
+      "sign": "improved access/allocations positive hypothesis",
+      "lag": "1-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "sanctions_capital_controls",
+      "to": "btc_usd",
+      "degree": 2,
+      "channel": "cross-border demand, access constraints and risk premium",
+      "sign": "ambiguous; adoption demand versus enforcement/risk-off",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "oil_gas_opec",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "energy inflation and policy expectations",
+      "sign": "supply shock may raise inflation compensation and yields",
+      "lag": "1-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "oil_gas_opec",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "terms of trade, Australian energy import bill and global risk",
+      "sign": "mixed; exporter/importer and risk regime dependent",
+      "lag": "1-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "shipping_freight_chokepoints",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "freight cost pass-through into goods inflation",
+      "sign": "disruption positive inflation/yield hypothesis",
+      "lag": "7-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "wars_elections_policy_uncertainty",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "risk premium, sanctions, fiscal response and liquidity",
+      "sign": "initial risk-off often negative; capital-flight response may differ",
+      "lag": "minutes-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "weather_food_energy_stress",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "food/energy supply shocks and inflation expectations",
+      "sign": "severe supply shock may raise near-term inflation/yields",
+      "lag": "7-180 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "china_property_industrial_demand",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "Australian export demand, iron ore and regional growth",
+      "sign": "stronger China demand may strengthen AUD/USD",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "china_property_industrial_demand",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "global growth and risk appetite",
+      "sign": "mixed conditional risk-on/risk-off hypothesis",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "jpy_carry_unwind",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "carry liquidation and regional FX funding",
+      "sign": "AUD/USD negative during abrupt risk-off unwind",
+      "lag": "minutes-14 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "jpy_carry_unwind",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "global leverage reduction and cross-asset deleveraging",
+      "sign": "negative during abrupt unwind hypothesis",
+      "lag": "minutes-7 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "us_fiscal_treasury_issuance",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "duration supply, term premium and collateral absorption",
+      "sign": "larger net supply may raise term premium; demand dependent",
+      "lag": "days-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "central_bank_balance_sheet_repo",
+      "to": "dxy_usd_funding",
+      "degree": 3,
+      "channel": "reserve liquidity and short-term USD funding",
+      "sign": "liquidity expansion may ease USD funding stress",
+      "lag": "days-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "regulatory_enforcement_courts",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "changes in legal access, exchange operations and institutional risk",
+      "sign": "case-specific; adverse enforcement may be negative",
+      "lag": "minutes-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "cyber_cloud_network_outages",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "exchange, custody, cloud and network availability",
+      "sign": "major outage/cyber loss negative liquidity/confidence hypothesis",
+      "lag": "minutes-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "sovereign_capital_flight",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "potential store-of-value demand and cross-border restrictions",
+      "sign": "positive local demand hypothesis, global risk response uncertain",
+      "lag": "days-180 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "social_attention_sentiment",
+      "to": "btc_usd",
+      "degree": 3,
+      "channel": "attention, retail demand and reflexive positioning",
+      "sign": "positive attention may precede demand or contrarian crowding",
+      "lag": "hours-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "ai_semiconductor_power_demand",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "capex, electricity demand, term premium and inflation expectations",
+      "sign": "higher investment/capacity pressure may lift yields",
+      "lag": "30-365 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "australia_iron_ore_coal_china_trade",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "export receipts and terms of trade",
+      "sign": "stronger export prices/volumes may strengthen AUD/USD",
+      "lag": "1-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "australia_wages_rents_inflation",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "RBA reaction function and expected real rate differential",
+      "sign": "upside persistence may lift AUD/USD if RBA reprices hawkishly",
+      "lag": "days-90 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "australia_energy_tariffs",
+      "to": "aud_usd",
+      "degree": 3,
+      "channel": "business costs, inflation and RBA expectations",
+      "sign": "mixed; higher tariffs can lift inflation but weaken growth",
+      "lag": "days-180 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "sovereign_auctions_collateral",
+      "to": "bond_real_yields",
+      "degree": 3,
+      "channel": "auction tails, collateral scarcity and term premium",
+      "sign": "weak demand/collateral stress may lift yields",
+      "lag": "minutes-30 days",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "btc_usd",
+      "to": "btc_aud",
+      "degree": 0,
+      "channel": "numerator of cross rate",
+      "sign": "BTC/USD positive implies BTC/AUD positive, ceteris paribus",
+      "lag": "same bar",
+      "evidence_status": "hypothesis_only"
+    },
+    {
+      "from": "aud_usd",
+      "to": "btc_aud",
+      "degree": 0,
+      "channel": "denominator of cross rate",
+      "sign": "AUD/USD positive implies BTC/AUD negative, ceteris paribus",
+      "lag": "same bar",
+      "evidence_status": "hypothesis_only"
+    }
+  ]
+}

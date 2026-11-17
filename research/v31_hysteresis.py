@@ -54,7 +54,7 @@ def decision(bars, i, name, holding=False, held=0, events=()):
         return "BUY"
     return "HOLD"
 
-def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_veto=None, max_entry_debit=CAP):
+def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_veto=None, max_entry_debit=CAP, exit_veto=None):
     if name not in VARIANTS or start < WARMUP or end > len(bars) or end-start < 3:
         raise ValueError("Invalid replay segment")
     if not .5 <= cost_mult <= 2: raise ValueError("Invalid cost multiplier")
@@ -71,6 +71,14 @@ def replay(bars, start, end, name, events=(), cost_mult=1., audit=False, entry_v
         # Optional strictly-as-of event-risk gate: suppress BUY only; never block protective SELL.
         if action=="BUY" and entry_veto is not None and entry_veto(bars[i][0]):
             action="HOLD"
+        # Optional completed-bar exit override. The callback is invoked only
+        # while holding, after MIN_HOLD, and never on the terminal liquidation
+        # bar. Its timestamp is the next bar OPEN; callback inputs must be
+        # derived exclusively from candles completed before this timestamp.
+        if (action=="HOLD" and qty and exit_veto is not None
+                and i < end-1 and i-entry_i >= MIN_HOLD
+                and exit_veto(bars[i][0])):
+            action="SELL"
         if audit: actions.append((bars[i][0], bars[i-1][0], action))
         if action=="BUY" and not qty:
             budget=min(max_entry_debit,.1*cash)
