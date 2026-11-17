@@ -193,6 +193,7 @@ def persist_warc_capture_audit(warc_audit_path, rows_path, manifest_path):
         "capture_rows_seen": len(audit.get("capture_rows", [])),
         "capture_rows_added": added,
         "corpus_updated": bool(added),
+        "market_join": audit.get("market_join"),
     }
 
 
