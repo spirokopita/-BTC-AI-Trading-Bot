@@ -11,7 +11,7 @@
 - `tests/test_v43_drawdown_cash_gate.py` (9 tests)
 - `.github/workflows/v41-volume-confirmation.yml` (V43 CI step, bounded Common Crawl limit=1, concurrency cancellation, corrected persistence read-back command)
 - PR #33: https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/33
-- PR head: `f50bd8a176c876a338499cf2c5dae8c73605a47e`
+- PR final head: `bfd890b500d6f8eeae213e6ac9815f8e222c167f` (V43 code/test CI ran on `f50bd8a176c876a338499cf2c5dae8c73605a47e`; subsequent commits were documentation-only)
 - Main merge: `28cc61951a2a16879e7e04c935a74a80f239d5fd`; persistence commit `1aadc46d284b310895a1ee916d5f6a22922e3076`
 - PR CI run 44190949880 PASSED 357 full regression tests + 9 V43 tests; main push run 44191923759 research and persistence jobs PASSED. Main artifact 14378080633, SHA256 `81cabf71f9b148a566fee73ad1135ada5d1f655408179646ca419d0b7ea05e68`.
 - Test command: `python -m unittest discover -s tests -p 'test_v43_drawdown_cash_gate.py' -v`; full suite: `python -m unittest discover -s tests -v`.
@@ -45,15 +45,8 @@ A$50/A$100 sensitivity (H80/300): A$50 current friction NET +A$19.640152; A$100 
 ## News/event context (not a predictive claim)
 Five retrospective publication-time events and seven matched controls: mean event-minus-control NET +A$0.366381 at 4h, -A$0.657088 at 24h, -A$1.124280 at 48h; seven overlapping 7-day event windows. Convenience sample, no first-observed timestamps, not independent enough to establish predictiveness. RBA November minutes were actually published 17 Nov 11:30 AEDT (00:30 UTC); the checked-in event file still calls them scheduled/not yet released. The 17 Nov CoinDesk ETF-flow follow-up (published 06:36 EST / 11:36 UTC) is also not yet captured as first-observed. Do not use either retrospectively in the strategy until provenance is fixed.
 
-## Next source and strategy hypothesis
-- Existing `research/v39_rba_fx_asof.py` provides 2,224 official RBA daily AUD/USD observations (F11.1 / WM-Reuters source); conservative availability is assumed 17:00 Sydney +24h, not historically first-observed. Use this existing connector for BTC/USD–AUD/USD decomposition; FRED DEXUSAL is a daily cross-check, while bulk ALFRED vintages require authorized key access.
-- RBA minutes published 17 Nov 11:30 AEDT (00:30 UTC); the current event file still marks them future. Add an actual first-observed snapshot and keep the 17 Nov CoinDesk ETF-flow follow-up separate from its publication time.
-
-## Android
-No changes and no APK. Native Kotlin/Compose/Room PAPER engine remains HOLD; A$100 inclusive cap, 10% available-cash cap, 80bps taker, stale/offline entry block, 15-minute WorkManager minimum, purple status notification, master controls and idempotent controls preserved. Live execution remains disabled.
-
 ## Next
-1. Merge PR #33 and verify main push persistence commits 265 rows, manifest SHA and cursor; read back all values.
-2. Add first-observed snapshots for the RBA minutes and CoinDesk ETF-flow follow-up, keeping published/update/capture/retrieval times separate.
-3. Diagnose Common Crawl with a different URL-key normalization and index; do not repeat the two exact 404 queries.
-4. Test BTC/USD–AUD/USD decomposition using official RBA/FRED series with conservative availability lag, then compare against price-only and degree-1 baselines under the same cost model.
+1. Capture the RBA minutes released 17 Nov 11:30 AEDT and the 17 Nov CoinDesk ETF-flow follow-up with actual first-observed times; keep publication, update, capture and retrieval times separate.
+2. Test BTC/USD–AUD/USD decomposition using the existing RBA F11.1 daily connector (2,224 rows, assumed 17:00 Sydney +24h availability); compare with price-only and degree-1 baselines. RBA source terms restrict redistribution; FRED DEXUSAL is a secondary daily cross-check, and bulk ALFRED vintages require authorized key access.
+3. Diagnose Common Crawl with a different URL-key normalization and collection index; do not repeat the two exact 404 queries.
+4. Sample the remaining 18 months toward the 10,000 outcome-independent monthly-article target (1,399/10,000, 13.99%).
