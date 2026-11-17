@@ -243,6 +243,7 @@ jobs:
           assert w['body_downloaded'] is False
           assert w['market_join']['mode']=='V44_STRICT_ASOF_KRAKEN_4H_JOIN'
           assert w['market_join']['strict_asof_eligible']<=w.get('verified_capture_versions',0)
+          assert w['market_join']['strict_asof_eligible']+w['market_join']['pending_after_last_bar']+w['market_join']['proof_rejected']==w.get('verified_capture_versions',0)
           assert w['market_join']['no_lookahead'] is True
           assert w.get('requests_attempted',0)<=9
           assert w.get('verified_capture_versions',0)==len(w.get('capture_rows',[]))
