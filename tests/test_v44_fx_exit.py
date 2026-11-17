@@ -162,6 +162,20 @@ class V44FxExitTests(unittest.TestCase):
             mocked.assert_called_once_with(
                 events[0], START + 100, latency_seconds=3600)
 
+    def test_news_veto_audit_records_decision_bar_for_missed_opportunity(self):
+        bars = bars_fixture()
+        events = [{"id": "verified-negative", "sentiment": -1}]
+        audit = []
+        with patch("research.v48_news_proof_gate.classify",
+                   return_value={"eligible": True,
+                                 "available_at_utc": START + 10}):
+            veto, _ = make_news_entry_veto(
+                events, "h80_news_negative_veto",
+                bars=bars, audit_rows=audit)
+            self.assertTrue(veto(bars[500][0]))
+        self.assertEqual(audit[0]["decision_index"], 500)
+        self.assertEqual(audit[0]["decision"], "VETOED_BUY")
+
     def test_news_veto_does_not_use_unavailable_or_unscored_news(self):
         with patch("research.v48_news_proof_gate.classify",
                    return_value={"eligible": False,
