@@ -154,6 +154,7 @@ def _record(source, body, final_url, retrieved, published, updated,
         "availability_latency_seconds": LATENCY_SECONDS,
         "historical_asof_use": "NOT_ELIGIBLE_FOR_PRE_CAPTURE_DECISIONS",
         "paper_only": True,
+        "usage_constraints": "metadata and response hashes only; no article body redistribution; respect publisher terms",
     }
 
 
