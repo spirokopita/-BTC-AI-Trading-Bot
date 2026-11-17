@@ -36,9 +36,18 @@ Predeclared H80/300 base; 540 completed 4h bars (90d); drawdown thresholds 10/15
 | 15% delayed placebo | 7 | +32.536538 | 11.298383 | 0.706165 | 0.706165 | +19.825825 | +0.660861% | -4.159425% |
 | A$100 buy-and-hold | 3 | +135.859476 | 5.842937 | 0.365252 | 0.365252 | +129.286037 | +4.309535% | -2.790726% |
 
-All train/validation selectors chose HOLD. Therefore selected test NET = A$0 by design. H80/300 is a diagnostic, not the selected policy. The 10/15% gates each vetoed 58 BUY attempts and lowered NET by A$18.980657 versus baseline; the 20% gate did nothing. The delayed placebo nearly matched the live gate. **Reject the feature.**
+All train/validation selectors chose HOLD. Therefore selected test NET = A$0 by design. H80/300 is a diagnostic, not the selected policy. The 10/15% gates each vetoed 58 BUY attempts and lowered NET by A$18.980657 versus baseline; the 20% gate did nothing. Among 58 vetoed signals, 22 had positive 24h forward returns and 3 had positive 7d returns; mean forward returns were -0.483119% and -2.034414%, respectively. The delayed 7d placebo nearly matched the live gate, so the result is not specific to current drawdown information. **Reject the feature.**
 
-Price-only baselines on the same three test segments: SMA 118 trades NET -A$119.682481; momentum 242 NET -A$374.775403; RSI 158 NET -A$225.519567; ATR breakout 133 NET -A$197.561916; regime 267 NET -A$407.787388; trend+ATR 20 NET -A$27.686213.
+Price-only baselines on the same three test segments (A$3,000 summed reset capital):
+
+| Baseline | Trades | Wins/losses | Gross | Fees | Spread | Slippage | NET | Return | Worst DD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| SMA | 118 | 20/98 | +86.793716 | 183.534320 | 11.470939 | 11.470939 | -119.682481 | -3.989416% | -7.631585% |
+| Momentum | 242 | 18/224 | +24.061066 | 354.521285 | 22.157592 | 22.157592 | -374.775403 | -12.492513% | -19.713239% |
+| RSI | 158 | 11/147 | +43.488769 | 239.118482 | 14.944926 | 14.944926 | -225.519567 | -7.517319% | -13.666897% |
+| ATR breakout | 133 | 13/120 | +30.799440 | 202.987846 | 12.686756 | 12.686756 | -197.561916 | -6.585397% | -9.369700% |
+| Regime | 267 | 21/246 | +22.700181 | 382.655597 | 23.915986 | 23.915986 | -407.787388 | -13.592913% | -24.735182% |
+| Trend + ATR | 20 | 3/17 | +7.746437 | 31.495682 | 1.968484 | 1.968484 | -27.686213 | -0.922874% | -2.153114% |
 
 A$50/A$100 sensitivity (H80/300): A$50 current friction NET +A$19.640152; A$100 half/current/double friction +A$45.178506 / +A$38.454151 / +A$25.215557. 10/15% gate: A$50 current +A$10.149824; A$100 half/current/double +A$26.026247 / +A$19.473494 / +A$6.573540.
 
