@@ -38,11 +38,26 @@ class V44RecentNewsTests(unittest.TestCase):
             datetime(2026, 11, 18, 0, 1, tzinfo=timezone.utc),
             datetime(2026, 11, 18, 0, 2, tzinfo=timezone.utc),
         ])
+        bars = [
+            (int(datetime(2026, 11, 18, hour, 0,
+                          tzinfo=timezone.utc).timestamp()),
+             100.0, 101.0, 99.0, 100.0, 1.0)
+            for hour in (0, 4, 8)
+        ]
         result = capture_all(
             fetcher=lambda url: mapping[url],
             clock=lambda: next(clock_values),
+            bars=bars,
+            market_provenance={"source_response_sha256": "fixture"},
         )
         self.assertEqual(result["record_count"], 2)
+        self.assertEqual(result["market_join"]["strict_asof_eligible"], 2)
+        self.assertTrue(result["market_join"]["no_lookahead"])
+        self.assertEqual(
+            {row["first_tradable_bar_open_utc"]
+             for row in result["market_join"]["matches"]},
+            {"2026-11-18T04:00:00Z"},
+        )
         for row, body in zip(result["records"], (rba_page, coindesk_page)):
             digest = hashlib.sha256(body).hexdigest()
             self.assertEqual(row["content_sha256"], digest)
