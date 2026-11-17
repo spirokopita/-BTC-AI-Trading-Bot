@@ -17,12 +17,12 @@ import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 
-from research.v29_point_in_time import CAP, CASH, buyhold, simulate
+from research.v29_point_in_time import CAP, CASH, simulate
 from research.v31_hysteresis import WARMUP, replay
 from research.v32_segments import segments
 from research.v42_volatility_exit import boundaries_v42
 from research.v39_rba_fx_asof import fetch_fx
-from research.v41_volume_confirmation import load_verified_news
+from research.v41_volume_confirmation import buyhold_audit, load_verified_news
 
 FX_WINDOW = 20
 FX_STALENESS_SECONDS = 10 * 86400
@@ -271,7 +271,7 @@ def evaluate(bars, market_provenance, fx, fx_provenance, news_path):
             "selected_test_net_aud": 0.0 if selected == "HOLD" else tests[selected]["net_aud"],
             "test": tests,
             "price_only_baselines": baselines,
-            "buyhold_aud100": buyhold(local, test_start, n),
+            "buyhold_aud100": buyhold_audit(local, test_start, n, max_entry_debit=100.0),
             "sensitivity": sensitivity,
         })
     if not folds:
