@@ -4,8 +4,10 @@ A forced exit is tested only when the BTC/AUD 30-day return remains positive
 while the implied BTC/USD component is weak. RBA FX is a retrospective
 snapshot with assumed 17:00 Sydney +24h availability, not a verified vintage.
 All Kraken periods have been inspected before; results are exploratory only.
-No news signal is used, no Android promotion is allowed, and live execution
-remains disabled.
+Historical news variants use only V48 exact-version proof and a seven-day
+shifted placebo. The new V44 RBA/CoinDesk snapshots are prospective only and
+are not fed into this historical replay. No Android promotion is allowed.
+Live execution remains disabled.
 """
 from __future__ import annotations
 
@@ -361,6 +363,7 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         "fx_historical_first_observed_verified": False,
         "fx_historical_revisions_verified": False,
         "candidates": list(CANDIDATES),
+        "selectable_candidates": list(SELECTABLE),
         "selection": (
             "50/20/30 chronological split, 84-bar embargo; >=2 trades and "
             "positive NET in train and validation, otherwise HOLD"),
@@ -390,6 +393,8 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
             "RBA FX data is a retrospective snapshot with assumed +24h availability",
             "Current 80bps taker fee and modeled spread/slippage applied to historical prices",
             "No observed order-book queue, partial fills, or actual execution",
+            "News variants fail closed when V48 exact-version proof or numeric sentiment is absent",
+            "V44 current RBA/CoinDesk captures are prospective only and excluded from this backtest",
             "Three independent A$1,000 reset wallets; summed returns are not compounded",
         ],
     }
