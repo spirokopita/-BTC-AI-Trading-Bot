@@ -61,6 +61,45 @@ class V44PersistCaptureTests(unittest.TestCase):
             self.assertEqual(result["rows"], 0)
             self.assertEqual(result["new_versions_inserted_this_run"], 0)
 
+    def test_syndicated_articles_share_one_event_cluster(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            audit = root / "audit.json"
+            data = root / "news.jsonl"
+            manifest = root / "manifest.json"
+            records = [
+                {
+                    "url": "https://www.coindesk.com/sample",
+                    "publisher": "CoinDesk",
+                    "event_cluster_id": "US_BTC_ETF_FLOWS_2026_11_16",
+                    "status": "CAPTURED_METADATA_HASH_ONLY",
+                    "capture_version_hash": "c"*64,
+                    "body_stored": False,
+                    "retrieved_at_utc": "2026-11-17T22:58:43Z",
+                    "first_persisted_observation_at_utc": "2026-11-17T22:58:43Z",
+                },
+                {
+                    "url": "https://cryptobriefing.com/sample",
+                    "publisher": "Crypto Briefing",
+                    "event_cluster_id": "US_BTC_ETF_FLOWS_2026_11_16",
+                    "status": "CAPTURED_METADATA_HASH_ONLY",
+                    "capture_version_hash": "d"*64,
+                    "body_stored": False,
+                    "retrieved_at_utc": "2026-11-17T22:58:44Z",
+                    "first_persisted_observation_at_utc": "2026-11-17T22:58:44Z",
+                },
+            ]
+            audit.write_text(json.dumps({
+                "schema": "v44_direct_news_capture_1",
+                "records": records,
+            }))
+            result = merge_capture(audit, data_path=data, manifest_path=manifest)
+            self.assertEqual(result["distinct_urls"], 2)
+            self.assertEqual(result["distinct_event_clusters"], 1)
+            cluster = result["event_clusters"]["US_BTC_ETF_FLOWS_2026_11_16"]
+            self.assertEqual(cluster["rows"], 2)
+            self.assertEqual(cluster["publishers"], ["CoinDesk", "Crypto Briefing"])
+
     def test_unknown_schema_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             audit = Path(temp) / "audit.json"
