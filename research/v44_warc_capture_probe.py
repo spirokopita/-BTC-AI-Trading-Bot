@@ -309,11 +309,23 @@ def main(argv=None):
                         default="https://odaily.news/newsflash/280563")
     args = parser.parse_args(argv)
     audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
-    report = probe(
-        audit.get("records", []),
-        datetime.now(timezone.utc).isoformat(),
-        preferred_url=args.preferred_url,
-    )
+    try:
+        report = probe(
+            audit.get("records", []),
+            datetime.now(timezone.utc).isoformat(),
+            preferred_url=args.preferred_url,
+        )
+    except Exception as exc:
+        report = {
+            "mode": "V44_COMMON_CRAWL_ALTERNATE_URLKEY_PROBE",
+            "status": "BLOCKED_OR_FAILED",
+            "error": f"{type(exc).__name__}: {str(exc)[:240]}",
+            "requests_attempted": 0,
+            "successful_index_queries": 0,
+            "verified_capture_versions": 0,
+            "capture_rows": [],
+            "body_downloaded": False,
+        }
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
