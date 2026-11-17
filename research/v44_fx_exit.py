@@ -124,7 +124,7 @@ def make_exit_veto(bars, fx, candidate, audit_rows=None):
     return veto, counts
 
 
-def make_news_entry_veto(events, candidate):
+def make_news_entry_veto(events, candidate, bars=None, audit_rows=None):
     """Strict V48 negative-news entry veto and a seven-day shifted placebo."""
     if candidate not in (
             "h80_news_negative_veto",
@@ -135,6 +135,8 @@ def make_news_entry_veto(events, candidate):
              if candidate.endswith("placebo7d") else 0)
     counts = {"verified_event_rows": len(events),
               "vetoed_candidate_bars": 0}
+    index_by_ts = ({int(row[0]): i for i, row in enumerate(bars)}
+                   if bars is not None else {})
 
     def veto(decision_ts):
         cutoff = float(decision_ts) - delay
@@ -149,6 +151,18 @@ def make_news_entry_veto(events, candidate):
             if (negative and proof["available_at_utc"] <= cutoff
                     and cutoff - proof["available_at_utc"] < NEWS_WINDOW_SECONDS):
                 counts["vetoed_candidate_bars"] += 1
+                if audit_rows is not None:
+                    index = index_by_ts.get(int(decision_ts))
+                    if index is None:
+                        raise ValueError("News veto timestamp absent from bars")
+                    audit_rows.append({
+                        "decision_index": index,
+                        "decision_ts": int(decision_ts),
+                        "event_id": event.get("id") or event.get("url"),
+                        "available_at_utc": proof["available_at_utc"],
+                        "sentiment": event.get("sentiment"),
+                        "decision": "VETOED_BUY",
+                    })
                 return True
         return False
 
@@ -169,7 +183,10 @@ def replay_variant(bars, start, end, candidate, fx, *, events=(),
     veto, counts = make_exit_veto(
         bars, fx, candidate, audit_rows=forced_rows,
     )
-    entry_veto, news_counts = make_news_entry_veto(events, candidate)
+    news_rows = [] if audit else None
+    entry_veto, news_counts = make_news_entry_veto(
+        events, candidate, bars=bars, audit_rows=news_rows,
+    )
     result = replay(
         bars, start, end, BASE_STRATEGY[candidate], events=(),
         cost_mult=cost_mult, audit=audit,
@@ -179,6 +196,7 @@ def replay_variant(bars, start, end, candidate, fx, *, events=(),
     result["candidate"] = candidate
     result["feature_counts"] = counts
     result["news_counts"] = news_counts
+    result["news_veto_audit"] = news_rows or []
     result["forced_exit_audit"] = forced_rows or []
     if audit:
         result.pop("decision_audit", None)
@@ -367,8 +385,12 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
             "buyhold_aud100": buyhold_detail(local, test_start, n),
             "fee_sensitivity": sensitivity,
             "missed_opportunities": {
-                name: missed_opportunities(
-                    local, tests[name]["forced_exit_audit"], n)
+                name: {
+                    "forced_exit": missed_opportunities(
+                        local, tests[name]["forced_exit_audit"], n),
+                    "news_veto": missed_opportunities(
+                        local, tests[name]["news_veto_audit"], n),
+                }
                 for name in CANDIDATES
             },
         })
