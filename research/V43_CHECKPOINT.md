@@ -2,7 +2,7 @@
 
 ## Execution status
 - **DONE:** V43 research implementation, 9 targeted tests, full repository regression, official Kraken archive replay, fresh Kraken OHLC bridge, recent event study, 12-month cryptocurrency.cv sample, bounded Common Crawl diagnostic, accounting and chronology verification.
-- **PARTIAL:** PR #33 open and CI green. Main-branch corpus/cursor persistence has not run because PR workflows intentionally skip the push-only persistence job.
+- **DONE:** PR #33 merged; main push research and persistence jobs passed. Read-back verified 2,491 rows, 1,428 article versions, 1,399 outcome-independent monthly archive articles, cursor 64/64 and 18 months remaining.
 - **BLOCKED:** Common Crawl exact-URL lookup: one ODaily URL, two post-publication indexes, both HTTP 404. This does not establish that the page was never crawled.
 - **NOT ATTEMPTED:** Android engine changes or APK build; no research candidate passed train/validation, so no promotion was warranted.
 
@@ -12,8 +12,8 @@
 - `.github/workflows/v41-volume-confirmation.yml` (V43 CI step, bounded Common Crawl limit=1, concurrency cancellation, corrected persistence read-back command)
 - PR #33: https://github.com/spirokopita/-BTC-AI-Trading-Bot/pull/33
 - PR head: `f50bd8a176c876a338499cf2c5dae8c73605a47e`
-- Main base: `68745b8d150203315e33609da461b146d118953b`
-- CI run: 44190949880 PASSED; 357 full regression tests + 9 V43 tests; artifact 14377081503, SHA256 `fc669c5277994c8060b5bda27cd8886897082d04a6de422605c542bf29eca45c`.
+- Main merge: `28cc61951a2a16879e7e04c935a74a80f239d5fd`; persistence commit `1aadc46d284b310895a1ee916d5f6a22922e3076`
+- PR CI run 44190949880 PASSED 357 full regression tests + 9 V43 tests; main push run 44191923759 research and persistence jobs PASSED. Main artifact 14378080633, SHA256 `81cabf71f9b148a566fee73ad1135ada5d1f655408179646ca419d0b7ea05e68`.
 - Test command: `python -m unittest discover -s tests -p 'test_v43_drawdown_cash_gate.py' -v`; full suite: `python -m unittest discover -s tests -v`.
 
 ## Data provenance
@@ -44,6 +44,10 @@ A$50/A$100 sensitivity (H80/300): A$50 current friction NET +A$19.640152; A$100 
 
 ## News/event context (not a predictive claim)
 Five retrospective publication-time events and seven matched controls: mean event-minus-control NET +A$0.366381 at 4h, -A$0.657088 at 24h, -A$1.124280 at 48h; seven overlapping 7-day event windows. Convenience sample, no first-observed timestamps, not independent enough to establish predictiveness. RBA November minutes were actually published 17 Nov 11:30 AEDT (00:30 UTC); the checked-in event file still calls them scheduled/not yet released. The 17 Nov CoinDesk ETF-flow follow-up (published 06:36 EST / 11:36 UTC) is also not yet captured as first-observed. Do not use either retrospectively in the strategy until provenance is fixed.
+
+## Next source and strategy hypothesis
+- Existing `research/v39_rba_fx_asof.py` provides 2,224 official RBA daily AUD/USD observations (F11.1 / WM-Reuters source); conservative availability is assumed 17:00 Sydney +24h, not historically first-observed. Use this existing connector for BTC/USD–AUD/USD decomposition; FRED DEXUSAL is a daily cross-check, while bulk ALFRED vintages require authorized key access.
+- RBA minutes published 17 Nov 11:30 AEDT (00:30 UTC); the current event file still marks them future. Add an actual first-observed snapshot and keep the 17 Nov CoinDesk ETF-flow follow-up separate from its publication time.
 
 ## Android
 No changes and no APK. Native Kotlin/Compose/Room PAPER engine remains HOLD; A$100 inclusive cap, 10% available-cash cap, 80bps taker, stale/offline entry block, 15-minute WorkManager minimum, purple status notification, master controls and idempotent controls preserved. Live execution remains disabled.
