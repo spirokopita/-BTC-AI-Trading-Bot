@@ -230,7 +230,7 @@ jobs:
           bh=x['aggregate_buyhold_aud100']
           assert bh['trades']==bh['wins']+bh['losses']
           assert abs(bh['gross_aud']-bh['fees_aud']-bh['spread_aud']-bh['slippage_aud']-bh['net_aud'])<.00001
-          assert bh['max_drawdown_pct']<=0
+          assert bh['worst_fold_drawdown_pct']<=0
           print('V44_BUYHOLD_BREAKDOWN',bh)
           print('V44_NEWS_VETOED_BARS',sum(f['test']['h80_news_negative_veto']['news_counts']['vetoed_candidate_bars'] for f in x['folds']))
           print('V44_SELECTORS',x['selected_by_fold'],'SELECTED_NET',x['aggregate_selected_test_net_aud'],'BUYHOLD',x['aggregate_buyhold_aud100_net'])
