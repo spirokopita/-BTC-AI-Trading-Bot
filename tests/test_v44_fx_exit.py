@@ -137,7 +137,8 @@ class V44FxExitTests(unittest.TestCase):
     def test_selector_fails_closed_without_positive_train_and_validation(self):
         training = {name: {"trades": 2, "net_aud": 1.0}
                     for name in ("h80_base", "h80_fx_mask_exit_0",
-                                 "h80_fx_mask_exit_m1", "h50_base")}
+                                 "h80_fx_mask_exit_m1",
+                                 "h80_news_negative_veto", "h50_base")}
         validation = {name: {"trades": 2, "net_aud": 2.0}
                       for name in training}
         self.assertIn(select(training, validation), training)
