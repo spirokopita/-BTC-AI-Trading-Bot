@@ -276,7 +276,7 @@ def evaluate(bars, fx, market_provenance, fx_provenance):
                 tests[chosen]["net_aud"] if chosen != "HOLD" else 0.0),
             "test": tests,
             "price_baselines": baselines,
-            "buyhold_aud100": buyhold(local, test_start, n),
+            "buyhold_aud100_net_aud": buyhold(local, test_start, n),
             "fee_sensitivity": sensitivity,
             "missed_opportunities": {
                 name: missed_opportunities(
@@ -315,7 +315,7 @@ def evaluate(bars, fx, market_provenance, fx_provenance):
         "aggregate_independent_aud1000_reset_accounts": totals,
         "aggregate_price_baselines": baseline_totals,
         "aggregate_buyhold_aud100_net": round(sum(
-            fold["buyhold_aud100"]["net_aud"] for fold in folds), 6),
+            fold["buyhold_aud100_net_aud"] for fold in folds), 6),
         "aggregate_selected_test_net_aud": round(sum(
             fold["selected_test_net_aud"] for fold in folds), 6),
         "selected_by_fold": [
