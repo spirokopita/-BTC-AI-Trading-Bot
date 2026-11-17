@@ -77,12 +77,13 @@ class V44LiveNewsCaptureTests(unittest.TestCase):
         self.assertEqual(next_4h_open("2026-11-18T00:00:00Z"),
                          "2026-11-18T04:00:00Z")
 
-    def test_run_preserves_all_three_source_roles(self):
+    def test_run_preserves_all_source_roles(self):
         report = run(ok_fetch, retrieved_at_utc="2026-11-17T22:48:33Z",
                      workflow_event="push", workflow_ref="refs/heads/main")
-        self.assertEqual(report["record_count"], 3)
-        self.assertEqual(report["captured_count"], 3)
+        self.assertEqual(report["record_count"], 4)
+        self.assertEqual(report["captured_count"], 4)
         self.assertEqual(report["failed_count"], 0)
+        self.assertEqual(report["records"][1]["event_cluster_id"], report["records"][2]["event_cluster_id"])
         self.assertEqual(len({row["capture_version_hash"] for row in report["records"]}), 1)
         self.assertTrue(all(not row["strict_historical_backtest_eligible"]
                             for row in report["records"]))
