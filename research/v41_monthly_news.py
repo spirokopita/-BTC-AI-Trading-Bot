@@ -63,6 +63,12 @@ def retryable_status(status):
         "429", "500", "502", "503", "504", "timeout",
         "timed out", "urlerror", "temporarily unavailable",
         "connection reset", "remote end closed",
+        # Validation failures are unresolved, not empty-success months.
+        # Keep them retryable so corrected date filters can revisit them.
+        "no returned article has verified publication month",
+        "archive api did not echo requested date filters",
+        "outside requested utc publication month",
+        "unknown response shape",
     ))
 
 
