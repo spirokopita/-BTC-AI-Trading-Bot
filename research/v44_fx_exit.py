@@ -29,12 +29,15 @@ CANDIDATES = (
     "h80_fx_mask_exit_0",
     "h80_fx_mask_exit_m1",
     "h80_fx_mask_exit_placebo7d",
+    "h80_news_negative_veto",
+    "h80_news_negative_veto_placebo7d",
     "h50_base",
 )
 SELECTABLE = (
     "h80_base",
     "h80_fx_mask_exit_0",
     "h80_fx_mask_exit_m1",
+    "h80_news_negative_veto",
     "h50_base",
 )
 BASE_STRATEGY = {
@@ -42,6 +45,8 @@ BASE_STRATEGY = {
     "h80_fx_mask_exit_0": "h80_300",
     "h80_fx_mask_exit_m1": "h80_300",
     "h80_fx_mask_exit_placebo7d": "h80_300",
+    "h80_news_negative_veto": "h80_300",
+    "h80_news_negative_veto_placebo7d": "h80_300",
     "h50_base": "h50_200",
 }
 WEAK_USD_THRESHOLD = {
@@ -50,6 +55,8 @@ WEAK_USD_THRESHOLD = {
     "h80_fx_mask_exit_placebo7d": 0.0,
 }
 BTC_AUD_MIN_RETURN = math.log(1.02)
+NEWS_WINDOW_SECONDS = 7 * 86400
+NEWS_DELAY_SECONDS = 7 * 86400
 COSTS_BPS_EACH_SIDE = {"taker": 80, "half_spread": 5, "slippage": 5}
 FIELDS = ("trades", "wins", "losses", "gross_aud", "fees_aud",
           "spread_aud", "slippage_aud", "net_aud")
@@ -66,7 +73,7 @@ def make_exit_veto(bars, fx, candidate, audit_rows=None):
     """
     if candidate not in CANDIDATES:
         raise ValueError("Unknown V44 candidate")
-    if candidate in ("h80_base", "h50_base"):
+    if candidate not in WEAK_USD_THRESHOLD:
         return None, {"feature_observations": 0, "missing_fx": 0,
                       "forced_exits": 0}
     threshold = WEAK_USD_THRESHOLD[candidate]
@@ -113,8 +120,39 @@ def make_exit_veto(bars, fx, candidate, audit_rows=None):
     return veto, counts
 
 
-def replay_variant(bars, start, end, candidate, fx, *, cost_mult=1.0,
-                   max_entry_debit=CAP, audit=False):
+def make_news_entry_veto(events, candidate):
+    """Strict V48 negative-news entry veto and a seven-day shifted placebo."""
+    if candidate not in (
+            "h80_news_negative_veto",
+            "h80_news_negative_veto_placebo7d"):
+        return None, {"verified_event_rows": 0, "vetoed_candidate_bars": 0}
+    from research.v48_news_proof_gate import classify as classify_news
+    delay = (NEWS_DELAY_SECONDS
+             if candidate.endswith("placebo7d") else 0)
+    counts = {"verified_event_rows": len(events),
+              "vetoed_candidate_bars": 0}
+
+    def veto(decision_ts):
+        cutoff = float(decision_ts) - delay
+        for event in events:
+            proof = classify_news(event, cutoff, latency_seconds=3600)
+            if not proof["eligible"]:
+                continue
+            try:
+                negative = float(event.get("sentiment", 0)) < 0
+            except (TypeError, ValueError):
+                negative = False
+            if (negative and proof["available_at_utc"] <= cutoff
+                    and cutoff - proof["available_at_utc"] < NEWS_WINDOW_SECONDS):
+                counts["vetoed_candidate_bars"] += 1
+                return True
+        return False
+
+    return veto, counts
+
+
+def replay_variant(bars, start, end, candidate, fx, *, events=(),
+                   cost_mult=1.0, max_entry_debit=CAP, audit=False):
     if candidate not in CANDIDATES:
         raise ValueError("Unknown V44 candidate")
     if not 0 < max_entry_debit <= CAP:
@@ -127,13 +165,16 @@ def replay_variant(bars, start, end, candidate, fx, *, cost_mult=1.0,
     veto, counts = make_exit_veto(
         bars, fx, candidate, audit_rows=forced_rows,
     )
+    entry_veto, news_counts = make_news_entry_veto(events, candidate)
     result = replay(
         bars, start, end, BASE_STRATEGY[candidate], events=(),
         cost_mult=cost_mult, audit=audit,
-        max_entry_debit=max_entry_debit, exit_veto=veto,
+        max_entry_debit=max_entry_debit,
+        entry_veto=entry_veto, exit_veto=veto,
     )
     result["candidate"] = candidate
     result["feature_counts"] = counts
+    result["news_counts"] = news_counts
     result["forced_exit_audit"] = forced_rows or []
     if audit:
         result.pop("decision_audit", None)
@@ -209,7 +250,8 @@ def bars_from_json(path):
     return bars
 
 
-def evaluate(bars, fx, market_provenance, fx_provenance):
+def evaluate(bars, fx, market_provenance, fx_provenance,
+            events=(), news_provenance=None):
     folds = []
     for left, right in segments(bars, 1000):
         local = bars[left:right]
@@ -218,16 +260,19 @@ def evaluate(bars, fx, market_provenance, fx_provenance):
         if train_end <= WARMUP:
             raise ValueError("Insufficient train history after warm-up")
         training = {
-            name: replay_variant(local, WARMUP, train_end, name, fx)
+            name: replay_variant(local, WARMUP, train_end, name, fx,
+                                  events=events)
             for name in SELECTABLE
         }
         validation = {
-            name: replay_variant(local, val_start, val_end, name, fx)
+            name: replay_variant(local, val_start, val_end, name, fx,
+                                  events=events)
             for name in SELECTABLE
         }
         chosen = select(training, validation)
         tests = {
-            name: replay_variant(local, test_start, n, name, fx, audit=True)
+            name: replay_variant(local, test_start, n, name, fx,
+                                  events=events, audit=True)
             for name in CANDIDATES
         }
         baselines = {
@@ -238,14 +283,17 @@ def evaluate(bars, fx, market_provenance, fx_provenance):
         sensitivity = {
             name: {
                 "A50_current_cost": replay_variant(
-                    local, test_start, n, name, fx, max_entry_debit=50.0,
+                    local, test_start, n, name, fx, events=events,
+                    max_entry_debit=50.0,
                 )["net_aud"],
                 "A100_half_cost": replay_variant(
-                    local, test_start, n, name, fx, cost_mult=0.5,
+                    local, test_start, n, name, fx, events=events,
+                    cost_mult=0.5,
                 )["net_aud"],
                 "A100_current_cost": tests[name]["net_aud"],
                 "A100_double_cost": replay_variant(
-                    local, test_start, n, name, fx, cost_mult=2.0,
+                    local, test_start, n, name, fx, events=events,
+                    cost_mult=2.0,
                 )["net_aud"],
             }
             for name in CANDIDATES
@@ -302,6 +350,11 @@ def evaluate(bars, fx, market_provenance, fx_provenance):
         "mode": "V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
         "market": market_provenance,
         "fx": fx_provenance,
+        "news": news_provenance or {
+            "strict_verified_event_rows": len(events),
+            "signal": "negative sentiment veto with 1h V48 latency and 7d window",
+            "placebo": "same rule shifted 7d earlier",
+        },
         "fx_availability": (
             "RBA 17:00 Australia/Sydney +24h DST-aware ASSUMPTION; "
             "retrospective snapshot, not historical first-observed/vintage"),
@@ -357,7 +410,20 @@ def main(argv=None):
     else:
         bars, market_provenance = archive()
     fx, fx_provenance = fetch_fx()
-    report = evaluate(bars, fx, market_provenance, fx_provenance)
+    from research.v41_volume_confirmation import load_verified_news
+    events, news_sha256, news_counts = load_verified_news()
+    news_provenance = {
+        "strict_verified_event_rows": len(events),
+        "historical_news_corpus_sha256": news_sha256,
+        "proof_classification_counts": news_counts,
+        "availability": "V48 exact-version proof only; 1h latency; no publication-time backdating",
+        "signal": "negative-sentiment 7d entry veto; 7d shifted placebo; train-only selection",
+        "current_v44_publisher_snapshots_used": False,
+    }
+    report = evaluate(
+        bars, fx, market_provenance, fx_provenance,
+        events=events, news_provenance=news_provenance,
+    )
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(report, indent=2, allow_nan=False, sort_keys=True)
