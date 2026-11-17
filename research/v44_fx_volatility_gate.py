@@ -284,11 +284,22 @@ def evaluate(bars, market_provenance, fx, fx_provenance, news_path):
     buyhold_rows = [fold["buyhold_aud100"] for fold in folds]
     buyhold_total = aggregate(buyhold_rows)
     selected_net = round(sum(fold["selected_test_net_aud"] for fold in folds), 6)
+    historical_fx_present = "rba_f11_xls_2018_2022" in fx_provenance.get("successful_sources", {})
+    fx_coverage_complete = all(
+        fold["fx_coverage"]["train"] >= 0.75
+        and fold["fx_coverage"]["validation"] >= 0.75
+        and fold["fx_coverage"]["test"] >= 0.75
+        for fold in folds
+    )
+    data_quality_status = "PASS" if historical_fx_present and fx_coverage_complete else "INCOMPLETE_HISTORICAL_FX"
     return {
         "mode": "V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
         "hypothesis": "20-observation annualized AUD/USD realized-volatility gate on H80/300 BUYs",
         "market": market_provenance,
         "fx": fx_provenance,
+        "data_quality_status": data_quality_status,
+        "historical_fx_source_present": historical_fx_present,
+        "all_fold_fx_coverage_at_least_75pct": fx_coverage_complete,
         "fx_feature": {
             "source": "RBA F11.1 and 2018-2022 historical XLS",
             "quote": "USD per AUD; AUD/USD",
@@ -316,7 +327,8 @@ def evaluate(bars, market_provenance, fx, fx_provenance, news_path):
         "aggregate_buyhold_aud100": buyhold_total,
         "aggregate_selected_test_net_aud": selected_net,
         "selected_policy": "HOLD" if all(fold["selected_using_train_validation_only"] == "HOLD" for fold in folds) else "FOLD_SPECIFIC_TRAIN_VALIDATION_SELECTION",
-        "promotion": "REJECTED_PENDING_UNTOUCHED_OOS_AND_VERIFIED_FX_VINTAGES",
+        "promotion": ("REJECTED_PENDING_UNTOUCHED_OOS_AND_VERIFIED_FX_VINTAGES"
+                      if data_quality_status == "PASS" else "REJECTED_INCOMPLETE_HISTORICAL_FX_DATA"),
         "limitations": [
             "All historical Kraken segments were previously inspected; not untouched OOS",
             "RBA FX snapshot is retrospective; assumed availability is not proof of historical vintage",
@@ -369,6 +381,7 @@ def main(argv=None):
         "selected": [f["selected_using_train_validation_only"] for f in report["folds"]],
         "selected_net": report["aggregate_selected_test_net_aud"],
         "buyhold_net": report["aggregate_buyhold_aud100"]["net_aud"],
+        "data_quality_status": report["data_quality_status"],
         "candidate_net": {k: v["net_aud"] for k, v in report["aggregate_test"].items()},
         "baseline_net": {k: v["net_aud"] for k, v in report["aggregate_price_only_baselines"].items()},
     }, sort_keys=True))
