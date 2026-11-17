@@ -315,7 +315,7 @@ def evaluate(bars, market_provenance, fx, fx_provenance, news_path):
         "aggregate_price_only_baselines": baseline_totals,
         "aggregate_buyhold_aud100": buyhold_total,
         "aggregate_selected_test_net_aud": selected_net,
-        "selected_policy": "HOLD" if selected_net == 0 else "TRAIN_VALIDATION_SELECTED_CANDIDATE",
+        "selected_policy": "HOLD" if all(fold["selected_using_train_validation_only"] == "HOLD" for fold in folds) else "FOLD_SPECIFIC_TRAIN_VALIDATION_SELECTION",
         "promotion": "REJECTED_PENDING_UNTOUCHED_OOS_AND_VERIFIED_FX_VINTAGES",
         "limitations": [
             "All historical Kraken segments were previously inspected; not untouched OOS",
