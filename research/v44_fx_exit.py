@@ -1,0 +1,386 @@
+"""V44 PAPER ONLY: AUD/USD decomposition as a trend-masking exit diagnostic.
+
+A forced exit is tested only when the BTC/AUD 30-day return remains positive
+while the implied BTC/USD component is weak. RBA FX is a retrospective
+snapshot with assumed 17:00 Sydney +24h availability, not a verified vintage.
+All Kraken periods have been inspected before; results are exploratory only.
+No news signal is used, no Android promotion is allowed, and live execution
+remains disabled.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+from datetime import datetime, timezone
+from pathlib import Path
+
+from research.v29_point_in_time import CASH, CAP, simulate, buyhold
+from research.v31_hysteresis import WARMUP, replay
+from research.v32_segments import segments
+from research.v33_cross_regime import archive, boundaries
+from research.v39_rba_fx_asof import fetch_fx
+from research.v40_fx_decomposition import decomposition
+from research.v42_volatility_exit import boundaries_v42
+
+CANDIDATES = (
+    "h80_base",
+    "h80_fx_mask_exit_0",
+    "h80_fx_mask_exit_m1",
+    "h80_fx_mask_exit_placebo7d",
+    "h50_base",
+)
+SELECTABLE = (
+    "h80_base",
+    "h80_fx_mask_exit_0",
+    "h80_fx_mask_exit_m1",
+    "h50_base",
+)
+BASE_STRATEGY = {
+    "h80_base": "h80_300",
+    "h80_fx_mask_exit_0": "h80_300",
+    "h80_fx_mask_exit_m1": "h80_300",
+    "h80_fx_mask_exit_placebo7d": "h80_300",
+    "h50_base": "h50_200",
+}
+WEAK_USD_THRESHOLD = {
+    "h80_fx_mask_exit_0": 0.0,
+    "h80_fx_mask_exit_m1": math.log(0.99),
+    "h80_fx_mask_exit_placebo7d": 0.0,
+}
+BTC_AUD_MIN_RETURN = math.log(1.02)
+COSTS_BPS_EACH_SIDE = {"taker": 80, "half_spread": 5, "slippage": 5}
+FIELDS = ("trades", "wins", "losses", "gross_aud", "fees_aud",
+          "spread_aud", "slippage_aud", "net_aud")
+
+
+def make_exit_veto(bars, fx, candidate, audit_rows=None):
+    """Return a HOLD-to-SELL callback using only prior completed candles.
+
+    The feature is the V40 30-day log decomposition. A position is exited
+    only if BTC/AUD is still up at least 2% while the implied BTC/USD leg is
+    flat/negative (or <= -1% for the stricter candidate). The placebo shifts
+    both market and FX inputs seven days backward. Missing/stale FX never
+    forces an exit.
+    """
+    if candidate not in CANDIDATES:
+        raise ValueError("Unknown V44 candidate")
+    if candidate in ("h80_base", "h50_base"):
+        return None, {"feature_observations": 0, "missing_fx": 0,
+                      "forced_exits": 0}
+    threshold = WEAK_USD_THRESHOLD[candidate]
+    delay = 7 if candidate.endswith("placebo7d") else 0
+    index_by_ts = {int(row[0]): i for i, row in enumerate(bars)}
+    if len(index_by_ts) != len(bars):
+        raise ValueError("Duplicate BTC/AUD candle timestamp")
+    counts = {"feature_observations": 0, "missing_fx": 0,
+              "forced_exits": 0}
+
+    def veto(decision_ts):
+        index = index_by_ts.get(int(decision_ts))
+        if index is None:
+            raise ValueError("Exit decision timestamp absent from market bars")
+        feature = decomposition(bars, index, fx, delay_days=delay)
+        if feature is None:
+            counts["missing_fx"] += 1
+            return False
+        counts["feature_observations"] += 1
+        triggered = (
+            feature["btc_aud_log30"] >= BTC_AUD_MIN_RETURN
+            and feature["implied_btc_usd_log30"] <= threshold
+        )
+        if triggered:
+            counts["forced_exits"] += 1
+            if audit_rows is not None:
+                audit_rows.append({
+                    "decision_index": index,
+                    "decision_ts": int(decision_ts),
+                    "latest_completed_candle_ts": feature["latest_completed_candle_ts"],
+                    "btc_aud_log30": round(feature["btc_aud_log30"], 9),
+                    "aud_usd_log30": round(feature["aud_usd_log30"], 9),
+                    "implied_btc_usd_log30": round(
+                        feature["implied_btc_usd_log30"], 9),
+                    "latest_fx_assumed_available_ts":
+                        feature["latest_fx_assumed_available_ts"],
+                    "prior_fx_assumed_available_ts":
+                        feature["prior_fx_assumed_available_ts"],
+                    "delay_days": delay,
+                    "decision": "FORCED_SELL_NEXT_OPEN",
+                })
+        return triggered
+
+    return veto, counts
+
+
+def replay_variant(bars, start, end, candidate, fx, *, cost_mult=1.0,
+                   max_entry_debit=CAP, audit=False):
+    if candidate not in CANDIDATES:
+        raise ValueError("Unknown V44 candidate")
+    if not 0 < max_entry_debit <= CAP:
+        raise ValueError("Paper entry debit must be in (0, A$100]")
+    if not 0.5 <= cost_mult <= 2.0:
+        raise ValueError("Cost multiplier outside registered sensitivity")
+    if start < WARMUP or end > len(bars) or end - start < 3:
+        raise ValueError("Invalid V44 chronological replay interval")
+    forced_rows = [] if audit else None
+    veto, counts = make_exit_veto(
+        bars, fx, candidate, audit_rows=forced_rows,
+    )
+    result = replay(
+        bars, start, end, BASE_STRATEGY[candidate], events=(),
+        cost_mult=cost_mult, audit=audit,
+        max_entry_debit=max_entry_debit, exit_veto=veto,
+    )
+    result["candidate"] = candidate
+    result["feature_counts"] = counts
+    result["forced_exit_audit"] = forced_rows or []
+    if audit:
+        result.pop("decision_audit", None)
+        for trade in result["trade_audit"]:
+            if trade["entry_debit_aud"] > min(
+                    max_entry_debit,
+                    0.10 * trade["cash_before_entry_aud"]) + 1e-8:
+                raise AssertionError("Inclusive A$100/10% cash cap")
+            if not math.isclose(
+                    trade["net"],
+                    trade["gross"] - trade["fees"]
+                    - trade["spread"] - trade["slippage"],
+                    abs_tol=1e-7):
+                raise AssertionError("Gross-cost-NET mismatch")
+    return result
+
+
+def missed_opportunities(bars, forced_rows, end):
+    """Forward prices after forced exits; descriptive only, never trade P&L."""
+    report = {}
+    for horizon, label in ((6, "24h"), (42, "7d")):
+        values = [
+            float(bars[row["decision_index"] + horizon][4])
+            / float(bars[row["decision_index"]][1]) - 1.0
+            for row in forced_rows
+            if row["decision_index"] + horizon < end
+        ]
+        report[label] = {
+            "observations": len(values),
+            "positive": sum(value > 0 for value in values),
+            "non_positive": sum(value <= 0 for value in values),
+            "mean_forward_return_pct": (
+                round(sum(values) / len(values) * 100, 6)
+                if values else None
+            ),
+            "interpretation": "descriptive forward price only; not additive NET P&L",
+        }
+    return report
+
+
+def select(training, validation):
+    """Train/validation only; require >=2 trades and positive NET in both."""
+    eligible = [
+        name for name in SELECTABLE
+        if training[name]["trades"] >= 2
+        and validation[name]["trades"] >= 2
+        and training[name]["net_aud"] > 0
+        and validation[name]["net_aud"] > 0
+    ]
+    if not eligible:
+        return "HOLD"
+    return max(eligible, key=lambda name: min(
+        training[name]["net_aud"], validation[name]["net_aud"]))
+
+
+def aggregate(results):
+    totals = {field: round(sum(row[field] for row in results), 6)
+              for field in FIELDS}
+    totals["return_pct"] = round(
+        totals["net_aud"] / (CASH * len(results)) * 100, 6)
+    totals["worst_fold_drawdown_pct"] = min(
+        row["max_drawdown_pct"] for row in results)
+    return totals
+
+
+def bars_from_json(path):
+    doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    if doc.get("schema") != "v41_kraken_ohlcvt_1":
+        raise ValueError("Unknown official Kraken bar schema")
+    bars = doc.get("bars")
+    if not isinstance(bars, list) or not bars:
+        raise ValueError("Missing official Kraken BTC/AUD bars")
+    return bars
+
+
+def evaluate(bars, fx, market_provenance, fx_provenance):
+    folds = []
+    for left, right in segments(bars, 1000):
+        local = bars[left:right]
+        n = len(local)
+        train_end, val_start, val_end, test_start = boundaries_v42(n)
+        if train_end <= WARMUP:
+            raise ValueError("Insufficient train history after warm-up")
+        training = {
+            name: replay_variant(local, WARMUP, train_end, name, fx)
+            for name in SELECTABLE
+        }
+        validation = {
+            name: replay_variant(local, val_start, val_end, name, fx)
+            for name in SELECTABLE
+        }
+        chosen = select(training, validation)
+        tests = {
+            name: replay_variant(local, test_start, n, name, fx, audit=True)
+            for name in CANDIDATES
+        }
+        baselines = {
+            name: simulate(local, test_start, n, name)
+            for name in ("sma", "momentum", "rsi", "breakout",
+                         "regime", "trend_breakout")
+        }
+        sensitivity = {
+            name: {
+                "A50_current_cost": replay_variant(
+                    local, test_start, n, name, fx, max_entry_debit=50.0,
+                )["net_aud"],
+                "A100_half_cost": replay_variant(
+                    local, test_start, n, name, fx, cost_mult=0.5,
+                )["net_aud"],
+                "A100_current_cost": tests[name]["net_aud"],
+                "A100_double_cost": replay_variant(
+                    local, test_start, n, name, fx, cost_mult=2.0,
+                )["net_aud"],
+            }
+            for name in CANDIDATES
+        }
+        test_first = int(local[test_start][0])
+        test_last = int(local[-1][0])
+        folds.append({
+            "segment_bars": n,
+            "first_utc": datetime.fromtimestamp(
+                local[0][0], timezone.utc).isoformat(),
+            "last_utc": datetime.fromtimestamp(
+                local[-1][0], timezone.utc).isoformat(),
+            "train_end_utc": datetime.fromtimestamp(
+                local[train_end - 1][0], timezone.utc).isoformat(),
+            "validation_start_utc": datetime.fromtimestamp(
+                local[val_start][0], timezone.utc).isoformat(),
+            "validation_end_utc": datetime.fromtimestamp(
+                local[val_end - 1][0], timezone.utc).isoformat(),
+            "test_start_utc": datetime.fromtimestamp(
+                test_first, timezone.utc).isoformat(),
+            "test_end_utc": datetime.fromtimestamp(
+                test_last, timezone.utc).isoformat(),
+            "embargo_bars": 84,
+            "training": training,
+            "validation": validation,
+            "selected_using_train_validation_only": chosen,
+            "selected_test_net_aud": (
+                tests[chosen]["net_aud"] if chosen != "HOLD" else 0.0),
+            "test": tests,
+            "price_baselines": baselines,
+            "buyhold_aud100": buyhold(local, test_start, n),
+            "fee_sensitivity": sensitivity,
+            "missed_opportunities": {
+                name: missed_opportunities(
+                    local, tests[name]["forced_exit_audit"], n)
+                for name in CANDIDATES
+            },
+        })
+    if not folds:
+        raise ValueError("No eligible gap-free >=1000-bar Kraken segment")
+    totals = {
+        name: aggregate([fold["test"][name] for fold in folds])
+        for name in CANDIDATES
+    }
+    baseline_totals = {
+        name: {
+            field: round(sum(fold["price_baselines"][name][field]
+                             for fold in folds), 6)
+            for field in FIELDS
+        }
+        for name in folds[0]["price_baselines"]
+    }
+    return {
+        "mode": "V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
+        "market": market_provenance,
+        "fx": fx_provenance,
+        "fx_availability": (
+            "RBA 17:00 Australia/Sydney +24h DST-aware ASSUMPTION; "
+            "retrospective snapshot, not historical first-observed/vintage"),
+        "fx_historical_first_observed_verified": False,
+        "fx_historical_revisions_verified": False,
+        "candidates": list(CANDIDATES),
+        "selection": (
+            "50/20/30 chronological split, 84-bar embargo; >=2 trades and "
+            "positive NET in train and validation, otherwise HOLD"),
+        "folds": folds,
+        "aggregate_independent_aud1000_reset_accounts": totals,
+        "aggregate_price_baselines": baseline_totals,
+        "aggregate_buyhold_aud100_net": round(sum(
+            fold["buyhold_aud100"]["net_aud"] for fold in folds), 6),
+        "aggregate_selected_test_net_aud": round(sum(
+            fold["selected_test_net_aud"] for fold in folds), 6),
+        "selected_by_fold": [
+            fold["selected_using_train_validation_only"] for fold in folds],
+        "worst_fold_drawdown_pct": {
+            name: min(fold["test"][name]["max_drawdown_pct"]
+                      for fold in folds)
+            for name in CANDIDATES
+        },
+        "costs_bps_each_side": COSTS_BPS_EACH_SIDE,
+        "starting_cash_aud": CASH,
+        "max_inclusive_entry_debit_aud": CAP,
+        "cash_fraction_cap": 0.10,
+        "android_policy": "HOLD",
+        "promotion": "REJECTED_NO_UNTOUCHED_OOS_OR_VERIFIED_FX_VINTAGE",
+        "news_used_for_trading": False,
+        "limitations": [
+            "All historical Kraken segments were previously inspected; not untouched OOS",
+            "RBA FX data is a retrospective snapshot with assumed +24h availability",
+            "Current 80bps taker fee and modeled spread/slippage applied to historical prices",
+            "No observed order-book queue, partial fills, or actual execution",
+            "Three independent A$1,000 reset wallets; summed returns are not compounded",
+        ],
+    }
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bars-json", default=None)
+    parser.add_argument("--market-report", default=None)
+    parser.add_argument("--output", default="audit/v44-fx-exit.json")
+    args = parser.parse_args(argv)
+    if args.bars_json:
+        bars = bars_from_json(args.bars_json)
+        market_provenance = {}
+        if args.market_report:
+            market_doc = json.loads(Path(args.market_report).read_text())
+            market_provenance = market_doc.get("market", market_doc)
+    else:
+        bars, market_provenance = archive()
+    fx, fx_provenance = fetch_fx()
+    report = evaluate(bars, fx, market_provenance, fx_provenance)
+    target = Path(args.output)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    raw = (json.dumps(report, indent=2, allow_nan=False, sort_keys=True)
+           + "\n").encode()
+    target.write_bytes(raw)
+    print(json.dumps({
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "folds": len(report["folds"]),
+        "selected_by_fold": report["selected_by_fold"],
+        "selected_net": report["aggregate_selected_test_net_aud"],
+        "buyhold_net": report["aggregate_buyhold_aud100_net"],
+        "candidate_net": {
+            name: values["net_aud"]
+            for name, values in report[
+                "aggregate_independent_aud1000_reset_accounts"].items()
+        },
+        "baseline_net": {
+            name: values["net_aud"]
+            for name, values in report["aggregate_price_baselines"].items()
+        },
+        "promotion": report["promotion"],
+    }, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
