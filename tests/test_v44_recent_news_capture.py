@@ -174,7 +174,7 @@ class V44RecentNewsTests(unittest.TestCase):
             root = Path(tmp)
             rows_path = root / "historical.jsonl"
             manifest_path = root / "historical-manifest.json"
-            rows_path.write_text(json.dumps(base) + "\\n")
+            rows_path.write_text(json.dumps(base) + "\n")
             manifest_path.write_text(json.dumps({
                 "source_status_latest": {"cryptocurrency_cv": {"fetched_rows": 1}},
                 "market_join_latest": {"strict_asof_eligible": 0},
