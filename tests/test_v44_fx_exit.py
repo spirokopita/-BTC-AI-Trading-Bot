@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from research.v31_hysteresis import replay as base_replay
 from research.v44_fx_exit import (
-    CANDIDATES, make_exit_veto, replay_variant, select,
+    CANDIDATES, make_exit_veto, make_news_entry_veto, replay_variant, select,
 )
 
 STEP = 14400
@@ -148,12 +148,53 @@ class V44FxExitTests(unittest.TestCase):
             row["trades"] = 1
         self.assertEqual(select(training, validation), "HOLD")
 
+    def test_news_veto_requires_strict_v48_availability_and_negative_sentiment(self):
+        events = [{"id": "verified-negative", "sentiment": -1}]
+        with patch("research.v48_news_proof_gate.classify",
+                   return_value={"eligible": True,
+                                 "available_at_utc": START + 10}) as mocked:
+            veto, counts = make_news_entry_veto(
+                events, "h80_news_negative_veto")
+            self.assertTrue(veto(START + 100))
+            self.assertEqual(counts["vetoed_candidate_bars"], 1)
+            mocked.assert_called_once_with(
+                events[0], START + 100, latency_seconds=3600)
+
+    def test_news_veto_does_not_use_unavailable_or_unscored_news(self):
+        with patch("research.v48_news_proof_gate.classify",
+                   return_value={"eligible": False,
+                                 "available_at_utc": START + 500}):
+            veto, counts = make_news_entry_veto(
+                [{"sentiment": -1}], "h80_news_negative_veto")
+            self.assertFalse(veto(START + 100))
+            self.assertEqual(counts["vetoed_candidate_bars"], 0)
+        with patch("research.v48_news_proof_gate.classify",
+                   return_value={"eligible": True,
+                                 "available_at_utc": START + 10}):
+            veto, counts = make_news_entry_veto(
+                [{"sentiment": "unscored"}], "h80_news_negative_veto")
+            self.assertFalse(veto(START + 100))
+            self.assertEqual(counts["vetoed_candidate_bars"], 0)
+
+    def test_seven_day_news_placebo_shifts_decision_cutoff_backwards(self):
+        with patch("research.v48_news_proof_gate.classify",
+                   return_value={"eligible": False,
+                                 "available_at_utc": START - 1}) as mocked:
+            veto, _ = make_news_entry_veto(
+                [{"sentiment": -1}], "h80_news_negative_veto_placebo7d")
+            self.assertFalse(veto(START + 9 * 86400))
+            self.assertEqual(
+                mocked.call_args.args[1], START + 2 * 86400)
+
     def test_candidate_menu_and_base_have_no_exit_override(self):
         bars = bars_fixture()
-        self.assertEqual(len(CANDIDATES), 5)
+        self.assertEqual(len(CANDIDATES), 7)
         callback, counts = make_exit_veto(bars, None, "h80_base")
         self.assertIsNone(callback)
         self.assertEqual(counts["forced_exits"], 0)
+        news_callback, _ = make_exit_veto(
+            bars, None, "h80_news_negative_veto")
+        self.assertIsNone(news_callback)
 
 
 if __name__ == "__main__":
