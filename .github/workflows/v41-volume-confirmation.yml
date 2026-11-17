@@ -293,7 +293,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v44_persist_news_capture.py' -v
-          python -c "import hashlib,json,pathlib; p=pathlib.Path('data/news_capture_observations_v44.jsonl'); m=json.loads(pathlib.Path('data/news_capture_manifest_v44.json').read_text()); assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows']; assert all(not r.get('body_stored',True) for r in rows); print('V44_PERSISTED_NEWS_VERSIONS',len(rows),'URLS',m['distinct_urls'],'SHA256',m['rows_sha256'])"
+          python -c "import hashlib,json,pathlib; p=pathlib.Path('data/news_capture_observations_v44.jsonl'); m=json.loads(pathlib.Path('data/news_capture_manifest_v44.json').read_text()); assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows']; assert all(not r.get('body_stored',True) for r in rows); print('V44_PERSISTED_NEWS_VERSIONS',len(rows),'URLS',m['distinct_urls'],'EVENT_CLUSTERS',m['distinct_event_clusters'],'SHA256',m['rows_sha256'])"
           python - <<'PY'
           import hashlib,json,pathlib
           p=pathlib.Path('data/historical_news_sample_v38.jsonl')
