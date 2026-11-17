@@ -5,6 +5,8 @@ on:
       - 'research/v41_volume_confirmation.py'
       - 'research/v42_volatility_exit.py'
       - 'research/v42_warc_capture_probe.py'
+      - 'research/v43_drawdown_cash_gate.py'
+      - 'tests/test_v43_drawdown_cash_gate.py'
       - 'research/v37_source_topic_registry.json'
       - 'tests/test_v42_volatility_exit.py'
       - 'tests/test_v42_warc_capture_probe.py'
@@ -24,6 +26,8 @@ on:
       - 'research/v41_volume_confirmation.py'
       - 'research/v42_volatility_exit.py'
       - 'research/v42_warc_capture_probe.py'
+      - 'research/v43_drawdown_cash_gate.py'
+      - 'tests/test_v43_drawdown_cash_gate.py'
       - 'research/v37_source_topic_registry.json'
       - 'tests/test_v42_volatility_exit.py'
       - 'tests/test_v42_warc_capture_probe.py'
@@ -41,6 +45,9 @@ permissions:
 jobs:
   research:
     if: github.actor != 'github-actions[bot]'
+    concurrency:
+      group: v41-paper-research-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
@@ -53,6 +60,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_v41_volume_confirmation.py' -v
           python -m unittest discover -s tests -p 'test_v42_volatility_exit.py' -v
           python -m unittest discover -s tests -p 'test_v42_warc_capture_probe.py' -v
+          python -m unittest discover -s tests -p 'test_v43_drawdown_cash_gate.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
@@ -76,6 +84,11 @@ jobs:
             --bars-json audit/v41-market-bars.json \
             --output audit/v42-volatility-exit.json \
             --bars-json-output audit/v42-market-bars.json
+      - name: V43 past-only drawdown cash-entry gate walk-forward
+        run: |
+          python -m research.v43_drawdown_cash_gate \
+            --bars-json audit/v41-market-bars.json \
+            --output audit/v43-drawdown-cash-gate.json
       - name: Fresh completed public BTC/AUD 4h bridge
         run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json --bars-json-output audit/v41-recent-bars.json
       - name: Timestamped recent macro/crypto event study with prior matched controls
@@ -90,7 +103,8 @@ jobs:
           python -m research.v42_warc_capture_probe \
             --audit audit/v42-monthly-news.json \
             --bars-json audit/v42-market-bars.json \
-            --output audit/v42-monthly-news-enriched.json
+            --output audit/v42-monthly-news-enriched.json \
+            --limit 1
       - name: Verify paper accounting, chronology, provenance and sampling cursor
         run: |
           python - <<'PY'
@@ -131,6 +145,23 @@ jobs:
               values=a[label]
               assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
               print('V41_BUYHOLD',label,values)
+          g=json.loads(pathlib.Path('audit/v43-drawdown-cash-gate.json').read_text())
+          assert g['mode']=='V43_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY'
+          assert g['android_policy']=='HOLD' and g['promotion'].startswith('REJECTED')
+          assert g['fees_each_side_bps']=={'taker':80,'half_spread':5,'slippage':5}
+          assert g['max_inclusive_entry_debit_aud']==100 and g['cash_fraction_cap']==.10
+          assert g['parameters_predeclared']['entry_only_gate'] is True
+          assert g['parameters_predeclared']['protective_sells_never_vetoed'] is True
+          for name,values in g['aggregate_independent_reset_accounts'].items():
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V43_STRATEGY',name,values)
+          for name,values in g['aggregate_price_baselines'].items():
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V43_PRICE_BASELINE',name,values)
+          assert abs(g['aggregate_buyhold_aud100']['gross_aud']-g['aggregate_buyhold_aud100']['fees_aud']-g['aggregate_buyhold_aud100']['spread_aud']-g['aggregate_buyhold_aud100']['slippage_aud']-g['aggregate_buyhold_aud100']['net_aud'])<.00001
+          print('V43_SELECTORS',[f['selected_using_train_validation_only'] for f in g['folds']])
+          print('V43_SELECTED_TEST_NET',g['aggregate_selected_test_net_aud'],'BUYHOLD',g['aggregate_buyhold_aud100']['net_aud'])
+          print('V43_NEWS',g['news'])
           print('V41_MARKET',a['market'])
           print('V41_PRICE_BASELINES',a['aggregate_price_baselines'])
           print('V41_BUYHOLD_A100',a['aggregate_buyhold_aud100'])
@@ -179,6 +210,7 @@ jobs:
           path: |
             audit/v41-volume-confirmation.json
             audit/v42-volatility-exit.json
+            audit/v43-drawdown-cash-gate.json
             audit/v42-market-bars.json
             audit/v42-monthly-news.json
             audit/v42-monthly-news-enriched.json
@@ -241,19 +273,7 @@ jobs:
             python -m research.v41_persist_cursor --audit audit/v42-monthly-news-enriched.json
             python -m unittest discover -s tests -p 'test_v38_persist_sample.py' -q
             python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -q
-            python - <<'PY'
-            import hashlib,json,pathlib
-            p=pathlib.Path('data/historical_news_sample_v38.jsonl')
-            m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text())
-            c=json.loads(pathlib.Path('data/historical_news_sampling_cursor_v41.json').read_text())
-            rows=[json.loads(x) for x in p.read_text().splitlines() if x]
-            assert len(rows)==m['rows_cumulative_deduplicated']
-            assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']
-            assert m['historical_article_versions_cumulative']<=len(rows)
-            assert set(c['completed_months']).issubset(set(c['attempted_months']))
-            print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256'])
-            print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])
-            PY
+            python -c "import hashlib,json,pathlib; p=pathlib.Path('data/historical_news_sample_v38.jsonl'); m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text()); c=json.loads(pathlib.Path('data/historical_news_sampling_cursor_v41.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows_cumulative_deduplicated']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; assert m['historical_article_versions_cumulative']<=len(rows); assert set(c['completed_months']).issubset(set(c['attempted_months'])); print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256']); print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])"
             git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json
             if git diff --cached --quiet; then
               echo 'No new article metadata or cursor updates'

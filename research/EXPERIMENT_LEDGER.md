@@ -1,3 +1,30 @@
+## V43 — 2026-11-18 — 90-day drawdown cash-entry gate
+
+**Status:** Research and tests DONE; PR #33 open; main persistence PARTIAL; promotion REJECTED. PR head `f50bd8a176c876a338499cf2c5dae8c73605a47e`, main base `68745b8d150203315e33609da461b146d118953b`.
+
+**Hypothesis and protocol.** H80/300 wrapped with a 90-day / 540 completed 4h-bar drawdown-from-high entry gate at 10%, 15%, 20%, plus a 42-bar (7-day) delayed placebo. Gate applies to BUY only; protective SELL never blocked. 50/20/30 chronological train/validation/test on three previously inspected gap-free Kraken archive segments, 84-bar embargo, independent A$1,000 wallets, A$100 inclusive debit / 10% cash cap, 80bps taker + 5bps half-spread + 5bps slippage per side. Selection requires >=2 trades and positive NET in both train and validation; otherwise HOLD.
+
+**Test results (three independent A$1,000 accounts, summed AUD):**
+
+| Variant | Trades | Wins/losses | Gross | Fees | Spread | Slippage | NET | Return | Worst fold DD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| H80/300 base | 7 | 3/4 | +51.333281 | 11.448071 | 0.715531 | 0.715531 | +38.454151 | +1.281805% | -4.192577% |
+| 10% gate | 7 | 3/4 | +32.180402 | 11.295001 | 0.705954 | 0.705954 | +19.473494 | +0.649116% | -4.192577% |
+| 15% gate | 7 | 3/4 | +32.180402 | 11.295001 | 0.705954 | 0.705954 | +19.473494 | +0.649116% | -4.192577% |
+| 20% gate | 7 | 3/4 | +51.333281 | 11.448071 | 0.715531 | 0.715531 | +38.454151 | +1.281805% | -4.192577% |
+| 15% / 7d placebo | 7 | 3/4 | +32.536538 | 11.298383 | 0.706165 | 0.706165 | +19.825825 | +0.660861% | -4.159425% |
+| A$100 buy-and-hold | 3 | 3/0 | +135.859476 | 5.842937 | 0.365252 | 0.365252 | +129.286037 | +4.309535% | -2.790726% |
+
+All train/validation selectors chose HOLD; selected test NET A$0. The 10%/15% gates vetoed 58 BUY attempts but delayed the eventual profitable trend entry, reducing NET by A$18.980657. The 20% gate did nothing. The delayed placebo produced nearly the same result. Vetoed-signal mean forward return was -0.483119% at 24h and -2.034414% at 7d (22/58 and 3/58 positive). **Reject the feature.**
+
+**Price-only baselines:** SMA 118 trades NET -119.682481; momentum 242 NET -374.775403; RSI 158 NET -225.519567; ATR breakout 133 NET -197.561916; regime 267 NET -407.787388; trend+ATR 20 NET -27.686213. H80/300 A$50 current-cost NET +19.640152; A$100 half/current/double friction +45.178506 / +38.454151 / +25.215557. 10%/15% gate A$50 current +10.149824; A$100 half/current/double +26.026247 / +19.473494 / +6.573540.
+
+**Data/news.** Kraken archive 13,763 bars / 20 gaps / segments 6863, 3398, 1999; member SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`. Fresh bridge 720 bars through 2026-11-17 16:00 UTC, 287 post-archive, 0 gaps, response SHA256 `c802bf3681ddec609d9d03e726b6563649e0f6418d5e7ed8f15e8bc9a5c64554`, last completed close A$94,647.70. All historical archive periods previously inspected. cryptocurrency.cv: 265 metadata rows across 12 months, 0 first-observed, 0 strict as-of. Common Crawl: 1 URL, 2 requests, 2 HTTP 404, 0 captures. Existing proof-gated corpus: 2,225 without independent capture proof, 1 valid capture, 0 strict as-of test-window events. Recent event study: 5 retrospective events / 7 controls; event-minus-control NET +0.366381 at 4h, -0.657088 at 24h, -1.124280 at 48h; 7 overlapping 7-day windows, no robust news edge.
+
+**Validation.** PR CI 44190949880 PASSED 357 full repository tests and 9 V43 tests; artifact 14377081503, SHA256 `fc669c5277994c8060b5bda27cd8886897082d04a6de422605c542bf29eca45c`. PR persistence is skipped by design; main write/read-back remains pending. The nested persistence here-document was replaced by a tested `python -c` read-back assertion; Common Crawl probe reduced to one URL / two requests. Android unchanged, no APK, no live orders.
+
+**Next:** (1) Merge PR #33 and verify main corpus, manifest SHA and cursor after persistence; (2) capture RBA minutes released 17 Nov 11:30 AEDT and the 17 Nov CoinDesk ETF-flow follow-up with actual first-observed times; (3) diagnose Common Crawl with alternate URL-key normalization/index; (4) test BTC/USD–AUD/USD decomposition from official RBA/FRED series with conservative availability lag against price-only and degree-1 baselines.
+
 ## V42 — 2026-11-17: ATR-normalized exit and time-stop rejection; Common Crawl version-proof probe
 
 **Status:** PR #32 MERGED to main as e1b983f36941d986924433966f38ebb4fa2a2488; research run 43974285006 PASSED but persistence failed on concurrent JSONL/manifest rebase; conflict-safe fix c47ef37891aea530eaae351263e469573f0f19c1 committed; rerun 43975610213 in progress. Main corpus read-back remains 2,226 rows / 1,163 articles / 52 months. PAPER ONLY/HOLD. No Android source change or strategy promotion.
