@@ -18,7 +18,9 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 
-from research.v29_point_in_time import CASH, CAP, simulate, buyhold
+from research.v29_point_in_time import (
+    CASH, CAP, FEE, SPREAD, SLIPPAGE, execution, simulate, buyhold,
+)
 from research.v31_hysteresis import WARMUP, replay
 from research.v32_segments import segments
 from research.v33_cross_regime import archive, boundaries
@@ -242,6 +244,42 @@ def aggregate(results):
     return totals
 
 
+def buyhold_detail(bars, start, end):
+    """A$100 buy-and-hold with the same per-side taker/spread/slippage model."""
+    entry_mid = float(bars[start][1])
+    exit_mid = float(bars[end - 1][1])
+    quantity = CAP / (entry_mid * (1 + SPREAD + SLIPPAGE) * (1 + FEE))
+    entry = execution(entry_mid, quantity, "buy", 1.0)
+    exit_fill = execution(exit_mid, quantity, "sell", 1.0)
+    gross = (exit_mid - entry_mid) * quantity
+    fees = entry["fee"] + exit_fill["fee"]
+    spread = entry["spread"] + exit_fill["spread"]
+    slippage = entry["slippage"] + exit_fill["slippage"]
+    net = gross - fees - spread - slippage
+    if not math.isclose(net, buyhold(bars, start, end), abs_tol=1e-5):
+        raise AssertionError("Detailed buy-and-hold does not reconcile to V29")
+    cash_after_entry = CASH - entry["notional"] - entry["fee"]
+    peak = CASH
+    drawdown = 0.0
+    for row in bars[start:end]:
+        equity = cash_after_entry + quantity * float(row[4])
+        peak = max(peak, equity)
+        drawdown = min(drawdown, equity / peak - 1.0)
+    return {
+        "trades": 1,
+        "wins": int(net > 0),
+        "losses": int(net <= 0),
+        "gross_aud": round(gross, 6),
+        "fees_aud": round(fees, 6),
+        "spread_aud": round(spread, 6),
+        "slippage_aud": round(slippage, 6),
+        "net_aud": round(net, 6),
+        "return_pct": round(net / CASH * 100, 6),
+        "max_drawdown_pct": round(drawdown * 100, 6),
+        "drawdown_basis": "mark-to-market close; before hypothetical exit costs",
+    }
+
+
 def bars_from_json(path):
     doc = json.loads(Path(path).read_text(encoding="utf-8"))
     if doc.get("schema") != "v41_kraken_ohlcvt_1":
@@ -326,7 +364,7 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
                 tests[chosen]["net_aud"] if chosen != "HOLD" else 0.0),
             "test": tests,
             "price_baselines": baselines,
-            "buyhold_aud100_net_aud": buyhold(local, test_start, n),
+            "buyhold_aud100": buyhold_detail(local, test_start, n),
             "fee_sensitivity": sensitivity,
             "missed_opportunities": {
                 name: missed_opportunities(
@@ -341,13 +379,10 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         for name in CANDIDATES
     }
     baseline_totals = {
-        name: {
-            field: round(sum(fold["price_baselines"][name][field]
-                             for fold in folds), 6)
-            for field in FIELDS
-        }
+        name: aggregate([fold["price_baselines"][name] for fold in folds])
         for name in folds[0]["price_baselines"]
     }
+    buyhold_totals = aggregate([fold["buyhold_aud100"] for fold in folds])
     return {
         "mode": "V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY",
         "market": market_provenance,
@@ -370,8 +405,8 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         "folds": folds,
         "aggregate_independent_aud1000_reset_accounts": totals,
         "aggregate_price_baselines": baseline_totals,
-        "aggregate_buyhold_aud100_net": round(sum(
-            fold["buyhold_aud100_net_aud"] for fold in folds), 6),
+        "aggregate_buyhold_aud100": buyhold_totals,
+        "aggregate_buyhold_aud100_net": buyhold_totals["net_aud"],
         "aggregate_selected_test_net_aud": round(sum(
             fold["selected_test_net_aud"] for fold in folds), 6),
         "selected_by_fold": [
