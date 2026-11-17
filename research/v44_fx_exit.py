@@ -387,7 +387,7 @@ def evaluate(bars, fx, market_provenance, fx_provenance,
         "cash_fraction_cap": 0.10,
         "android_policy": "HOLD",
         "promotion": "REJECTED_NO_UNTOUCHED_OOS_OR_VERIFIED_FX_VINTAGE",
-        "news_used_for_trading": False,
+        "news_used_for_trading": bool(events),
         "limitations": [
             "All historical Kraken segments were previously inspected; not untouched OOS",
             "RBA FX data is a retrospective snapshot with assumed +24h availability",
