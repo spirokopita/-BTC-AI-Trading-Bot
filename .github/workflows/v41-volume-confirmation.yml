@@ -225,7 +225,14 @@ jobs:
               print('V44_STRATEGY',name,values)
           for name,values in x['aggregate_price_baselines'].items():
               assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              assert 'worst_fold_drawdown_pct' in values
               print('V44_PRICE_BASELINE',name,values)
+          bh=x['aggregate_buyhold_aud100']
+          assert bh['trades']==bh['wins']+bh['losses']
+          assert abs(bh['gross_aud']-bh['fees_aud']-bh['spread_aud']-bh['slippage_aud']-bh['net_aud'])<.00001
+          assert bh['max_drawdown_pct']<=0
+          print('V44_BUYHOLD_BREAKDOWN',bh)
+          print('V44_NEWS_VETOED_BARS',sum(f['test']['h80_news_negative_veto']['news_counts']['vetoed_candidate_bars'] for f in x['folds']))
           print('V44_SELECTORS',x['selected_by_fold'],'SELECTED_NET',x['aggregate_selected_test_net_aud'],'BUYHOLD',x['aggregate_buyhold_aud100_net'])
           q=json.loads(pathlib.Path('audit/v44-recent-news-capture.json').read_text())
           assert q['mode']=='V44_PROSPECTIVE_FIRST_OBSERVED_PUBLISHER_SNAPSHOTS'
