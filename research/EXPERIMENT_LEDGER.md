@@ -17,7 +17,18 @@
 
 All train/validation selectors chose HOLD; selected test NET A$0. The 10%/15% gates vetoed 58 BUY attempts but delayed the eventual profitable trend entry, reducing NET by A$18.980657. The 20% gate did nothing. The delayed placebo produced nearly the same result. Vetoed-signal mean forward return was -0.483119% at 24h and -2.034414% at 7d (22/58 and 3/58 positive). **Reject the feature.**
 
-**Price-only baselines:** SMA 118 trades NET -119.682481; momentum 242 NET -374.775403; RSI 158 NET -225.519567; ATR breakout 133 NET -197.561916; regime 267 NET -407.787388; trend+ATR 20 NET -27.686213. H80/300 A$50 current-cost NET +19.640152; A$100 half/current/double friction +45.178506 / +38.454151 / +25.215557. 10%/15% gate A$50 current +10.149824; A$100 half/current/double +26.026247 / +19.473494 / +6.573540.
+**Price-only baselines (same test periods, three A$1,000 wallets):**
+
+| Baseline | Trades | Wins/losses | Gross | Fees | Spread | Slippage | NET | Return | Worst fold DD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| SMA | 118 | 20/98 | +86.793716 | 183.534320 | 11.470939 | 11.470939 | -119.682481 | -3.989416% | -7.631585% |
+| Momentum | 242 | 18/224 | +24.061066 | 354.521285 | 22.157592 | 22.157592 | -374.775403 | -12.492513% | -19.713239% |
+| RSI mean reversion | 158 | 11/147 | +43.488769 | 239.118482 | 14.944926 | 14.944926 | -225.519567 | -7.517319% | -13.666897% |
+| ATR breakout | 133 | 13/120 | +30.799440 | 202.987846 | 12.686756 | 12.686756 | -197.561916 | -6.585397% | -9.369700% |
+| Regime filter | 267 | 21/246 | +22.700181 | 382.655597 | 23.915986 | 23.915986 | -407.787388 | -13.592913% | -24.735182% |
+| Trend + ATR | 20 | 3/17 | +7.746437 | 31.495682 | 1.968484 | 1.968484 | -27.686213 | -0.922874% | -2.153114% |
+
+H80/300 A$50 current-cost NET +19.640152; A$100 half/current/double friction +45.178506 / +38.454151 / +25.215557. 10%/15% gate A$50 current +10.149824; A$100 half/current/double +26.026247 / +19.473494 / +6.573540.
 
 **Data/news.** Kraken archive 13,763 bars / 20 gaps / segments 6863, 3398, 1999; member SHA256 `ed732a5cd906991b2d2b306b3266578dcea14b07c6f9b307cb4c3c3753eb296e`. Fresh bridge 720 bars through 2026-11-17 16:00 UTC, 287 post-archive, 0 gaps, response SHA256 `c802bf3681ddec609d9d03e726b6563649e0f6418d5e7ed8f15e8bc9a5c64554`, last completed close A$94,647.70. All historical archive periods previously inspected. cryptocurrency.cv added 265 metadata rows from 12 months, all retrospective, 0 first-observed, 0 strict as-of. Main manifest read-back: 2,491 rows, 1,428 article versions, 1,399 outcome-independent monthly archive articles; 29 GDELT/topic-search rows excluded from the 10k target; 18 months remain. Corpus SHA256 `a539690a36ab723727164669bb1ccb94cd73276f2bccaa548c7fc26b647178c1`. Cursor 64 attempted/completed, no retries. Common Crawl latest probe: 1 URL, 2 requests, 2 HTTP 404, 0 captures; no WARC body downloaded. Existing proof-gated corpus: 2,225 without independent capture proof, 1 verified capture, 0 strict as-of test-window events.
 
