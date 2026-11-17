@@ -167,9 +167,9 @@ def persist_warc_capture_audit(warc_audit_path, rows_path, manifest_path):
             "deduplicated_rows": 0,
             "retrieved_at_utc": audit["retrieved_at_utc"],
             "source_status": previous.get("source_status_latest", {}),
-            "market_join": previous.get("market_join_latest", {
+            "market_join": audit.get("market_join") or previous.get("market_join_latest", {
                 "strict_asof_eligible": 0,
-                "note": "V44 WARC metadata added; market join not recomputed here",
+                "note": "V44 WARC metadata added; no market bars supplied",
             }),
         }
         rows, manifest = build(v38_audit, rows)
@@ -228,6 +228,7 @@ def persist(audit_path, data_path, manifest_path, warc_audit_path=None,
         "raw_publisher_bodies_redistributed": False,
         "last_run_source_status": audit.get("source_status", {}),
         "last_run_failures": audit.get("failures", []),
+        "market_join": audit.get("market_join"),
         "warc_persistence": warc_summary,
     }
     manifest_path = Path(manifest_path)
