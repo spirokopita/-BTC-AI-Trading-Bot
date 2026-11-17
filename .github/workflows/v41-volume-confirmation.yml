@@ -45,6 +45,9 @@ permissions:
 jobs:
   research:
     if: github.actor != 'github-actions[bot]'
+    concurrency:
+      group: v41-paper-research-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
@@ -100,7 +103,8 @@ jobs:
           python -m research.v42_warc_capture_probe \
             --audit audit/v42-monthly-news.json \
             --bars-json audit/v42-market-bars.json \
-            --output audit/v42-monthly-news-enriched.json
+            --output audit/v42-monthly-news-enriched.json \\
+            --limit 1
       - name: Verify paper accounting, chronology, provenance and sampling cursor
         run: |
           python - <<'PY'
