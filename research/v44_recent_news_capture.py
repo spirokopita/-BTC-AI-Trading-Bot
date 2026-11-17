@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from research.v44_asof_join import strict_asof_join
+
 RBA_INDEX_URL = "https://www.rba.gov.au/news/index.html"
 RBA_MINUTES_URL = "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-11-03.html"
 COINDESK_URL = "https://www.coindesk.com/markets/2026/11/17/bitcoin-remains-penned-in-near-usd64-000-even-as-etf-outflow-streak-ends"
@@ -155,7 +157,7 @@ def _record(source, body, final_url, retrieved, published, updated,
     }
 
 
-def capture_all(fetcher=None, clock=None):
+def capture_all(fetcher=None, clock=None, bars=None, market_provenance=None):
     fetcher = fetcher or fetch
     clock = clock or (lambda: datetime.now(timezone.utc))
     rows, failures, statuses = [], [], {}
@@ -211,6 +213,17 @@ def capture_all(fetcher=None, clock=None):
         }
         failures.append({"source_id": coindesk_source["id"], "error": statuses[coindesk_source["id"]]["error"]})
 
+    market_join = (
+        strict_asof_join(rows, bars, market_provenance)
+        if bars is not None else {
+            "mode": "V44_STRICT_ASOF_KRAKEN_4H_JOIN",
+            "status": "NOT_RUN_NO_BARS",
+            "strict_asof_eligible": 0,
+            "pending_after_last_bar": len(rows),
+            "proof_rejected": 0,
+            "no_lookahead": True,
+        }
+    )
     return {
         "mode": "V44_PROSPECTIVE_FIRST_OBSERVED_PUBLISHER_SNAPSHOTS",
         "retrieved_at_utc": utc_iso(clock()),
@@ -218,6 +231,7 @@ def capture_all(fetcher=None, clock=None):
         "source_status": statuses,
         "failures": failures,
         "record_count": len(rows),
+        "market_join": market_join,
         "historical_backfill": False,
         "strategy_use": (
             "NOT_USED_IN_CURRENT_HISTORICAL_BACKTEST; point-in-time availability "
@@ -229,8 +243,20 @@ def capture_all(fetcher=None, clock=None):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="audit/v44-recent-news-capture.json")
+    parser.add_argument("--bars-json", default=None)
+    parser.add_argument("--market-report", default=None)
     args = parser.parse_args(argv)
-    report = capture_all()
+    bars = None
+    market_provenance = {}
+    if args.bars_json:
+        bars_doc = json.loads(Path(args.bars_json).read_text(encoding="utf-8"))
+        bars = bars_doc.get("bars")
+        if not isinstance(bars, list) or not bars:
+            raise ValueError("Recent Kraken bridge bars missing")
+        if args.market_report:
+            market_doc = json.loads(Path(args.market_report).read_text(encoding="utf-8"))
+            market_provenance = market_doc.get("market", market_doc)
+    report = capture_all(bars=bars, market_provenance=market_provenance)
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     raw = (json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
