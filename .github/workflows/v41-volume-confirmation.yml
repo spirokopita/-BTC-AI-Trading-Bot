@@ -15,6 +15,7 @@ on:
       - 'tests/test_v44_fx_exit.py'
       - 'tests/test_v44_recent_news_capture.py'
       - 'tests/test_v44_warc_capture_probe.py'
+      - 'tests/test_v44_driver_graph.py'
       - 'data/v44_recent_news_observations.jsonl'
       - 'data/v44_recent_news_manifest.json'
       - 'research/v37_source_topic_registry.json'
@@ -46,6 +47,7 @@ on:
       - 'tests/test_v44_fx_exit.py'
       - 'tests/test_v44_recent_news_capture.py'
       - 'tests/test_v44_warc_capture_probe.py'
+      - 'tests/test_v44_driver_graph.py'
       - 'data/v44_recent_news_observations.jsonl'
       - 'data/v44_recent_news_manifest.json'
       - 'research/v37_source_topic_registry.json'
@@ -84,6 +86,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_v44_fx_exit.py' -v
           python -m unittest discover -s tests -p 'test_v44_recent_news_capture.py' -v
           python -m unittest discover -s tests -p 'test_v44_warc_capture_probe.py' -v
+          python -m unittest discover -s tests -p 'test_v44_driver_graph.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
