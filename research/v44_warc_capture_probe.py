@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from research.v44_asof_join import strict_asof_join
+
 COLLINFO_URL = "https://index.commoncrawl.org/collinfo.json"
 MAX_INDEXES = 3
 MAX_VARIANTS = 3
@@ -215,7 +217,7 @@ def select_target(records, preferred_url=None):
 
 
 def probe(records, retrieved_at_utc, *, indexes=None, fetcher=None,
-          preferred_url=None):
+          preferred_url=None, bars=None, market_provenance=None):
     retrieved = parse_utc(retrieved_at_utc)
     if retrieved is None:
         raise ValueError("retrieved_at_utc must be timezone-aware")
@@ -280,6 +282,17 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=None,
         unique[(row["version_hash"], row["capture_reference"])] = row
     captures = sorted(unique.values(), key=lambda row: (
         row["verified_capture_at_utc"], row["capture_reference"]))
+    market_join = (
+        strict_asof_join(captures, bars, market_provenance)
+        if bars is not None else {
+            "mode": "V44_STRICT_ASOF_KRAKEN_4H_JOIN",
+            "status": "NOT_RUN_NO_BARS",
+            "strict_asof_eligible": 0,
+            "pending_after_last_bar": len(captures),
+            "proof_rejected": 0,
+            "no_lookahead": True,
+        }
+    )
     return {
         "mode": "V44_COMMON_CRAWL_ALTERNATE_URLKEY_PROBE",
         "target_url": target,
@@ -291,6 +304,7 @@ def probe(records, retrieved_at_utc, *, indexes=None, fetcher=None,
         "successful_index_queries": successful_queries,
         "verified_capture_versions": len(captures),
         "capture_rows": captures,
+        "market_join": market_join,
         "queries": queries,
         "failures": failures,
         "body_downloaded": False,
@@ -307,13 +321,26 @@ def main(argv=None):
     parser.add_argument("--output", default="audit/v44-warc-capture.json")
     parser.add_argument("--preferred-url",
                         default="https://odaily.news/newsflash/280563")
+    parser.add_argument("--bars-json", default=None)
+    parser.add_argument("--market-report", default=None)
     args = parser.parse_args(argv)
     audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+    bars = None
+    market_provenance = {}
+    if args.bars_json:
+        bars_doc = json.loads(Path(args.bars_json).read_text(encoding="utf-8"))
+        bars = bars_doc.get("bars")
+        if not isinstance(bars, list) or not bars:
+            raise ValueError("Official Kraken archive bars missing")
+        if args.market_report:
+            market_doc = json.loads(Path(args.market_report).read_text(encoding="utf-8"))
+            market_provenance = market_doc.get("market", market_doc)
     try:
         report = probe(
             audit.get("records", []),
             datetime.now(timezone.utc).isoformat(),
             preferred_url=args.preferred_url,
+            bars=bars, market_provenance=market_provenance,
         )
     except Exception as exc:
         report = {
@@ -324,6 +351,14 @@ def main(argv=None):
             "successful_index_queries": 0,
             "verified_capture_versions": 0,
             "capture_rows": [],
+            "market_join": {
+                "mode": "V44_STRICT_ASOF_KRAKEN_4H_JOIN",
+                "status": "BLOCKED_OR_FAILED",
+                "strict_asof_eligible": 0,
+                "pending_after_last_bar": 0,
+                "proof_rejected": 0,
+                "no_lookahead": True,
+            },
             "body_downloaded": False,
         }
     target = Path(args.output)
