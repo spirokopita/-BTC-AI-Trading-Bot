@@ -63,15 +63,32 @@ def merge_capture(audit_path, *, data_path=DATA_PATH, manifest_path=MANIFEST_PAT
                              separators=(",", ":")) + "\n" for row in rows).encode()
     data_path.write_bytes(raw)
     source_counts = {}
+    cluster_map = {}
     for row in rows:
-        source_counts[row.get("publisher", "unknown")] = (
-            source_counts.get(row.get("publisher", "unknown"), 0) + 1
-        )
+        publisher = row.get("publisher", "unknown")
+        source_counts[publisher] = source_counts.get(publisher, 0) + 1
+        cluster_id = row.get("event_cluster_id") or ("url:" + row["url"])
+        cluster = cluster_map.setdefault(cluster_id, {
+            "rows": 0, "publishers": set(), "urls": set()
+        })
+        cluster["rows"] += 1
+        cluster["publishers"].add(publisher)
+        cluster["urls"].add(row["url"])
+    event_clusters = {
+        cluster_id: {
+            "rows": value["rows"],
+            "publishers": sorted(value["publishers"]),
+            "urls": sorted(value["urls"]),
+        }
+        for cluster_id, value in sorted(cluster_map.items())
+    }
     manifest = {
         "schema": "v44_news_capture_manifest_1",
         "rows": len(rows),
         "distinct_urls": len({row["url"] for row in rows}),
         "distinct_versions": len({(row["url"], row["capture_version_hash"]) for row in rows}),
+        "distinct_event_clusters": len(event_clusters),
+        "event_clusters": event_clusters,
         "new_versions_inserted_this_run": inserted,
         "latest_retrieval_utc": max((row.get("last_retrieved_at_utc", "")
                                      for row in rows), default=None),
