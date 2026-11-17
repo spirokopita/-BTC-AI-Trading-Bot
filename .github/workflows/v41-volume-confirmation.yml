@@ -179,7 +179,7 @@ jobs:
           assert abs(b['gross_aud']-b['fees_aud']-b['spread_aud']-b['slippage_aud']-b['net_aud'])<.00001
           assert f['promotion'].startswith('REJECTED')
           assert c['schema']=='v44_direct_news_capture_1' and c['record_count']==4
-          assert c['captured_count']+c['failed_count']==3
+          assert c['captured_count']+c['failed_count']==c['record_count']
           assert all(not row['strict_historical_backtest_eligible'] for row in c['records'])
           assert all(row.get('body_stored') is False for row in c['records'])
           print('V44_FX_DATA_QUALITY',f['data_quality_status'],'HISTORICAL_XLS',f['historical_fx_source_present'],'ALL_FOLD_COVERAGE',f['all_fold_fx_coverage_at_least_75pct'],'SOURCE_PROVENANCE',f['fx'])
