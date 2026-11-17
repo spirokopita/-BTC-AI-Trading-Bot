@@ -10,7 +10,9 @@ from research.v44_recent_news_capture import (
     COINDESK_URL, RBA_INDEX_URL, RBA_MINUTES_URL,
     capture_all, parse_coindesk_publication, parse_rba_publication,
 )
-from research.v44_persist_recent_news import merge_rows, persist
+from research.v44_persist_recent_news import (
+    merge_rows, merge_warc_captures, persist, persist_warc_capture_audit,
+)
 
 
 class V44RecentNewsTests(unittest.TestCase):
@@ -87,6 +89,96 @@ class V44RecentNewsTests(unittest.TestCase):
                  verified_capture_at_utc="2026-11-18T01:00:00Z",
                  retrieved_at_utc="2026-11-18T01:00:00Z")
         self.assertEqual(len(merge_rows([], [a, b])), 2)
+
+    def test_warc_capture_promotes_existing_metadata_row_without_double_count(self):
+        base = {
+            "url": "https://odaily.news/newsflash/280563",
+            "canonical_url": "odaily.news/newsflash/280563",
+            "source_ids": ["cryptocurrency_cv"],
+            "published_at_utc": "2022-04-01T00:00:00Z",
+            "retrieved_at_utc": "2026-11-18T00:00:00Z",
+            "title": "Sample article",
+            "original_publisher": "Odaily",
+            "sampling_class": "historical_article",
+        }
+        capture = {
+            "url": base["url"],
+            "canonical_url": base["canonical_url"],
+            "source_ids": ["cryptocurrency_cv", "common_crawl"],
+            "capture_type": "common_crawl_index_digest",
+            "version_hash": "A" * 32,
+            "version_hash_algorithm": "sha1_base32",
+            "capture_source": "common_crawl",
+            "verified_capture_at_utc": "2022-07-10T12:34:56Z",
+            "retrieved_at_utc": "2026-11-18T00:10:00Z",
+            "published_at_utc": base["published_at_utc"],
+            "updated_at_utc": None,
+            "capture_reference": "https://data.commoncrawl.org/crawl-data/x/warc/file.warc.gz#offset=10&length=200",
+            "index_version": "CC-MAIN-2022-33",
+            "capture_offset": 10,
+            "capture_length": 200,
+            "capture_mime": "text/html",
+            "capture_status": "200",
+            "index_timezone_assumption": "UTC",
+        }
+        rows, added = merge_warc_captures([base], [capture])
+        self.assertEqual(added, 1)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["availability_confidence"], "verified_crawl")
+        self.assertEqual(rows[0]["version_hash"], "A" * 32)
+        self.assertIn("cryptocurrency_cv", rows[0]["source_ids"])
+        self.assertIn("common_crawl", rows[0]["source_ids"])
+
+    def test_warc_persistence_updates_v38_manifest_and_readback(self):
+        base = {
+            "url": "https://odaily.news/newsflash/280563",
+            "canonical_url": "odaily.news/newsflash/280563",
+            "source_ids": ["cryptocurrency_cv"],
+            "published_at_utc": "2022-04-01T00:00:00Z",
+            "retrieved_at_utc": "2026-11-18T00:00:00Z",
+            "title": "Sample article",
+            "original_publisher": "Odaily",
+            "sampling_class": "historical_article",
+        }
+        capture = {
+            "url": base["url"], "canonical_url": base["canonical_url"],
+            "source_ids": ["cryptocurrency_cv", "common_crawl"],
+            "capture_type": "common_crawl_index_digest",
+            "version_hash": "B" * 32, "version_hash_algorithm": "sha1_base32",
+            "capture_source": "common_crawl",
+            "verified_capture_at_utc": "2022-07-10T12:34:56Z",
+            "retrieved_at_utc": "2026-11-18T00:10:00Z",
+            "published_at_utc": base["published_at_utc"], "updated_at_utc": None,
+            "capture_reference": "https://data.commoncrawl.org/crawl-data/x/warc/file.warc.gz#offset=10&length=200",
+            "index_version": "CC-MAIN-2022-33",
+            "capture_offset": 10, "capture_length": 200,
+            "capture_mime": "text/html", "capture_status": "200",
+            "index_timezone_assumption": "UTC",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows_path = root / "historical.jsonl"
+            manifest_path = root / "historical-manifest.json"
+            rows_path.write_text(json.dumps(base) + "\\n")
+            manifest_path.write_text(json.dumps({
+                "source_status_latest": {"cryptocurrency_cv": {"fetched_rows": 1}},
+                "market_join_latest": {"strict_asof_eligible": 0},
+            }))
+            audit_path = root / "warc.json"
+            audit_path.write_text(json.dumps({
+                "mode": "V44_COMMON_CRAWL_ALTERNATE_URLKEY_PROBE",
+                "status": "CAPTURE_FOUND",
+                "retrieved_at_utc": "2026-11-18T00:10:00Z",
+                "capture_rows": [capture],
+            }))
+            summary = persist_warc_capture_audit(
+                audit_path, rows_path, manifest_path)
+            manifest = json.loads(manifest_path.read_text())
+            persisted = [json.loads(line) for line in rows_path.read_text().splitlines()]
+            self.assertEqual(summary["capture_rows_added"], 1)
+            self.assertEqual(manifest["historical_verified_crawl_rows"], 1)
+            self.assertEqual(manifest["rows_cumulative_deduplicated"], 1)
+            self.assertEqual(persisted[0]["version_hash"], "B" * 32)
 
     def test_persist_writes_manifest_and_readback_hash(self):
         row = {
