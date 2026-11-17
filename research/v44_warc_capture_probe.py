@@ -1,7 +1,7 @@
 """V44: bounded Common Crawl CDX probe with alternate URL-key matching.
 
 The previous V43 probe used exact URL matching on two indexes and returned
-two HTTP 404s. This version tests exact/prefix matching and www/http aliases
+two HTTP 404s. This version tests exact/prefix matching and a www host alias
 on up to three later indexes, skipping those two previously queried indexes
 for the same ODaily URL. It downloads CDX metadata only, never WARC bodies.
 """
@@ -165,7 +165,7 @@ def _capture_row(cdx, target, article, index, retrieved_at_utc):
         "schema": "v44_common_crawl_capture_metadata_1",
         "url": target,
         "canonical_url": target,
-        "source_ids": ["common_crawl"],
+        "source_ids": sorted(set(article.get("source_ids", [])) | {"common_crawl"}),
         "original_publisher": article.get("original_publisher"),
         "title": article.get("title"),
         "published_at_utc": article.get("published_at_utc"),
