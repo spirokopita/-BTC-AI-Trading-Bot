@@ -93,7 +93,7 @@ class V44RecentNewsTests(unittest.TestCase):
     def test_warc_capture_promotes_existing_metadata_row_without_double_count(self):
         base = {
             "url": "https://odaily.news/newsflash/280563",
-            "canonical_url": "odaily.news/newsflash/280563",
+            "canonical_url": "https://odaily.news/newsflash/280563",
             "source_ids": ["cryptocurrency_cv"],
             "published_at_utc": "2022-04-01T00:00:00Z",
             "retrieved_at_utc": "2026-11-18T00:00:00Z",
@@ -132,7 +132,7 @@ class V44RecentNewsTests(unittest.TestCase):
     def test_warc_persistence_updates_v38_manifest_and_readback(self):
         base = {
             "url": "https://odaily.news/newsflash/280563",
-            "canonical_url": "odaily.news/newsflash/280563",
+            "canonical_url": "https://odaily.news/newsflash/280563",
             "source_ids": ["cryptocurrency_cv"],
             "published_at_utc": "2022-04-01T00:00:00Z",
             "retrieved_at_utc": "2026-11-18T00:00:00Z",
