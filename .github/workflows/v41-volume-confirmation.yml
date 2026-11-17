@@ -12,6 +12,8 @@ on:
       - 'research/v44_persist_recent_news.py'
       - 'research/v44_warc_capture_probe.py'
       - 'research/v44_btc_aud_driver_graph.json'
+      - 'research/v44_asof_join.py'
+      - 'tests/test_v44_asof_join.py'
       - 'tests/test_v44_fx_exit.py'
       - 'tests/test_v44_recent_news_capture.py'
       - 'tests/test_v44_warc_capture_probe.py'
@@ -44,6 +46,8 @@ on:
       - 'research/v44_persist_recent_news.py'
       - 'research/v44_warc_capture_probe.py'
       - 'research/v44_btc_aud_driver_graph.json'
+      - 'research/v44_asof_join.py'
+      - 'tests/test_v44_asof_join.py'
       - 'tests/test_v44_fx_exit.py'
       - 'tests/test_v44_recent_news_capture.py'
       - 'tests/test_v44_warc_capture_probe.py'
@@ -87,6 +91,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_v44_recent_news_capture.py' -v
           python -m unittest discover -s tests -p 'test_v44_warc_capture_probe.py' -v
           python -m unittest discover -s tests -p 'test_v44_driver_graph.py' -v
+          python -m unittest discover -s tests -p 'test_v44_asof_join.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
@@ -121,16 +126,22 @@ jobs:
             --bars-json audit/v41-market-bars.json \
             --market-report audit/v41-volume-confirmation.json \
             --output audit/v44-fx-exit.json
-      - name: V44 first-observed RBA and CoinDesk publisher snapshots
-        run: python -m research.v44_recent_news_capture --output audit/v44-recent-news-capture.json
       - name: V44 alternate Common Crawl URL-key and later-index probe
         run: |
           python -m research.v44_warc_capture_probe \
             --audit audit/v42-monthly-news-enriched.json \
+            --bars-json audit/v42-market-bars.json \
+            --market-report audit/v41-volume-confirmation.json \
             --output audit/v44-warc-capture.json \
             --preferred-url https://odaily.news/newsflash/280563
       - name: Fresh completed public BTC/AUD 4h bridge
         run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json --bars-json-output audit/v41-recent-bars.json
+      - name: V44 first-observed RBA and CoinDesk snapshots plus strict recent-bar join
+        run: |
+          python -m research.v44_recent_news_capture \
+            --output audit/v44-recent-news-capture.json \
+            --bars-json audit/v41-recent-bars.json \
+            --market-report audit/v41-recent-bridge.json
       - name: Timestamped recent macro/crypto event study with prior matched controls
         run: python -m research.v41_recent_news_event_study --bars-json audit/v41-recent-bars.json --events data/v41_recent_news_events.json --output audit/v41-recent-news-event-study.json
       - name: Bounded nonrepeating historical article months and strict market join
@@ -219,6 +230,10 @@ jobs:
           q=json.loads(pathlib.Path('audit/v44-recent-news-capture.json').read_text())
           assert q['mode']=='V44_PROSPECTIVE_FIRST_OBSERVED_PUBLISHER_SNAPSHOTS'
           assert q['historical_backfill'] is False and q['body_redistribution'] is False
+          assert q['market_join']['mode']=='V44_STRICT_ASOF_KRAKEN_4H_JOIN'
+          assert q['market_join']['strict_asof_eligible']<=q['record_count']
+          assert q['market_join']['strict_asof_eligible']+q['market_join']['pending_after_last_bar']+q['market_join']['proof_rejected']==q['record_count']
+          assert q['market_join']['no_lookahead'] is True
           for row in q['records']:
               assert row['capture_type']=='first_observed_snapshot'
               assert row['content_sha256']==row['version_capture_sha256']
@@ -226,6 +241,9 @@ jobs:
               assert row['historical_asof_use']=='NOT_ELIGIBLE_FOR_PRE_CAPTURE_DECISIONS'
           w=json.loads(pathlib.Path('audit/v44-warc-capture.json').read_text())
           assert w['body_downloaded'] is False
+          assert w['market_join']['mode']=='V44_STRICT_ASOF_KRAKEN_4H_JOIN'
+          assert w['market_join']['strict_asof_eligible']<=w.get('verified_capture_versions',0)
+          assert w['market_join']['no_lookahead'] is True
           assert w.get('requests_attempted',0)<=9
           assert w.get('verified_capture_versions',0)==len(w.get('capture_rows',[]))
           print('V44_NEWS_CAPTURE',q['source_status'],'ROWS',q['record_count'])
