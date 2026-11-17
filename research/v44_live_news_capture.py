@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -25,6 +26,7 @@ USER_AGENT = "BTC-AUD-PAPER-research/44 (+https://github.com/spirokopita/-BTC-AI
 SPECS = (
     {
         "id": "rba_november_2026_minutes",
+        "event_cluster_id": "RBA_NOVEMBER_2026_MINUTES",
         "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-11-03.html",
         "publisher": "Reserve Bank of Australia",
         "role": "official_macro_minutes",
@@ -38,6 +40,7 @@ SPECS = (
     },
     {
         "id": "coindesk_btc_etf_flow_2026_11_17",
+        "event_cluster_id": "US_BTC_ETF_FLOWS_2026_11_16",
         "url": "https://www.coindesk.com/markets/2026/11/17/bitcoin-remains-penned-in-near-usd64-000-even-as-etf-outflow-streak-ends",
         "publisher": "CoinDesk",
         "role": "crypto_etf_flows_and_market_structure",
@@ -50,7 +53,22 @@ SPECS = (
         "btc_aud_channel": "BTC/USD demand channel if AUD/USD is unchanged",
     },
     {
+        "id": "cryptobriefing_btc_etf_flow_2026_11_17",
+        "event_cluster_id": "US_BTC_ETF_FLOWS_2026_11_16",
+        "url": "https://cryptobriefing.com/bitcoin-etf-outflow-streak-ends-64800/",
+        "publisher": "Crypto Briefing",
+        "role": "independent_crypto_etf_flow_followup",
+        "published_at_utc": "2026-11-17T16:59:00Z",
+        "publication_time_basis": "Crypto Briefing page byline: 17 Nov 2026 11:59 a.m. EST (UTC-5)",
+        "release_time_source_url": None,
+        "causal_degree_hypothesis": 1,
+        "btc_usd_channel": "reported spot ETF flows may affect marginal BTC demand",
+        "aud_usd_channel": "no direct FX sign hypothesized",
+        "btc_aud_channel": "BTC/USD demand channel if AUD/USD is unchanged",
+    },
+    {
         "id": "rba_november_2026_release_clock",
+        "event_cluster_id": "RBA_NOVEMBER_2026_MINUTES",
         "url": "https://www.rba.gov.au/schedules-events/calendar/",
         "publisher": "Reserve Bank of Australia",
         "role": "official_release_clock",
@@ -63,7 +81,7 @@ SPECS = (
         "btc_aud_channel": "not an independent market event",
     },
 )
-ALLOWED_HOSTS = {"www.rba.gov.au", "www.coindesk.com"}
+ALLOWED_HOSTS = {"www.rba.gov.au", "www.coindesk.com", "cryptobriefing.com", "www.cryptobriefing.com"}
 
 
 class MetaParser(HTMLParser):
@@ -114,22 +132,36 @@ def fetch_http(url):
         "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml",
     })
-    with urllib.request.urlopen(request, timeout=25) as response:
-        final_url = response.geturl()
-        final_host = (urlparse(final_url).hostname or "").lower()
-        if final_host not in ALLOWED_HOSTS:
-            raise ValueError("Redirect left trusted host allowlist")
-        body = response.read(MAX_BYTES + 1)
-        if len(body) > MAX_BYTES:
-            raise ValueError("Page exceeded V44 response byte cap")
-        if response.status != 200 or len(body) < 500:
-            raise ValueError("Unexpected HTTP status or short HTML response")
-        return {
-            "status": response.status,
-            "final_url": final_url,
-            "headers": dict(response.headers.items()),
-            "body": body,
-        }
+    last_error = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=25) as response:
+                final_url = response.geturl()
+                final_host = (urlparse(final_url).hostname or "").lower()
+                if final_host not in ALLOWED_HOSTS:
+                    raise ValueError("Redirect left trusted host allowlist")
+                body = response.read(MAX_BYTES + 1)
+                if len(body) > MAX_BYTES:
+                    raise ValueError("Page exceeded V44 response byte cap")
+                if response.status != 200 or len(body) < 500:
+                    raise ValueError("Unexpected HTTP status or short HTML response")
+                return {
+                    "status": response.status,
+                    "final_url": final_url,
+                    "headers": dict(response.headers.items()),
+                    "body": body,
+                }
+        except urllib.error.HTTPError as exc:
+            last_error = exc
+            if exc.code not in (429, 502, 503, 504) or attempt == 2:
+                raise
+            retry_after = (exc.headers.get("Retry-After") if exc.headers else None)
+            try:
+                wait_seconds = float(retry_after) if retry_after else (2 ** attempt)
+            except ValueError:
+                wait_seconds = 2 ** attempt
+            time.sleep(min(10.0, max(1.0, wait_seconds)))
+    raise last_error
 
 
 def _modified_time(meta, headers):
