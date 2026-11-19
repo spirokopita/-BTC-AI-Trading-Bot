@@ -1,3 +1,9 @@
+# RUN SUMMARY (2026-11-20 V44 partial checkpoint)
+- **DONE:** Added proof-gated version-specific historical news selector `research/v44_news_asof.py` and nine synthetic leakage tests `tests/test_v44_news_asof.py`; GitHub main read-back confirmed both files (commits 15436fa and b1e3555).
+- **LOCAL TEST:** Equivalent nine-case standalone implementation passed 9/9 with `python -m unittest discover -s tests -p 'test_v44_news_asof.py' -v`; uploaded GitHub source has not yet been executed by CI. No historical article was newly proven available; no new market backtest or APK.
+- **BLOCKED RESEARCH:** No new untouched OOS evidence; no algorithm promotion. Prior V43 benchmark H80/300 +A$38.454151 NET vs same-stake buy-and-hold +A$129.286037, all selectors HOLD. Do not interpret those as V44 results.
+- **NEXT:** Execute committed tests in CI, integrate proof-gated selector into existing as-of joins, expand 18 unsampled archive months, verify original WARC captures, rerun chronological price/news ablations with 80bps per-side taker plus separate spread/slippage. Preserve PAPER ONLY, A$100 inclusive/10% cash and HOLD.
+
 # RUN SUMMARY (2026-11-18 V43)
 - Main: PR #33 merged 28cc619; persistence bot commit 1aadc46 verified; corpus 2,491 rows / 1,428 article versions / 1,399 outcome-independent monthly articles; cursor 64/64, 18 months remain.
 - Android unchanged: native Kotlin/Compose/Room PAPER engine HOLD, A$100 inclusive / 10% cash, 80bps taker, stale/offline block, 15-minute WorkManager, purple notification and master controls; no APK or live orders.
