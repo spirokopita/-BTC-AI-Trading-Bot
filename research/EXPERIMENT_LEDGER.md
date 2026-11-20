@@ -1,3 +1,11 @@
+## V45 — 2026-11-21 — as-of evidence audit (PARTIAL)
+
+**Changes:** research/v45_asof_audit.py commit 9f1d3a01fdb0baa5e58ad7abfc3fd49f6a997d1b and tests/test_v45_asof_audit.py commit 74a9a5b3fd8bc45886ba69e006425ae9dbf66bf7. Version-level counts: total, invalid/unproven, future capture, eligible versions, distinct canonical URLs. Nonfinite and negative observation latency rejected. Publication time alone never proves availability.
+
+**Verification:** 5/5 local synthetic tests passed on a reconstructed copy of the dependencies with command `python -m unittest discover -s tests -v`. GitHub CI of exact committed files not verified. No live market/news requests, new candles, new captured news, chronological walk-forward, cost-sensitivity rerun, Android build, or APK. No new trade count/gross/fees/spread/slippage/NET/DD can be reported. Existing V43 historical metrics remain unchanged and exploratory; 1,399 archive articles / 18 unsampled months / one historical capture as of last verified V43 checkpoint, not re-audited today.
+
+**Decision:** HOLD retained, PAPER ONLY. Do not promote audit counts to proof of predictive value. Next: CI test V44/V45, integrate into historical join and quantify eligible corpus, verify WARC capture digests and version provenance, run prespecified event-conditioned low-turnover chronological OOS vs price-only and delayed/random controls with A$100 inclusive cap, 80bps taker + spread/slippage.
+
 ## V43 — 2026-11-18 — 90-day drawdown cash-entry gate
 
 **Status:** Research DONE; PR #33 MERGED; main news persistence DONE and read back; promotion REJECTED. Merge commit `28cc61951a2a16879e7e04c935a74a80f239d5fd`; persistence bot commit `1aadc46d284b310895a1ee916d5f6a22922e3076`; research run `44191923759` PASSED; PR CI `44190949880` PASSED 357 full regression tests and 9 V43 tests.
