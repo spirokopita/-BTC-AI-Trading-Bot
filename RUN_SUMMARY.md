@@ -1,3 +1,10 @@
+# RUN SUMMARY (2026-11-21 V45 partial)
+- GitHub main: V45 as-of eligibility audit and five synthetic tests committed; commit SHAs 9f1d3a01 and 74a9a5b3. Five tests passed locally on reconstructed dependencies, NOT GitHub CI.
+- V44 strict selector remains unintegrated with historical backtests. No new verified news capture, market data, OOS trades, or strategy returns this run.
+- Prior V43: 1,399 monthly archive articles, 18 months remaining; one verified historical capture, zero strict as-of test-window news. These are prior checkpoint figures, not refreshed V45 counts.
+- PAPER ONLY HOLD, A$100 inclusive entry / 10% cash, 80bps per-side taker + separate spread/slippage; no Android changes/APK.
+- NEXT: execute committed tests in CI, audit real corpus, capture WARC versions, run frozen chronological strategy/news ablations and report all NET components before any promotion.
+
 # RUN SUMMARY (2026-11-20 V44 partial checkpoint)
 - **DONE:** Added proof-gated version-specific historical news selector `research/v44_news_asof.py` and nine synthetic leakage tests `tests/test_v44_news_asof.py`; GitHub main read-back confirmed both files (commits 15436fa and b1e3555).
 - **LOCAL TEST:** Equivalent nine-case standalone implementation passed 9/9 with `python -m unittest discover -s tests -p 'test_v44_news_asof.py' -v`; uploaded GitHub source has not yet been executed by CI. No historical article was newly proven available; no new market backtest or APK.
