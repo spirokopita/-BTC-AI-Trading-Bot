@@ -1,3 +1,11 @@
+## V46 — 2026-11-22 — strict as-of defensive hardening (PARTIAL)
+
+**DONE:** Hardened `research/v44_news_asof.py` to reject negative, NaN, infinite, nonnumeric latency and skip malformed historical rows without aborting an otherwise valid news batch. Added `tests/test_v46_asof_hardening.py` covering malformed rows, future capture and latency boundaries. GitHub branch `research/v46-asof-hardening`; commits `611a381e`, `0f7f3564`.
+
+**NOT VERIFIED:** Exact committed tests and full GitHub CI have not yet run. No fresh Kraken BTC/AUD download, historical WARC capture, new news article, actual strategy walk-forward, APK or Android change this run. No new gross, costs, NET, return or drawdown figures. Previously inspected V43 numbers are NOT new evidence. **PAPER ONLY / HOLD** unchanged.
+
+**NEXT:** Run `python -m unittest discover -s tests -p 'test_v46_asof_hardening.py' -v` and full CI; audit actual 2,491-row corpus with strict proof gating, retrieve verifiable WARC versions, complete remaining 18 archive months, then conduct frozen price-only vs news-aware chronological ablations with delayed/random controls, 80bps taker per side plus spread/slippage and A$100 inclusive/10%-cash cap. No promotion without independent untouched OOS NET benefit.
+
 ## V45 — 2026-11-21 — as-of evidence audit (PARTIAL)
 
 **Changes:** research/v45_asof_audit.py commit 9f1d3a01fdb0baa5e58ad7abfc3fd49f6a997d1b and tests/test_v45_asof_audit.py commit 74a9a5b3fd8bc45886ba69e006425ae9dbf66bf7. Version-level counts: total, invalid/unproven, future capture, eligible versions, distinct canonical URLs. Nonfinite and negative observation latency rejected. Publication time alone never proves availability.
