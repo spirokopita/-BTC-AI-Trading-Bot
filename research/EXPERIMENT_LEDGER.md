@@ -1,3 +1,9 @@
+## V47 — 2026-11-23 — repair blocking V46 syntax (PARTIAL)
+
+**DONE:** GitHub read-back identified literal backslash-n in `research/v44_news_asof.py` at `latency_seconds` guard on `research/v46-asof-hardening`, which would raise SyntaxError at import. Replaced with actual newline; commit `da54bfb2d9d905488eef43d53663a3aedb1de987`; fetched branch file and compared exact content (match).
+
+**BLOCKED/NOT ATTEMPTED:** No exact committed test execution or CI run verified; commit workflow query returned zero PR-triggered runs. No new Kraken candles, historical news capture, corpus audit, walk-forward trades, fees, NET, DD or Android APK. Do not infer a passing suite from source read-back. Next run must run targeted V44/V45/V46 tests and full CI, then corpus eligibility audit and frozen OOS strategy comparisons. PAPER ONLY HOLD; A$100 inclusive/10%-cash cap and 80bps taker remain unchanged.
+
 ## V46 — 2026-11-22 — strict as-of defensive hardening (PARTIAL)
 
 **DONE:** Hardened `research/v44_news_asof.py` to reject negative, NaN, infinite, nonnumeric latency and skip malformed historical rows without aborting an otherwise valid news batch. Added `tests/test_v46_asof_hardening.py` covering malformed rows, future capture and latency boundaries. GitHub branch `research/v46-asof-hardening`; commits `611a381e`, `0f7f3564`.
