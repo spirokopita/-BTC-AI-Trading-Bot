@@ -25,7 +25,8 @@ def validate(row):
     return canonical(row["url"]),cap
 
 def asof_versions(rows,decision_at,latency_seconds=0):
-    if not isinstance(latency_seconds,(int,float)) or not 0 <= latency_seconds < float("inf"):\n        raise ValueError("latency must be finite and nonnegative")
+    if not isinstance(latency_seconds,(int,float)) or not 0 <= latency_seconds < float("inf"):
+        raise ValueError("latency must be finite and nonnegative")
     cutoff=seconds(decision_at)-latency_seconds
     selected={}
     for row in rows:
