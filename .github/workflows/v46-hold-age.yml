@@ -1,0 +1,25 @@
+name: V46 hold-age ablation
+on:
+  pull_request:
+    paths:
+      - 'research/v46_hold_age_ablation.py'
+      - 'tests/test_v46_hold_age_ablation.py'
+      - '.github/workflows/v46-hold-age.yml'
+  workflow_dispatch:
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_v46_hold_age_ablation.py' -v
+      - run: python -m research.v46_hold_age_ablation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v46-hold-age-ablation
+          path: audit/v46-hold-age-ablation.json
+          if-no-files-found: ignore
