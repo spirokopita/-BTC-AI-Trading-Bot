@@ -1,17 +1,40 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 1559,
+  "historical_article_versions_cumulative": 1560,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-25T03:09:24.563785+00:00",
+  "latest_retrieval_utc": "2026-11-25T04:01:24.241807+00:00",
   "market_join_latest": {
-    "capture_market_join_status": "OK_GAP_SAFE_ASOF",
-    "examples": [],
+    "examples": [
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163532"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163528"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163508"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163540"
+      },
+      {
+        "bar_open_utc": "2021-01-31T20:00:00+00:00",
+        "strict_asof_eligible": false,
+        "url": "https://odaily.news/post/5163539"
+      }
+    ],
     "market_bars": 6863,
-    "official_release_time_aligned_not_first_observed": 0,
-    "retrospective_time_aligned": 0,
-    "strict_asof_eligible": 0,
-    "strict_asof_examples": [],
-    "strict_asof_rule": "V48 exact Common Crawl SHA1-base32 capture reference + one-hour latency; first gap-safe completed-bar OPEN at or after availability"
+    "official_release_time_aligned_not_first_observed": 2,
+    "retrospective_time_aligned": 282,
+    "strict_asof_eligible": 0
   },
   "months_by_publication": {
     "2020-01": 30,
@@ -79,8 +102,8 @@
     "2025-03": 1,
     "2026-07": 30,
     "2026-09": 10,
-    "2026-10": 50,
-    "unknown": 1063
+    "2026-10": 51,
+    "unknown": 1068
   },
   "no_lookahead": "Historical as-of uses only verified WARC captures; source-claimed first_seen and our 2026 retrieval cannot backdate history",
   "official_release_clock_rows": 3,
@@ -112,7 +135,7 @@
     "En": 4,
     "Ethereumworldnews": 1,
     "Finbold": 1,
-    "Fortune Crypto": 1,
+    "Fortune Crypto": 2,
     "NewsBTC": 5,
     "Odaily 星球日报": 1375,
     "OpenZeppelin Blog": 5,
@@ -140,17 +163,17 @@
     "r/defi": 4,
     "r/ethereum": 5,
     "segye.com": 2,
-    "unspecified": 1063,
+    "unspecified": 1068,
     "wikitree.co.kr": 3,
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 2622,
-  "rows_new_in_latest_sample": 131,
-  "rows_sha256": "ee36a1015cdc5a9625ce22de7dc6f3f5208653294ee2f8e9c829b94027f51d43",
+  "rows_cumulative_deduplicated": 2628,
+  "rows_new_in_latest_sample": 1643,
+  "rows_sha256": "339dc4cbbe43d0e0978ef0a604912f37b1169a56b029e7fbcb0f92bf685e02c7",
   "sampling_class_counts": {
-    "official_all_press_releases": 1014,
-    "outcome_independent_monthly_archive": 1530,
+    "official_all_press_releases": 1019,
+    "outcome_independent_monthly_archive": 1531,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -158,131 +181,59 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 1530,
-    "fed_press": 1015,
+    "cryptocurrency_cv": 1531,
+    "fed_press": 1020,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
     "common_crawl": {
-      "access_class": "FREE_PUBLIC_METADATA",
-      "attempted_article_urls": 1,
-      "body_downloaded": false,
-      "failed_or_rejected": 2,
-      "failures": [
-        {
-          "index": "CC-MAIN-2024-18",
-          "status": "HTTPError: HTTP Error 503: Service Temporarily Unavailable",
-          "url": "https://odaily.news/post/5194132"
-        },
-        {
-          "index": "CC-MAIN-2024-22",
-          "status": "HTTPError: HTTP Error 503: Service Temporarily Unavailable",
-          "url": "https://odaily.news/post/5194132"
-        }
-      ],
+      "fetched_rows": 1,
+      "status": "URL_SPECIFIC_INDEX_CAPTURE"
+    },
+    "crypto_news_api": {
       "fetched_rows": 0,
-      "index_ids_queried": [
-        "CC-MAIN-2024-18",
-        "CC-MAIN-2024-22"
-      ],
-      "index_selection_scope": "first two chronological post-publication indexes per sampled URL; absence in these indexes does not prove absence from all Common Crawl",
-      "index_timezone_assumption": "Common Crawl collinfo from/to values without offsets are interpreted as UTC",
-      "license_note": "Common Crawl CDX metadata/digests only; no WARC body retrieved; only first two chronological post-publication indexes queried",
-      "requests_attempted": 2,
-      "status": "BLOCKED_OR_FAILED",
-      "successful_index_queries": 0,
-      "verified_capture_versions": 0
+      "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
     },
     "cryptocurrency_cv": {
-      "fetched_rows": 131,
-      "per_month": {
-        "2024-03": {
-          "ok": true,
-          "retryable": false,
-          "rows": 24,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-06": {
-          "ok": true,
-          "retryable": false,
-          "rows": 16,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-08": {
-          "ok": true,
-          "retryable": false,
-          "rows": 16,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-09": {
-          "ok": true,
-          "retryable": false,
-          "rows": 30,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-11": {
-          "ok": true,
-          "retryable": false,
-          "rows": 18,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2024-12": {
-          "ok": true,
-          "retryable": false,
-          "rows": 26,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2025-03": {
-          "ok": true,
-          "retryable": false,
-          "rows": 1,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2025-05": {
-          "ok": false,
-          "retryable": true,
-          "rows": 0,
-          "status": "2025-05: no returned article has verified publication month",
-          "zero_rows": true
-        },
-        "2025-06": {
-          "ok": false,
-          "retryable": true,
-          "rows": 0,
-          "status": "2025-06: no returned article has verified publication month",
-          "zero_rows": true
-        },
-        "2025-08": {
-          "ok": false,
-          "retryable": true,
-          "rows": 0,
-          "status": "2025-08: no returned article has verified publication month",
-          "zero_rows": true
-        },
-        "2025-09": {
-          "ok": false,
-          "retryable": true,
-          "rows": 0,
-          "status": "2025-09: no returned article has verified publication month",
-          "zero_rows": true
-        },
-        "2025-11": {
-          "ok": false,
-          "retryable": true,
-          "rows": 0,
-          "status": "2025-11: no returned article has verified publication month",
-          "zero_rows": true
-        }
-      },
-      "status": "V41_PERSISTENT_UNSAMPLED_MONTH_CURSOR"
+      "fetched_rows": 575,
+      "status": "2025-04: no returned article has verified publication month; 2025-07: no returned article has verified publication month; 2025-10: no returned article has verified publication month"
+    },
+    "cryptopanic": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
+    },
+    "fed_press": {
+      "fetched_rows": 1020,
+      "status": "OFFICIAL_ANNUAL_DATE_ONLY"
+    },
+    "fomc_calendar": {
+      "fetched_rows": 48,
+      "status": "DATE_ONLY_PLUS_3_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE"
+    },
+    "fomc_statements_mirror": {
+      "fetched_rows": 0,
+      "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
+    },
+    "gdelt": {
+      "fetched_rows": 0,
+      "status": "HTTPError: HTTP Error 429: Too Many Requests"
+    },
+    "infini_news": {
+      "fetched_rows": 0,
+      "status": "OK_PREVIEW_INCOMPLETE"
+    },
+    "media_cloud": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API credentials/access required; no authorized key"
+    },
+    "newsdata_io": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: archive access key/paid tier; no authorized key or purchase"
+    },
+    "sandl": {
+      "fetched_rows": 0,
+      "status": "KEY_REQUIRED_OR_RESTRICTED: API access unverified/key may be required; no authorized key"
     }
   },
   "target": 10000,
