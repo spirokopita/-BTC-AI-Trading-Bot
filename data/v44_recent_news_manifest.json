@@ -1,0 +1,11 @@
+{
+  "schema": "v44_first_observed_metadata_manifest_1",
+  "version_rows_cumulative": 0,
+  "unique_urls": 0,
+  "source_counts": {},
+  "rows_sha256": "",
+  "historical_backfill": false,
+  "paper_only": true,
+  "raw_publisher_bodies_redistributed": false,
+  "status": "INITIALIZED_PENDING_V44_CAPTURE"
+}
