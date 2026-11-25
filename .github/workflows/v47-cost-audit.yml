@@ -1,0 +1,26 @@
+name: V47 cost audit
+on:
+  pull_request:
+    paths:
+      - 'research/v45_lot_aware_cycle.py'
+      - 'research/v47_cost_audit.py'
+      - 'tests/test_v47_cost_audit.py'
+      - '.github/workflows/v47-cost-audit.yml'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_v47_cost_audit.py' -v
+      - run: python -m research.v47_cost_audit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v47-cost-audit
+          path: audit/v47-cost-audit.json
+          if-no-files-found: ignore

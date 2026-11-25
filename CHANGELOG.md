@@ -982,3 +982,6 @@ Build V13 with Android SDK + Gradle and run device/instrumentation tests, then f
 
 
 **V42 FOLLOW-UP EXECUTION GUARD (2026-11-17):** Commit `0184ea21d94f5f5a827716666fa32b0e8f81b5cf` removes the cursor and workflow file from the main-push path filter and skips GitHub Actions bot pushes, preventing the persistence commit from recursively retriggering the full research job. Main rerun `43975610213` has passed the 348-test regression, V41/V42 archive studies, fresh bridge, event study and monthly sample; the bounded Common Crawl probe is still running, so its conflict-safe persist job has not yet reached final read-back.
+
+## 2026-11-14 V47 (research branch, paper only)
+Implemented explicit 80bps taker-fee and modeled 5bps spread/5bps slippage attribution in lot-aware Hoarder research; A$50/A$100 entry sizing comparison, same-buy never-sell control and deterministic safety test. Source: existing official Kraken archive (previously inspected; no untouched OOS). CI: `python -m unittest discover -s tests -p 'test_v47_cost_audit.py' -v` and `python -m research.v47_cost_audit`; see PR #28 for run/artifact. No Android promotion. Historical news expansion NOT ATTEMPTED in this scoped run. NEXT: reconcile fill-level gross/cost/NET and validate prospectively; no live orders.
