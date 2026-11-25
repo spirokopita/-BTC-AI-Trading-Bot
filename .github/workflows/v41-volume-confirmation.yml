@@ -14,6 +14,19 @@ on:
       - 'tests/test_v44_fx_volatility_gate.py'
       - 'tests/test_v44_live_news_capture.py'
       - 'tests/test_v44_persist_news_capture.py'
+      - 'research/v44_fx_exit.py'
+      - 'research/v44_recent_news_capture.py'
+      - 'research/v44_persist_recent_news.py'
+      - 'research/v44_warc_capture_probe.py'
+      - 'research/v44_btc_aud_driver_graph.json'
+      - 'research/v44_asof_join.py'
+      - 'tests/test_v44_asof_join.py'
+      - 'tests/test_v44_fx_exit.py'
+      - 'tests/test_v44_recent_news_capture.py'
+      - 'tests/test_v44_warc_capture_probe.py'
+      - 'tests/test_v44_driver_graph.py'
+      - 'data/v44_recent_news_observations.jsonl'
+      - 'data/v44_recent_news_manifest.json'
       - 'research/v37_source_topic_registry.json'
       - 'tests/test_v42_volatility_exit.py'
       - 'tests/test_v42_warc_capture_probe.py'
@@ -41,6 +54,19 @@ on:
       - 'tests/test_v44_fx_volatility_gate.py'
       - 'tests/test_v44_live_news_capture.py'
       - 'tests/test_v44_persist_news_capture.py'
+      - 'research/v44_fx_exit.py'
+      - 'research/v44_recent_news_capture.py'
+      - 'research/v44_persist_recent_news.py'
+      - 'research/v44_warc_capture_probe.py'
+      - 'research/v44_btc_aud_driver_graph.json'
+      - 'research/v44_asof_join.py'
+      - 'tests/test_v44_asof_join.py'
+      - 'tests/test_v44_fx_exit.py'
+      - 'tests/test_v44_recent_news_capture.py'
+      - 'tests/test_v44_warc_capture_probe.py'
+      - 'tests/test_v44_driver_graph.py'
+      - 'data/v44_recent_news_observations.jsonl'
+      - 'data/v44_recent_news_manifest.json'
       - 'research/v37_source_topic_registry.json'
       - 'tests/test_v42_volatility_exit.py'
       - 'tests/test_v42_warc_capture_probe.py'
@@ -77,6 +103,11 @@ jobs:
           python -m unittest discover -s tests -p 'test_v44_fx_volatility_gate.py' -v
           python -m unittest discover -s tests -p 'test_v44_live_news_capture.py' -v
           python -m unittest discover -s tests -p 'test_v44_persist_news_capture.py' -v
+          python -m unittest discover -s tests -p 'test_v44_fx_exit.py' -v
+          python -m unittest discover -s tests -p 'test_v44_recent_news_capture.py' -v
+          python -m unittest discover -s tests -p 'test_v44_warc_capture_probe.py' -v
+          python -m unittest discover -s tests -p 'test_v44_driver_graph.py' -v
+          python -m unittest discover -s tests -p 'test_v44_asof_join.py' -v
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v41_recent_news_event_study.py' -v
           python -m unittest discover -s tests -p 'test_v48_news_proof_gate.py' -v
@@ -109,8 +140,28 @@ jobs:
         run: python -m research.v44_fx_volatility_gate --bars-json audit/v41-market-bars.json --output audit/v44-fx-volatility.json
       - name: Capture current RBA minutes and CoinDesk ETF-flow article versions
         run: python -m research.v44_live_news_capture --output audit/v44-live-news-capture.json
+      - name: V44 AUD/USD decomposition as a trend-masking exit walk-forward
+        run: |
+          python -m research.v44_fx_exit \
+            --bars-json audit/v41-market-bars.json \
+            --market-report audit/v41-volume-confirmation.json \
+            --output audit/v44-fx-exit.json
+      - name: V44 alternate Common Crawl URL-key and later-index probe
+        run: |
+          python -m research.v44_warc_capture_probe \
+            --audit audit/v42-monthly-news-enriched.json \
+            --bars-json audit/v42-market-bars.json \
+            --market-report audit/v41-volume-confirmation.json \
+            --output audit/v44-warc-capture.json \
+            --preferred-url https://odaily.news/newsflash/280563
       - name: Fresh completed public BTC/AUD 4h bridge
         run: python -m research.v28_recent_bridge --output audit/v41-recent-bridge.json --bars-json-output audit/v41-recent-bars.json
+      - name: V44 first-observed RBA and CoinDesk snapshots plus strict recent-bar join
+        run: |
+          python -m research.v44_recent_news_capture \
+            --output audit/v44-recent-news-capture.json \
+            --bars-json audit/v41-recent-bars.json \
+            --market-report audit/v41-recent-bridge.json
       - name: Timestamped recent macro/crypto event study with prior matched controls
         run: python -m research.v41_recent_news_event_study --bars-json audit/v41-recent-bars.json --events data/v41_recent_news_events.json --output audit/v41-recent-news-event-study.json
       - name: Bounded nonrepeating historical article months and strict market join
@@ -205,6 +256,49 @@ jobs:
           print('V43_SELECTORS',[f['selected_using_train_validation_only'] for f in g['folds']])
           print('V43_SELECTED_TEST_NET',g['aggregate_selected_test_net_aud'],'BUYHOLD',g['aggregate_buyhold_aud100']['net_aud'])
           print('V43_NEWS',g['news'])
+          x=json.loads(pathlib.Path('audit/v44-fx-exit.json').read_text())
+          assert x['mode']=='V44_PAPER_ONLY_PRIOR_INSPECTED_EXPLORATORY'
+          assert x['android_policy']=='HOLD' and x['promotion'].startswith('REJECTED')
+          assert x['costs_bps_each_side']=={'taker':80,'half_spread':5,'slippage':5}
+          assert x['max_inclusive_entry_debit_aud']==100 and x['cash_fraction_cap']==.10
+          assert len(x['folds'])>=1
+          for name,values in x['aggregate_independent_aud1000_reset_accounts'].items():
+              assert values['trades']==values['wins']+values['losses']
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              print('V44_STRATEGY',name,values)
+          for name,values in x['aggregate_price_baselines'].items():
+              assert abs(values['gross_aud']-values['fees_aud']-values['spread_aud']-values['slippage_aud']-values['net_aud'])<.00001
+              assert 'worst_fold_drawdown_pct' in values
+              print('V44_PRICE_BASELINE',name,values)
+          bh=x['aggregate_buyhold_aud100']
+          assert bh['trades']==bh['wins']+bh['losses']
+          assert abs(bh['gross_aud']-bh['fees_aud']-bh['spread_aud']-bh['slippage_aud']-bh['net_aud'])<.00001
+          assert bh['worst_fold_drawdown_pct']<=0
+          print('V44_BUYHOLD_BREAKDOWN',bh)
+          print('V44_NEWS_VETOED_BARS',sum(f['test']['h80_news_negative_veto']['news_counts']['vetoed_candidate_bars'] for f in x['folds']))
+          print('V44_SELECTORS',x['selected_by_fold'],'SELECTED_NET',x['aggregate_selected_test_net_aud'],'BUYHOLD',x['aggregate_buyhold_aud100_net'])
+          q=json.loads(pathlib.Path('audit/v44-recent-news-capture.json').read_text())
+          assert q['mode']=='V44_PROSPECTIVE_FIRST_OBSERVED_PUBLISHER_SNAPSHOTS'
+          assert q['historical_backfill'] is False and q['body_redistribution'] is False
+          assert q['market_join']['mode']=='V44_STRICT_ASOF_KRAKEN_4H_JOIN'
+          assert q['market_join']['strict_asof_eligible']<=q['record_count']
+          assert q['market_join']['strict_asof_eligible']+q['market_join']['pending_after_last_bar']+q['market_join']['proof_rejected']==q['record_count']
+          assert q['market_join']['no_lookahead'] is True
+          for row in q['records']:
+              assert row['capture_type']=='first_observed_snapshot'
+              assert row['content_sha256']==row['version_capture_sha256']
+              assert row['verified_capture_at_utc']==row['retrieved_at_utc']
+              assert row['historical_asof_use']=='NOT_ELIGIBLE_FOR_PRE_CAPTURE_DECISIONS'
+          w=json.loads(pathlib.Path('audit/v44-warc-capture.json').read_text())
+          assert w['body_downloaded'] is False
+          assert w['market_join']['mode']=='V44_STRICT_ASOF_KRAKEN_4H_JOIN'
+          assert w['market_join']['strict_asof_eligible']<=w.get('verified_capture_versions',0)
+          assert w['market_join']['strict_asof_eligible']+w['market_join']['pending_after_last_bar']+w['market_join']['proof_rejected']==w.get('verified_capture_versions',0)
+          assert w['market_join']['no_lookahead'] is True
+          assert w.get('requests_attempted',0)<=9
+          assert w.get('verified_capture_versions',0)==len(w.get('capture_rows',[]))
+          print('V44_NEWS_CAPTURE',q['source_status'],'ROWS',q['record_count'])
+          print('V44_COMMON_CRAWL',w.get('status'),w.get('requests_attempted'),w.get('verified_capture_versions'),w.get('failures',[]))
           print('V41_MARKET',a['market'])
           print('V41_PRICE_BASELINES',a['aggregate_price_baselines'])
           print('V41_BUYHOLD_A100',a['aggregate_buyhold_aud100'])
@@ -256,6 +350,9 @@ jobs:
             audit/v43-drawdown-cash-gate.json
             audit/v44-fx-volatility.json
             audit/v44-live-news-capture.json
+            audit/v44-fx-exit.json
+            audit/v44-recent-news-capture.json
+            audit/v44-warc-capture.json
             audit/v42-market-bars.json
             audit/v42-monthly-news.json
             audit/v42-monthly-news-enriched.json
@@ -294,6 +391,10 @@ jobs:
           python -m unittest discover -s tests -p 'test_v41_monthly_news.py' -v
           python -m unittest discover -s tests -p 'test_v44_persist_news_capture.py' -v
           python -c "import hashlib,json,pathlib; p=pathlib.Path('data/news_capture_observations_v44.jsonl'); m=json.loads(pathlib.Path('data/news_capture_manifest_v44.json').read_text()); assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows']; assert all(not r.get('body_stored',True) for r in rows); print('V44_PERSISTED_NEWS_VERSIONS',len(rows),'URLS',m['distinct_urls'],'EVENT_CLUSTERS',m['distinct_event_clusters'],'SHA256',m['rows_sha256'])"
+          python -m research.v44_persist_recent_news --audit audit/v44-recent-news-capture.json --warc-audit audit/v44-warc-capture.json
+          python -m unittest discover -s tests -p 'test_v44_recent_news_capture.py' -v
+          python -c "import hashlib,json,pathlib; p=pathlib.Path('data/v44_recent_news_observations.jsonl'); m=json.loads(pathlib.Path('data/v44_recent_news_manifest.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['version_rows_cumulative']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; print('V44_PERSISTED_NEWS_ROWS',len(rows),'URLS',m['unique_urls'],'SHA256',m['rows_sha256'])"
+          python -c "import hashlib,json,pathlib; p=pathlib.Path('data/historical_news_sample_v38.jsonl'); m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows_cumulative_deduplicated']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; assert sum(r.get('availability_confidence')=='verified_crawl' for r in rows)==m['historical_verified_crawl_rows']; print('V44_WARC_CORPUS_ROWS',len(rows),'VERIFIED_CRAWLS',m['historical_verified_crawl_rows'],'SHA256',m['rows_sha256'])"
           python - <<'PY'
           import hashlib,json,pathlib
           p=pathlib.Path('data/historical_news_sample_v38.jsonl')
@@ -326,6 +427,11 @@ jobs:
             python -c "import hashlib,json,pathlib; p=pathlib.Path('data/news_capture_observations_v44.jsonl'); m=json.loads(pathlib.Path('data/news_capture_manifest_v44.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; assert all(not r.get('body_stored',True) for r in rows); print('V44_PERSISTED_NEWS_VERSIONS',len(rows),'URLS',m['distinct_urls'],'SHA256',m['rows_sha256'])"
             python -c "import hashlib,json,pathlib; p=pathlib.Path('data/historical_news_sample_v38.jsonl'); m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text()); c=json.loads(pathlib.Path('data/historical_news_sampling_cursor_v41.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows_cumulative_deduplicated']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; assert m['historical_article_versions_cumulative']<=len(rows); assert set(c['completed_months']).issubset(set(c['attempted_months'])); print('V41_CUMULATIVE_ROWS',len(rows),'ARTICLES',m['historical_article_versions_cumulative'],'SHA256',m['rows_sha256']); print('V41_CURSOR_ATTEMPTED',len(c['attempted_months']),'COMPLETED',len(c['completed_months']),'RETRY',c['retry_months'],'REMAINING',c['remaining_month_count'])"
             git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json data/news_capture_observations_v44.jsonl data/news_capture_manifest_v44.json
+            python -m research.v44_persist_recent_news --audit audit/v44-recent-news-capture.json --warc-audit audit/v44-warc-capture.json
+            python -m unittest discover -s tests -p 'test_v44_recent_news_capture.py' -q
+            python -c "import hashlib,json,pathlib; p=pathlib.Path('data/v44_recent_news_observations.jsonl'); m=json.loads(pathlib.Path('data/v44_recent_news_manifest.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['version_rows_cumulative']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; print('V44_PERSISTED_NEWS_ROWS',len(rows),'URLS',m['unique_urls'],'SHA256',m['rows_sha256'])"
+            python -c "import hashlib,json,pathlib; p=pathlib.Path('data/historical_news_sample_v38.jsonl'); m=json.loads(pathlib.Path('data/historical_news_manifest_v38.json').read_text()); rows=[json.loads(x) for x in p.read_text().splitlines() if x]; assert len(rows)==m['rows_cumulative_deduplicated']; assert hashlib.sha256(p.read_bytes()).hexdigest()==m['rows_sha256']; assert sum(r.get('availability_confidence')=='verified_crawl' for r in rows)==m['historical_verified_crawl_rows']; print('V44_WARC_CORPUS_ROWS',len(rows),'VERIFIED_CRAWLS',m['historical_verified_crawl_rows'],'SHA256',m['rows_sha256'])"
+            git add data/historical_news_sample_v38.jsonl data/historical_news_manifest_v38.json data/historical_news_sampling_cursor_v41.json data/v44_recent_news_observations.jsonl data/v44_recent_news_manifest.json
             if git diff --cached --quiet; then
               echo 'No new article metadata or cursor updates'
               exit 0
