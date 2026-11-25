@@ -2,7 +2,7 @@
   "body_bytes_stored": 0,
   "distinct_event_clusters": 2,
   "distinct_urls": 3,
-  "distinct_versions": 3,
+  "distinct_versions": 4,
   "event_clusters": {
     "RBA_NOVEMBER_2026_MINUTES": {
       "publishers": [
@@ -18,20 +18,20 @@
       "publishers": [
         "Crypto Briefing"
       ],
-      "rows": 1,
+      "rows": 2,
       "urls": [
         "https://cryptobriefing.com/bitcoin-etf-outflow-streak-ends-64800/"
       ]
     }
   },
-  "latest_retrieval_utc": "2026-11-25T03:08:41Z",
-  "new_versions_inserted_this_run": 0,
+  "latest_retrieval_utc": "2026-11-25T04:03:43Z",
+  "new_versions_inserted_this_run": 1,
   "policy": "Direct response SHA256 only; first persisted observation is the main-run fetch time, never publisher publication time",
-  "rows": 3,
-  "rows_sha256": "d2d37781b46ab8b238c8593632396cb4e0cbdfb5813bb29c64197c9df053ab6a",
+  "rows": 4,
+  "rows_sha256": "473b22d540b5166dab062978e27efde19dc3eff761eee7d35b11f1f205cc7f20",
   "schema": "v44_news_capture_manifest_1",
   "source_version_rows": {
-    "Crypto Briefing": 1,
+    "Crypto Briefing": 2,
     "Reserve Bank of Australia": 2
   }
 }

@@ -1,40 +1,17 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 1560,
+  "historical_article_versions_cumulative": 1650,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-25T04:01:24.241807+00:00",
+  "latest_retrieval_utc": "2026-11-25T04:04:25.432176+00:00",
   "market_join_latest": {
-    "examples": [
-      {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163532"
-      },
-      {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163528"
-      },
-      {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163508"
-      },
-      {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163540"
-      },
-      {
-        "bar_open_utc": "2021-01-31T20:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/post/5163539"
-      }
-    ],
+    "capture_market_join_status": "OK_GAP_SAFE_ASOF",
+    "examples": [],
     "market_bars": 6863,
-    "official_release_time_aligned_not_first_observed": 2,
-    "retrospective_time_aligned": 282,
-    "strict_asof_eligible": 0
+    "official_release_time_aligned_not_first_observed": 0,
+    "retrospective_time_aligned": 0,
+    "strict_asof_eligible": 0,
+    "strict_asof_examples": [],
+    "strict_asof_rule": "V48 exact Common Crawl SHA1-base32 capture reference + one-hour latency; first gap-safe completed-bar OPEN at or after availability"
   },
   "months_by_publication": {
     "2020-01": 30,
@@ -100,8 +77,10 @@
     "2025-01": 19,
     "2025-02": 4,
     "2025-03": 1,
+    "2026-06": 30,
     "2026-07": 30,
-    "2026-09": 10,
+    "2026-08": 30,
+    "2026-09": 40,
     "2026-10": 51,
     "unknown": 1068
   },
@@ -112,11 +91,15 @@
     "@cardanostiftung": 1,
     "AMBCrypto": 5,
     "Altcoinbuzz": 1,
+    "BBC Business": 3,
+    "BBC World": 1,
     "BIS Speeches": 21,
+    "Bitcoin Optech": 1,
     "Bitcoinist": 10,
     "Blockworks": 3,
-    "CNBC Crypto": 1,
-    "Coin Edition": 2,
+    "CNBC Crypto": 2,
+    "Coin Center": 1,
+    "Coin Edition": 3,
     "CoinDesk": 2,
     "CoinPedia": 1,
     "CoinTelegraph": 11,
@@ -128,18 +111,24 @@
     "CryptoSlate": 1,
     "Cryptoglobe": 7,
     "Cryptoninjas": 1,
-    "DW News": 1,
+    "DW News": 2,
     "Dailycoin": 1,
     "Decrypt": 2,
+    "Economic Times India Markets": 2,
     "EigenLayer Blog": 1,
     "En": 4,
     "Ethereumworldnews": 1,
+    "FRED Blog (St. Louis Fed)": 7,
+    "Financial Times Crypto": 9,
     "Finbold": 1,
-    "Fortune Crypto": 2,
+    "Fortune Crypto": 14,
+    "Glassnode Insights": 2,
+    "Lido Blog": 1,
     "NewsBTC": 5,
     "Odaily 星球日报": 1375,
     "OpenZeppelin Blog": 5,
-    "Stacker News": 10,
+    "Solana News": 4,
+    "Stacker News": 18,
     "The Block": 2,
     "The Daily Hodl": 12,
     "The Guardian Tech": 2,
@@ -150,8 +139,9 @@
     "Trustnodes": 1,
     "U.Today": 3,
     "Wolf Street": 2,
+    "Yahoo Finance Crypto": 28,
     "ZeroHedge": 1,
-    "ZyCrypto": 8,
+    "ZyCrypto": 9,
     "aol.com": 9,
     "cointelegraph.com": 1,
     "edaily.co.kr": 2,
@@ -159,7 +149,9 @@
     "fnnews.com": 1,
     "fool.com": 4,
     "hindustantimes.com": 1,
-    "r/CryptoCurrency": 1,
+    "r/Bitcoin": 4,
+    "r/CryptoCurrency": 3,
+    "r/CryptoMarkets": 1,
     "r/defi": 4,
     "r/ethereum": 5,
     "segye.com": 2,
@@ -168,12 +160,12 @@
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 2628,
-  "rows_new_in_latest_sample": 1643,
-  "rows_sha256": "339dc4cbbe43d0e0978ef0a604912f37b1169a56b029e7fbcb0f92bf685e02c7",
+  "rows_cumulative_deduplicated": 2718,
+  "rows_new_in_latest_sample": 90,
+  "rows_sha256": "5ab7389504271338907400e616f328e649799a38f9e0006dc01af0e24150391e",
   "sampling_class_counts": {
     "official_all_press_releases": 1019,
-    "outcome_independent_monthly_archive": 1531,
+    "outcome_independent_monthly_archive": 1621,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -181,59 +173,124 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 1531,
+    "cryptocurrency_cv": 1621,
     "fed_press": 1020,
     "fomc_calendar": 48,
     "gdelt": 29
   },
   "source_status_latest": {
     "common_crawl": {
-      "fetched_rows": 1,
-      "status": "URL_SPECIFIC_INDEX_CAPTURE"
-    },
-    "crypto_news_api": {
+      "access_class": "FREE_PUBLIC_METADATA",
+      "attempted_article_urls": 1,
+      "body_downloaded": false,
+      "failed_or_rejected": 2,
+      "failures": [
+        {
+          "index": "CC-MAIN-2026-25",
+          "status": "HTTPError: HTTP Error 404: Not Found",
+          "url": "https://fortune.com/2026/06/03/nscale-raised-billions-europe-ai-ambitions"
+        },
+        {
+          "index": "CC-MAIN-2026-30",
+          "status": "HTTPError: HTTP Error 404: Not Found",
+          "url": "https://fortune.com/2026/06/03/nscale-raised-billions-europe-ai-ambitions"
+        }
+      ],
       "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: historical API key/plan required; no authorized key"
+      "index_ids_queried": [
+        "CC-MAIN-2026-25",
+        "CC-MAIN-2026-30"
+      ],
+      "index_selection_scope": "first two chronological post-publication indexes per sampled URL; absence in these indexes does not prove absence from all Common Crawl",
+      "index_timezone_assumption": "Common Crawl collinfo from/to values without offsets are interpreted as UTC",
+      "license_note": "Common Crawl CDX metadata/digests only; no WARC body retrieved; only first two chronological post-publication indexes queried",
+      "requests_attempted": 2,
+      "status": "BLOCKED_OR_FAILED",
+      "successful_index_queries": 0,
+      "verified_capture_versions": 0
     },
     "cryptocurrency_cv": {
-      "fetched_rows": 575,
-      "status": "2025-04: no returned article has verified publication month; 2025-07: no returned article has verified publication month; 2025-10: no returned article has verified publication month"
-    },
-    "cryptopanic": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API authentication/plan required; no authorized key"
-    },
-    "fed_press": {
-      "fetched_rows": 1020,
-      "status": "OFFICIAL_ANNUAL_DATE_ONLY"
-    },
-    "fomc_calendar": {
-      "fetched_rows": 48,
-      "status": "DATE_ONLY_PLUS_3_OFFICIAL_CLOCKS_NOT_HISTORICAL_CAPTURE"
-    },
-    "fomc_statements_mirror": {
-      "fetched_rows": 0,
-      "status": "MIRROR_REACHABLE_NO_ORIGINAL_RELEASE_TIMING"
-    },
-    "gdelt": {
-      "fetched_rows": 0,
-      "status": "HTTPError: HTTP Error 429: Too Many Requests"
-    },
-    "infini_news": {
-      "fetched_rows": 0,
-      "status": "OK_PREVIEW_INCOMPLETE"
-    },
-    "media_cloud": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API credentials/access required; no authorized key"
-    },
-    "newsdata_io": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: archive access key/paid tier; no authorized key or purchase"
-    },
-    "sandl": {
-      "fetched_rows": 0,
-      "status": "KEY_REQUIRED_OR_RESTRICTED: API access unverified/key may be required; no authorized key"
+      "fetched_rows": 90,
+      "per_month": {
+        "2025-05": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-05: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-06": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-06: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-08": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-08: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-09": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-09: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-11": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-11: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-12": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-12: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2026-03": {
+          "ok": true,
+          "retryable": false,
+          "rows": 0,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": true
+        },
+        "2026-05": {
+          "ok": true,
+          "retryable": false,
+          "rows": 0,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": true
+        },
+        "2026-06": {
+          "ok": true,
+          "retryable": false,
+          "rows": 30,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2026-08": {
+          "ok": true,
+          "retryable": false,
+          "rows": 30,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        },
+        "2026-09": {
+          "ok": true,
+          "retryable": false,
+          "rows": 30,
+          "status": "OK_DATE_FILTERS_VERIFIED",
+          "zero_rows": false
+        }
+      },
+      "status": "V41_PERSISTENT_UNSAMPLED_MONTH_CURSOR"
     }
   },
   "target": 10000,
