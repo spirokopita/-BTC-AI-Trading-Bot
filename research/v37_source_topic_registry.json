@@ -1335,5 +1335,29 @@
     "article_target_excludes_date_only_fed_releases": true
   },
   "last_updated_utc": "2026-11-18",
-  "graph_status": "57 proposed degree-1/2/3 hypotheses; V44 AUD/USD volatility edge added as untested; no causal claim"
+  "graph_status": "57 proposed degree-1/2/3 hypotheses; V44 AUD/USD volatility edge added as untested; no causal claim",
+  "transmission_graph": {
+    "path": "research/v44_btc_aud_driver_graph.json",
+    "schema": "v44_btc_aud_driver_graph_1",
+    "status": "HYPOTHESIS_GRAPH_NOT_CAUSAL_EVIDENCE",
+    "last_updated_utc": "2026-11-17T23:18:21Z"
+  },
+  "v44_prospective_capture": {
+    "sources": [
+      {
+        "source_id": "rba_november_2026_minutes",
+        "access_class": "FREE_PUBLIC",
+        "status": "CAPTURE_ATTEMPT_IN_V44_WORKFLOW",
+        "usage": "metadata and exact response hash only; publisher text not redistributed"
+      },
+      {
+        "source_id": "coindesk_btc_etf_flows_2026_11_17",
+        "access_class": "PUBLIC_PAGE_NO_API_KEY",
+        "status": "CAPTURE_ATTEMPT_IN_V44_WORKFLOW",
+        "usage": "metadata and exact response hash only; publisher text not redistributed"
+      }
+    ],
+    "historical_backfill": false,
+    "availability": "first verified HTTP response time plus one-hour latency; never backdated to publication"
+  }
 }
