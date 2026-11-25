@@ -453,7 +453,7 @@
     "A100_inclusive_debit_cap",
     "10pct_cash_cap"
   ],
-  "next": "V42.1: correct Common Crawl collinfo naive from/to timestamps as UTC and rerun the 12-URL/two-index probe; V42 initial attempt selected invalid 2008/2009 IDs (24 failed queries, 0 captures). Re-run V42 walk-forward with 84-bar embargo matching the 84-bar maximum holding horizon. Then verify merge/main persistence. Continue monthly cryptocurrency.cv sampling; no article target claim until cumulative unique-URL read-back.",
+  "next": "V44: run the train-calibrated AUD/USD realized-volatility gate and delayed placebo; capture current RBA minutes and CoinDesk ETF-flow article hashes at actual retrieval time; persist first-observed versions on main; continue the 18 unsampled archive months; do not promote without genuinely untouched OOS NET benefit and verified FX vintages.",
   "graph_hypotheses": [
     {
       "from": "BTC spot ETF inflows",
@@ -1259,6 +1259,25 @@
         "USD"
       ],
       "hypothesis_status": "UNTESTED_NOT_CAUSAL"
+    },
+    {
+      "from": "AUD/USD 20-observation annualized realized volatility",
+      "to": "BTC/AUD long-entry risk and conditional return",
+      "degree": 2,
+      "sign_hypothesis": "direction ambiguous; higher FX volatility may raise BTC/AUD variance but does not imply a directional return",
+      "lag_hypothesis": "20 daily observations; RBA 17:00 Australia/Sydney +24h availability is ASSUMED; decision only at next eligible 4h open",
+      "channel": "AUD/USD denominator uncertainty and intermediate macro/financial-stress transmission",
+      "source_id": "rba_f11_1",
+      "confounders": [
+        "BTC/USD realized volatility",
+        "DXY",
+        "Australian commodity terms of trade",
+        "RBA/Fed policy expectations",
+        "global equity risk appetite"
+      ],
+      "status": "UNTESTED_PENDING_V44_CI",
+      "test_design": "H80/300 BUY-only gate at training-calibrated q75/q90 with seven-day delayed FX-volatility placebo; protective SELL never gated",
+      "vintage_limitation": "RBA history is a retrospective snapshot; no first-observed or revision-vintage proof"
     }
   ],
   "sampling_plan": {
@@ -1315,6 +1334,6 @@
     "last_total_records_including_official": 1633,
     "article_target_excludes_date_only_fed_releases": true
   },
-  "last_updated_utc": "2026-11-17",
-  "graph_status": "All degree 1-3 edges are untested transmission hypotheses, not causal claims. Stablecoin, Kraken depth and mining network sources are registered but not ingested; retrospective values without verified first-observed/vintage availability remain descriptive only."
+  "last_updated_utc": "2026-11-18",
+  "graph_status": "57 proposed degree-1/2/3 hypotheses; V44 AUD/USD volatility edge added as untested; no causal claim"
 }
