@@ -551,6 +551,102 @@
       "retryable": false,
       "rows": 24,
       "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-03",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 24,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-06",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 16,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-08",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 16,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-09",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 30,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-11",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 18,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2024-12",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 26,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2025-03",
+      "ok": true,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": false,
+      "rows": 1,
+      "status": "OK_DATE_FILTERS_VERIFIED"
+    },
+    {
+      "month": "2025-05",
+      "ok": false,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": true,
+      "rows": 0,
+      "status": "2025-05: no returned article has verified publication month"
+    },
+    {
+      "month": "2025-06",
+      "ok": false,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": true,
+      "rows": 0,
+      "status": "2025-06: no returned article has verified publication month"
+    },
+    {
+      "month": "2025-08",
+      "ok": false,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": true,
+      "rows": 0,
+      "status": "2025-08: no returned article has verified publication month"
+    },
+    {
+      "month": "2025-09",
+      "ok": false,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": true,
+      "rows": 0,
+      "status": "2025-09: no returned article has verified publication month"
+    },
+    {
+      "month": "2025-11",
+      "ok": false,
+      "retrieved_at_utc": "2026-11-25T03:09:24.563785+00:00",
+      "retryable": true,
+      "rows": 0,
+      "status": "2025-11: no returned article has verified publication month"
     }
   ],
   "attempted_months": [
@@ -604,15 +700,27 @@
     "2023-12",
     "2024-01",
     "2024-02",
+    "2024-03",
     "2024-04",
     "2024-05",
+    "2024-06",
     "2024-07",
+    "2024-08",
+    "2024-09",
     "2024-10",
+    "2024-11",
+    "2024-12",
     "2025-01",
     "2025-02",
+    "2025-03",
     "2025-04",
+    "2025-05",
+    "2025-06",
     "2025-07",
+    "2025-08",
+    "2025-09",
     "2025-10",
+    "2025-11",
     "2026-01",
     "2026-02",
     "2026-04",
@@ -670,12 +778,19 @@
     "2023-12",
     "2024-01",
     "2024-02",
+    "2024-03",
     "2024-04",
     "2024-05",
+    "2024-06",
     "2024-07",
+    "2024-08",
+    "2024-09",
     "2024-10",
+    "2024-11",
+    "2024-12",
     "2025-01",
     "2025-02",
+    "2025-03",
     "2025-04",
     "2025-07",
     "2025-10",
@@ -685,10 +800,16 @@
     "2026-07",
     "2026-10"
   ],
-  "last_retrieval_utc": "2026-11-17T22:39:40.245968+00:00",
+  "last_retrieval_utc": "2026-11-25T03:09:24.563785+00:00",
   "note": "Attempted months are not counted as populated articles. Legacy months are marked successful with unknown per-month row counts; V41 onward stores exact rows, zero-row and retryable-failure status.",
-  "remaining_month_count": 18,
-  "retry_months": [],
+  "remaining_month_count": 6,
+  "retry_months": [
+    "2025-05",
+    "2025-06",
+    "2025-08",
+    "2025-09",
+    "2025-11"
+  ],
   "schema": "v41_monthly_sampling_cursor_1",
   "scope_end_month": "2026-10",
   "scope_start_month": "2020-01",

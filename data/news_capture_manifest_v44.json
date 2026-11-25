@@ -1,0 +1,37 @@
+{
+  "body_bytes_stored": 0,
+  "distinct_event_clusters": 2,
+  "distinct_urls": 3,
+  "distinct_versions": 3,
+  "event_clusters": {
+    "RBA_NOVEMBER_2026_MINUTES": {
+      "publishers": [
+        "Reserve Bank of Australia"
+      ],
+      "rows": 2,
+      "urls": [
+        "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-11-03.html",
+        "https://www.rba.gov.au/schedules-events/calendar/"
+      ]
+    },
+    "US_BTC_ETF_FLOWS_2026_11_16": {
+      "publishers": [
+        "Crypto Briefing"
+      ],
+      "rows": 1,
+      "urls": [
+        "https://cryptobriefing.com/bitcoin-etf-outflow-streak-ends-64800/"
+      ]
+    }
+  },
+  "latest_retrieval_utc": "2026-11-25T03:08:41Z",
+  "new_versions_inserted_this_run": 0,
+  "policy": "Direct response SHA256 only; first persisted observation is the main-run fetch time, never publisher publication time",
+  "rows": 3,
+  "rows_sha256": "d2d37781b46ab8b238c8593632396cb4e0cbdfb5813bb29c64197c9df053ab6a",
+  "schema": "v44_news_capture_manifest_1",
+  "source_version_rows": {
+    "Crypto Briefing": 1,
+    "Reserve Bank of Australia": 2
+  }
+}

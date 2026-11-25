@@ -1,40 +1,14 @@
 {
   "android_policy": "HOLD",
-  "historical_article_versions_cumulative": 1428,
+  "historical_article_versions_cumulative": 1559,
   "historical_verified_crawl_rows": 1,
-  "latest_retrieval_utc": "2026-11-17T22:39:40.245968+00:00",
+  "latest_retrieval_utc": "2026-11-25T03:09:24.563785+00:00",
   "market_join_latest": {
     "capture_market_join_status": "OK_GAP_SAFE_ASOF",
-    "examples": [
-      {
-        "bar_open_utc": "2022-04-01T00:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/280550"
-      },
-      {
-        "bar_open_utc": "2022-04-01T00:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/280551"
-      },
-      {
-        "bar_open_utc": "2022-04-01T00:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/280552"
-      },
-      {
-        "bar_open_utc": "2022-04-01T00:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/280553"
-      },
-      {
-        "bar_open_utc": "2022-04-01T00:00:00+00:00",
-        "strict_asof_eligible": false,
-        "url": "https://odaily.news/newsflash/280555"
-      }
-    ],
+    "examples": [],
     "market_bars": 6863,
     "official_release_time_aligned_not_first_observed": 0,
-    "retrospective_time_aligned": 265,
+    "retrospective_time_aligned": 0,
     "strict_asof_eligible": 0,
     "strict_asof_examples": [],
     "strict_asof_rule": "V48 exact Common Crawl SHA1-base32 capture reference + one-hour latency; first gap-safe completed-bar OPEN at or after availability"
@@ -90,12 +64,19 @@
     "2023-12": 24,
     "2024-01": 23,
     "2024-02": 25,
+    "2024-03": 24,
     "2024-04": 22,
     "2024-05": 26,
+    "2024-06": 16,
     "2024-07": 25,
+    "2024-08": 16,
+    "2024-09": 30,
     "2024-10": 24,
+    "2024-11": 18,
+    "2024-12": 26,
     "2025-01": 19,
     "2025-02": 4,
+    "2025-03": 1,
     "2026-07": 30,
     "2026-09": 10,
     "2026-10": 50,
@@ -109,13 +90,15 @@
     "AMBCrypto": 5,
     "Altcoinbuzz": 1,
     "BIS Speeches": 21,
-    "Bitcoinist": 9,
+    "Bitcoinist": 10,
     "Blockworks": 3,
     "CNBC Crypto": 1,
     "Coin Edition": 2,
     "CoinDesk": 2,
     "CoinPedia": 1,
     "CoinTelegraph": 11,
+    "Coincu": 1,
+    "Coinpaprika": 2,
     "Crypto Briefing": 4,
     "CryptoDaily": 1,
     "CryptoPotato": 3,
@@ -124,20 +107,21 @@
     "Cryptoninjas": 1,
     "DW News": 1,
     "Dailycoin": 1,
-    "Decrypt": 1,
+    "Decrypt": 2,
     "EigenLayer Blog": 1,
     "En": 4,
     "Ethereumworldnews": 1,
     "Finbold": 1,
     "Fortune Crypto": 1,
     "NewsBTC": 5,
-    "Odaily 星球日报": 1250,
+    "Odaily 星球日报": 1375,
     "OpenZeppelin Blog": 5,
     "Stacker News": 10,
     "The Block": 2,
     "The Daily Hodl": 12,
     "The Guardian Tech": 2,
     "TheCryptoBasic": 1,
+    "Thecoinrepublic": 1,
     "Thecryptolark": 1,
     "Thedefiant": 1,
     "Trustnodes": 1,
@@ -161,12 +145,12 @@
     "zerohedge.com": 1
   },
   "paper_only": true,
-  "rows_cumulative_deduplicated": 2491,
-  "rows_new_in_latest_sample": 265,
-  "rows_sha256": "a539690a36ab723727164669bb1ccb94cd73276f2bccaa548c7fc26b647178c1",
+  "rows_cumulative_deduplicated": 2622,
+  "rows_new_in_latest_sample": 131,
+  "rows_sha256": "ee36a1015cdc5a9625ce22de7dc6f3f5208653294ee2f8e9c829b94027f51d43",
   "sampling_class_counts": {
     "official_all_press_releases": 1014,
-    "outcome_independent_monthly_archive": 1399,
+    "outcome_independent_monthly_archive": 1530,
     "scheduled_policy_statements": 48,
     "single_url_capture_probe": 1,
     "topic_search_not_representative": 29
@@ -174,7 +158,7 @@
   "schema": "v38_cumulative_metadata_1",
   "source_counts_not_exclusive": {
     "common_crawl": 1,
-    "cryptocurrency_cv": 1399,
+    "cryptocurrency_cv": 1530,
     "fed_press": 1015,
     "fomc_calendar": 48,
     "gdelt": 29
@@ -187,20 +171,20 @@
       "failed_or_rejected": 2,
       "failures": [
         {
-          "index": "CC-MAIN-2022-21",
-          "status": "HTTPError: HTTP Error 404: Not Found",
-          "url": "https://odaily.news/newsflash/280563"
+          "index": "CC-MAIN-2024-18",
+          "status": "HTTPError: HTTP Error 503: Service Temporarily Unavailable",
+          "url": "https://odaily.news/post/5194132"
         },
         {
-          "index": "CC-MAIN-2022-27",
-          "status": "HTTPError: HTTP Error 404: Not Found",
-          "url": "https://odaily.news/newsflash/280563"
+          "index": "CC-MAIN-2024-22",
+          "status": "HTTPError: HTTP Error 503: Service Temporarily Unavailable",
+          "url": "https://odaily.news/post/5194132"
         }
       ],
       "fetched_rows": 0,
       "index_ids_queried": [
-        "CC-MAIN-2022-21",
-        "CC-MAIN-2022-27"
+        "CC-MAIN-2024-18",
+        "CC-MAIN-2024-22"
       ],
       "index_selection_scope": "first two chronological post-publication indexes per sampled URL; absence in these indexes does not prove absence from all Common Crawl",
       "index_timezone_assumption": "Common Crawl collinfo from/to values without offsets are interpreted as UTC",
@@ -211,91 +195,91 @@
       "verified_capture_versions": 0
     },
     "cryptocurrency_cv": {
-      "fetched_rows": 265,
+      "fetched_rows": 131,
       "per_month": {
-        "2022-03": {
-          "ok": true,
-          "retryable": false,
-          "rows": 23,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2022-06": {
-          "ok": true,
-          "retryable": false,
-          "rows": 26,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2022-08": {
-          "ok": true,
-          "retryable": false,
-          "rows": 22,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2022-09": {
-          "ok": true,
-          "retryable": false,
-          "rows": 28,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2022-11": {
+        "2024-03": {
           "ok": true,
           "retryable": false,
           "rows": 24,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2022-12": {
+        "2024-06": {
           "ok": true,
           "retryable": false,
           "rows": 16,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2023-03": {
+        "2024-08": {
           "ok": true,
           "retryable": false,
-          "rows": 21,
+          "rows": 16,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2023-06": {
+        "2024-09": {
           "ok": true,
           "retryable": false,
-          "rows": 10,
+          "rows": 30,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2023-08": {
+        "2024-11": {
           "ok": true,
           "retryable": false,
-          "rows": 25,
+          "rows": 18,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2023-09": {
-          "ok": true,
-          "retryable": false,
-          "rows": 20,
-          "status": "OK_DATE_FILTERS_VERIFIED",
-          "zero_rows": false
-        },
-        "2023-11": {
+        "2024-12": {
           "ok": true,
           "retryable": false,
           "rows": 26,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
         },
-        "2023-12": {
+        "2025-03": {
           "ok": true,
           "retryable": false,
-          "rows": 24,
+          "rows": 1,
           "status": "OK_DATE_FILTERS_VERIFIED",
           "zero_rows": false
+        },
+        "2025-05": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-05: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-06": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-06: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-08": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-08: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-09": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-09: no returned article has verified publication month",
+          "zero_rows": true
+        },
+        "2025-11": {
+          "ok": false,
+          "retryable": true,
+          "rows": 0,
+          "status": "2025-11: no returned article has verified publication month",
+          "zero_rows": true
         }
       },
       "status": "V41_PERSISTENT_UNSAMPLED_MONTH_CURSOR"
